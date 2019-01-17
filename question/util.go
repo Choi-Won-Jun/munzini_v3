@@ -25,11 +25,11 @@ func LoadData() qDataConst {
 		printArray(ptoc)
 	*/
 
-	var ptocMap map[string]int //
+	// make map from slice ptoc
+	var ptocMap map[string]int
 	ptocMap = make(map[string]int)
-
 	for i := 1; i < len(ptoc); i++ {
-		ptocMap[ptoc[i][0]], _ = strconv.Atoi(ptoc[i][1])
+		ptocMap[ptoc[i][PTOC_QUESTION]], _ = strconv.Atoi(ptoc[i][PTOC_CUTOFF])
 	}
 
 	// test code to show how ptocMap looks like
@@ -50,4 +50,15 @@ func printArray(arr [][]string) {
 		}
 		fmt.Println()
 	}
+}
+
+func QIdxInit(qdata QData) QData {
+	for i := 1; i < len(qdata.RawData.QCWP); i++ {
+		qdata.QIdx = append(qdata.QIdx, i)
+	}
+	return qdata
+}
+
+func PrintStruct(qdata QData) {
+	fmt.Print(qdata)
 }
