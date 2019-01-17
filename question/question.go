@@ -1,16 +1,14 @@
+// question
 package question
 
 type qDataConst struct {
-  QtoC  map[string]string   // 질문 : 카테고리
-  CtoP  map[string]string   // 카테고리 : 변증
-  CtoV  map[string]int      // 카테고리 : 가중치(질문 문항 수)
-  PtoC  map[string]int      // 변증 : 컷오프
+	QCWP [][]string     // 질문, 카테고리, 가중치, 변증
+	PtoC map[string]int // 변증 : 컷오프
 }
 
 type qData struct {
-  q       [][]string        // [qA[], qB[], qC[], qD[], qE[]]
-  qRep    []string          // [q1, q2, q3, ..., q23]
-  repIdx  int               // q에서 뽑은 대표 질문들의 인덱스 값
-  qOther  [][]string        // [qAother[], qBother[], ... qEother[]
-  answer  map[string]int    // 질문 : 응답점수
+	qIdx       []int       // QCWP 인덱스 슬라이스
+	qRepIdx    []int       // 각 변증의 각 카테고리별 대표 질문들에 대한 QCWP 인덱스 슬라이스
+	qDetailIdx [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스]
+	answer     map[int]int // QCWP 인덱스 : 응답점수
 }

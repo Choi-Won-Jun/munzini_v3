@@ -2,9 +2,10 @@ package main
 
 import (
 	"log"
-	"magicball/handler"
+	"munzini/handler"
 	"net/http"
-	"os"	// added
+	"os"
+	"munzini/question"	// for test
 )
 
 func main() {
