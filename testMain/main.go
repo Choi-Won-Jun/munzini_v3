@@ -2,14 +2,17 @@
 package main
 
 import (
+	//"fmt"
 	"testbench/question"
 )
 
 func main() {
-	var data question.QData
+	var qdata question.QData
 
-	data.RawData = question.LoadData()
-	data = question.QIdxInit(data)
+	qdata.RawData = question.LoadData()
+	qdata = question.QIdxInit(qdata)
+	qdata = question.QRepIdxInit(qdata)
 
-	question.PrintStruct(data)
+	question.PrintStruct(qdata)
+
 }

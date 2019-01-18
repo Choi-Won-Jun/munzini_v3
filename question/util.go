@@ -5,10 +5,13 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
+	"math/rand" // 임의 추출 관련
 	"os"
 	"strconv" // string 관련 형변환
+	"time"    // 임의 추출 관련
 )
 
+// 1. load data to initalize the structure qDataConst
 func LoadData() qDataConst {
 	qcwp_file, _ := os.Open("resources/data/QCWP.csv")   // open QCWP.csv
 	ptoc_file, _ := os.Open("resources/data/cutoff.csv") // open cutoff.csv
@@ -43,6 +46,26 @@ func LoadData() qDataConst {
 	return qdatacon
 }
 
+// 2. initialize QIdx of the structure QData
+func QIdxInit(qdata QData) QData {
+	for i := 1; i < len(qdata.RawData.QCWP); i++ {
+		qdata.QIdx = append(qdata.QIdx, i)
+	}
+	return qdata
+}
+
+// 3. initialize QRepIdx of the structure QData
+func QRepIdxInit(qdata QData) QData {
+	rand.Seed(time.Now().UTC().UnixNano())
+	for i := 0; i < len(qdata.QIdx); {
+		catNum, _ := strconv.Atoi(qdata.RawData.QCWP[qdata.QIdx[i]][WEIGHT])
+		randVal := rand.Intn(catNum) + i
+		qdata.QRepIdx = append(qdata.QRepIdx, randVal)
+		i += catNum
+	}
+	return qdata
+}
+
 func printArray(arr [][]string) {
 	for i := 1; i < len(arr); i++ {
 		for j := 0; j < len(arr[i]); j++ {
@@ -52,13 +75,10 @@ func printArray(arr [][]string) {
 	}
 }
 
-func QIdxInit(qdata QData) QData {
-	for i := 1; i < len(qdata.RawData.QCWP); i++ {
-		qdata.QIdx = append(qdata.QIdx, i)
-	}
-	return qdata
-}
-
 func PrintStruct(qdata QData) {
-	fmt.Print(qdata)
+	fmt.Println(qdata.RawData)
+	fmt.Println(qdata.QIdx)
+	fmt.Println(qdata.QRepIdx)
+	fmt.Println(qdata.QDetailIdx)
+	fmt.Println(qdata.Answer)
 }
