@@ -1,13 +1,16 @@
 // question
 package question
 
-const QUESTION = 0
-const CATEGORY = 1
-const WEIGHT = 2
-const PATTERN = 3
+const PATTERN_NUM = 5 // 패턴 수
 
-const PTOC_PATTERN = 0
-const PTOC_CUTOFF = 1
+const FIRST_IDX = 1 // QCWP 실제 데이터 시 행번호
+const QUESTION = 0  // QCWP question 열번호
+const CATEGORY = 1  // QCWP category 열번호
+const WEIGHT = 2    // QCWP weight 열번호
+const PATTERN = 3   // QCWP pattern 열번호
+
+const PTOC_PATTERN = 0 // PtoC pattern 열번호
+const PTOC_CUTOFF = 1  // PtoC cutoff 열번호
 
 type qDataConst struct {
 	QCWP [][]string     // 질문, 카테고리, 가중치, 변증

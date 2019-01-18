@@ -31,7 +31,7 @@ func LoadData() qDataConst {
 	// make map from slice ptoc
 	var ptocMap map[string]int
 	ptocMap = make(map[string]int)
-	for i := 1; i < len(ptoc); i++ {
+	for i := FIRST_IDX; i < len(ptoc); i++ {
 		ptocMap[ptoc[i][PTOC_PATTERN]], _ = strconv.Atoi(ptoc[i][PTOC_CUTOFF])
 	}
 
@@ -48,7 +48,7 @@ func LoadData() qDataConst {
 
 // 2. initialize QIdx of the structure QData
 func QIdxInit(qdata QData) QData {
-	for i := 1; i < len(qdata.RawData.QCWP); i++ {
+	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); i++ {
 		qdata.QIdx = append(qdata.QIdx, i)
 	}
 	return qdata
@@ -57,8 +57,8 @@ func QIdxInit(qdata QData) QData {
 // 3. initialize QRepIdx of the structure QData
 func QRepIdxInit(qdata QData) QData {
 	rand.Seed(time.Now().UTC().UnixNano())
-	for i := 0; i < len(qdata.QIdx); {
-		catNum, _ := strconv.Atoi(qdata.RawData.QCWP[qdata.QIdx[i]][WEIGHT])
+	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); {
+		catNum, _ := strconv.Atoi(qdata.RawData.QCWP[i][WEIGHT])
 		randVal := rand.Intn(catNum) + i
 		qdata.QRepIdx = append(qdata.QRepIdx, randVal)
 		i += catNum
@@ -66,6 +66,44 @@ func QRepIdxInit(qdata QData) QData {
 	return qdata
 }
 
+// 4. initialize QDetailIdx of the structure QData
+func QDetailIdxInit(qdata QData) QData {
+	// make a restQIdx slice which includes all questions but the questions related to repIdx
+	var restQIdx []int
+	var qRepIdxIdx int = 0
+	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); i++ {
+		if i == qdata.QRepIdx[qRepIdxIdx] { // if a value to put into restQIdx is same with the value of qRepIdx
+			fmt.Println(qdata.QRepIdx[qRepIdxIdx])
+			if qRepIdxIdx+1 != len(qdata.QRepIdx) { // if not qRepIdx[qRepIdxIdx] is the very last value
+				qRepIdxIdx++
+			}
+			continue
+		}
+		restQIdx = append(restQIdx, i)
+	}
+
+	// make QDetailIdx
+	var prevP string = qdata.RawData.QCWP[FIRST_IDX][PATTERN]
+	var curP string
+	var startPoint int = 0
+	for i := 0; i < PATTERN_NUM; i++ {
+		var qPIdx []int
+		for j := startPoint; j < len(restQIdx); j++ {
+			curP = qdata.RawData.QCWP[restQIdx[j]][PATTERN]
+			if prevP != curP { // if pattern changed
+				prevP = curP
+				startPoint = j + 1
+				break
+			}
+			prevP = curP
+			qPIdx = append(qPIdx, restQIdx[j])
+		}
+		qdata.QDetailIdx = append(qdata.QDetailIdx, qPIdx)
+	}
+	return qdata
+}
+
+// 5. shuffle QRepIdx of the structure QData
 func QRepIdxShuffle(qdata QData) QData {
 
 	Copy_QRep := make([]int, len(qdata.QRepIdx))
@@ -90,7 +128,7 @@ func QRepIdxShuffle(qdata QData) QData {
 }
 
 func printArray(arr [][]string) {
-	for i := 1; i < len(arr); i++ {
+	for i := FIRST_IDX; i < len(arr); i++ {
 		for j := 0; j < len(arr[i]); j++ {
 			fmt.Printf("%s ", arr[i][j])
 		}
@@ -99,7 +137,8 @@ func printArray(arr [][]string) {
 }
 
 func PrintStruct(qdata QData) {
-	fmt.Println(qdata.RawData)
+	fmt.Println(qdata.RawData.QCWP)
+	fmt.Println(qdata.RawData.PtoC)
 	fmt.Println(qdata.QIdx)
 	fmt.Println(qdata.QRepIdx)
 	fmt.Println(qdata.QDetailIdx)
