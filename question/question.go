@@ -6,7 +6,7 @@ const CATEGORY = 1
 const WEIGHT = 2
 const PATTERN = 3
 
-const PTOC_QUESTION = 0
+const PTOC_PATTERN = 0
 const PTOC_CUTOFF = 1
 
 type qDataConst struct {

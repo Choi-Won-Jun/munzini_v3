@@ -1,4 +1,4 @@
-// loader
+// util
 package question
 
 import (
