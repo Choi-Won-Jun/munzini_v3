@@ -32,7 +32,7 @@ func LoadData() qDataConst {
 	var ptocMap map[string]int
 	ptocMap = make(map[string]int)
 	for i := 1; i < len(ptoc); i++ {
-		ptocMap[ptoc[i][PTOC_QUESTION]], _ = strconv.Atoi(ptoc[i][PTOC_CUTOFF])
+		ptocMap[ptoc[i][PTOC_PATTERN]], _ = strconv.Atoi(ptoc[i][PTOC_CUTOFF])
 	}
 
 	// test code to show how ptocMap looks like
