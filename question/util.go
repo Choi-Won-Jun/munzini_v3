@@ -66,6 +66,29 @@ func QRepIdxInit(qdata QData) QData {
 	return qdata
 }
 
+func QRepIdxShuffle(qdata QData) QData {
+
+	Copy_QRep := make([]int, len(qdata.QRepIdx))
+	//copy(qrepIdx, qdata.QRepIdx)
+
+	qreplength := len(qdata.QRepIdx)
+	isFilled := make([]bool, qreplength) // 새로 만들 qRep이 채워졌는지 ,모두 false 값
+
+	rand_seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(rand_seed)
+
+	n := 0
+	for n < qreplength {
+		if new_qrepIdx := r.Intn(qreplength); !isFilled[new_qrepIdx] {
+			Copy_QRep[n] = qdata.QRepIdx[new_qrepIdx]
+			isFilled[new_qrepIdx] = true
+			n++
+		}
+	}
+	copy(qdata.QRepIdx, Copy_QRep)
+	return qdata
+}
+
 func printArray(arr [][]string) {
 	for i := 1; i < len(arr); i++ {
 		for j := 0; j < len(arr[i]); j++ {

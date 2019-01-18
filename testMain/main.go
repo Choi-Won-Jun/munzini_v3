@@ -12,7 +12,7 @@ func main() {
 	qdata.RawData = question.LoadData()
 	qdata = question.QIdxInit(qdata)
 	qdata = question.QRepIdxInit(qdata)
-
+	qdata = question.QRepIdxShuffle(qdata)
 	question.PrintStruct(qdata)
 
 }
