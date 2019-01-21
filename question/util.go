@@ -46,15 +46,7 @@ func LoadData() qDataConst {
 	return qdatacon
 }
 
-// 2. initialize QIdx of the structure QData
-func QIdxInit(qdata QData) QData {
-	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); i++ {
-		qdata.QIdx = append(qdata.QIdx, i)
-	}
-	return qdata
-}
-
-// 3. initialize QRepIdx of the structure QData
+// 2. initialize QRepIdx of the structure QData
 func QRepIdxInit(qdata QData) QData {
 	rand.Seed(time.Now().UTC().UnixNano())
 	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); {
@@ -66,7 +58,7 @@ func QRepIdxInit(qdata QData) QData {
 	return qdata
 }
 
-// 4. initialize QDetailIdx of the structure QData
+// 3. initialize QDetailIdx of the structure QData
 func QDetailIdxInit(qdata QData) QData {
 	// make a restQIdx slice which includes all questions but the questions related to repIdx
 	var restQIdx []int
@@ -103,8 +95,7 @@ func QDetailIdxInit(qdata QData) QData {
 	return qdata
 }
 
-// 5. shuffle QRepIdx of the structure QData
-
+// 4. shuffle QRepIdx of the structure QData
 func QRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 	qreplength := len(qdata.QRepIdx)
 
@@ -122,8 +113,7 @@ func QRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 	return qdata
 }
 
-// shuffle QDetIdx of the structure QData
-
+// 5. shuffle QDetIdx of the structure QData
 func QDetailIdxShuffle(qdata QData, pattern []int) QData {
 
 	patlength := len(pattern)
@@ -145,6 +135,7 @@ func QDetailIdxShuffle(qdata QData, pattern []int) QData {
 	return qdata
 }
 
+// debug: print 2-dimensional slice
 func printArray(arr [][]string) {
 	for i := FIRST_IDX; i < len(arr); i++ {
 		for j := 0; j < len(arr[i]); j++ {
@@ -154,59 +145,11 @@ func printArray(arr [][]string) {
 	}
 }
 
+// debug: print the contents of struct QData
 func PrintStruct(qdata QData) {
 	fmt.Println(qdata.RawData.QCWP)
 	fmt.Println(qdata.RawData.PtoC)
-	fmt.Println(qdata.QIdx)
 	fmt.Println(qdata.QRepIdx)
 	fmt.Println(qdata.QDetailIdx)
 	fmt.Println(qdata.Answer)
 }
-
-/* Old QRepIdxShuffle Algorithm
-func QRepIdxShuffle(qdata QData) QData {
-
-	Copy_QRep := make([]int, len(qdata.QRepIdx))
-
-	qreplength := len(qdata.QRepIdx)
-	isFilled := make([]bool, qreplength) // 새로 만들 qRep이 채워졌는지 ,모두 false 값
-
-	rand_seed := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(rand_seed)
-
-	n := 0
-	for n < qreplength {
-		if new_qrepIdx := r.Intn(qreplength); !isFilled[new_qrepIdx] {
-			Copy_QRep[n] = qdata.QRepIdx[new_qrepIdx]
-			isFilled[new_qrepIdx] = true
-			n++
-		}
-	}
-	copy(qdata.QRepIdx, Copy_QRep)
-	return qdata
-}
-*/
-/* Old QDetailIdxShuffle Algorithm
-func QDetailIdxShuffle(qdata QData, pattern []int) QData { // int pattern 배열을 받는다.
-	// 대표질문의 컷오프값을 넘긴 변증의 index값들을 담고있다.
-	Copy_QDet := make([][]int, len(qdata.QDetailIdx))
-	copy(Copy_QDet, qdata.QDetailIdx)                  // QDetailIdx 전체를 복사해온다.
-	rand_seed := rand.NewSource(time.Now().UnixNano()) // Random Shuffle을 위함
-	r := rand.New(rand_seed)                           // Random Shuffle을 위함
-
-	for i := 0; i < len(pattern); i++ { // 해당하는 패턴들에 대해 Shuffle 반복 진행
-		qdetlength := len(Copy_QDet[pattern[i]])
-		isFilled := make([]bool, qdetlength)
-		n := 0
-		for n < qdetlength { // 해당하는 패턴의 길이만큼 Shuffle 진
-			if new_qdetIdx := r.Intn(qdetlength); !isFilled[new_qdetIdx] {
-				Copy_QDet[pattern[i]][n] = qdata.QDetailIdx[pattern[i]][new_qdetIdx]
-				isFilled[new_qdetIdx] = true
-				n++
-			}
-		}
-	}
-	copy(qdata.QDetailIdx, Copy_QDet)
-	return qdata
-}
-*/
