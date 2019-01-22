@@ -12,7 +12,7 @@ import (
 )
 
 // 1. load data to initalize the structure qDataConst
-func LoadData() qDataConst {
+func loadData() qDataConst {
 	qcwp_file, _ := os.Open("resources/data/QCWP.csv")   // open QCWP.csv
 	ptoc_file, _ := os.Open("resources/data/cutoff.csv") // open cutoff.csv
 
@@ -47,7 +47,7 @@ func LoadData() qDataConst {
 }
 
 // 2. initialize QRepIdx of the structure QData
-func QRepIdxInit(qdata QData) QData {
+func qRepIdxInit(qdata QData) QData {
 	rand.Seed(time.Now().UTC().UnixNano())
 	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); {
 		catNum, _ := strconv.Atoi(qdata.RawData.QCWP[i][WEIGHT])
@@ -59,7 +59,7 @@ func QRepIdxInit(qdata QData) QData {
 }
 
 // 3. initialize QDetailIdx of the structure QData
-func QDetailIdxInit(qdata QData) QData {
+func qDetailIdxInit(qdata QData) QData {
 	// make a restQIdx slice which includes all questions but the questions related to repIdx
 	var restQIdx []int
 	var qRepIdxIdx int = 0
@@ -96,7 +96,7 @@ func QDetailIdxInit(qdata QData) QData {
 }
 
 // 4. shuffle QRepIdx of the structure QData
-func QRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
+func qRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 	qreplength := len(qdata.QRepIdx)
 
 	rand_seed := rand.NewSource(time.Now().UnixNano())
@@ -114,7 +114,7 @@ func QRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 }
 
 // 5. shuffle QDetIdx of the structure QData
-func QDetailIdxShuffle(qdata QData, pattern []int) QData {
+func qDetailIdxShuffle(qdata QData, pattern []int) QData {
 
 	patlength := len(pattern)
 
@@ -132,6 +132,23 @@ func QDetailIdxShuffle(qdata QData, pattern []int) QData {
 			// Swap
 		}
 	}
+	return qdata
+}
+
+// DATA PREPARE 1 (Representative Questions): execute 1 ~ 4.
+func PrepareRep(qdata QData) QData {
+	qdata.RawData = loadData()	// 1.
+	qdata = qRepIdxInit(qdata)	// 2.
+	qdata = qDetailIdxInit(qdata)	// 3.
+	qdata = qRepIdxShuffle(qdata)	// 4.
+
+	return qdata
+}
+
+// DATA PREPARE 2 (Detail Questions): execute 5.
+func PrepareDet(qdata Qdata, pattern []int) QData {
+	qdata = qDetailIdxShuffle(qdata, pattern)	// 5.
+
 	return qdata
 }
 

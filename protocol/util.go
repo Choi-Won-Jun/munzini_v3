@@ -10,14 +10,6 @@ func MakeCEKResponse(responsePayload CEKResponsePayload) CEKResponse {
 	return response
 }
 
-// 멀티턴을 위한 리스폰스 세팅
-func SetMultiturn(response CEKResponse, sessionAtt SessionAttributes) CEKResponse {
-  response.Response.ShouldEndSession = false
-	response.SessionAttributes = sessionAtt
-
-	return response
-}
-
 // MakeOutputSpeech creates OutputSpeech instance with given params
 func MakeSimpleOutputSpeech(msg string) OutputSpeech {
 	return OutputSpeech{
