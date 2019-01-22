@@ -119,8 +119,8 @@ func calculateSQS(qdata QData) QData{
 	var score map[string]int
 	var biScore int // binary Score = { 0 ,1 }
 	
-	for i:=0;i<len(PATTEN_NAME);i++{ // Initialize score map
-		score[PATTEN_NAME[i]] = 0
+	for i:=0;i<len(PATTERN_NAME);i++{ // Initialize score map
+		score[PATTERN_NAME[i]] = 0
 	}
 	
 	for i:=0;i<qreplength;i++{
@@ -134,7 +134,7 @@ func calculateSQS(qdata QData) QData{
 		score[qdata.RawData.QCWP[QRepIdx[i]][PATTERN]] += biScore * qdata.RawData.QCWP[QRepIdx[i]][WEIGHT]	// 기준치점수 * 가중치
 	}
 	
-	for i:=0;i<len(PATTEN_NAME);i++{
+	for i:=0;i<len(PATTERN_NAME);i++{
 		if(score[qdata.RawData.QCWP[QRepIdx[i]][PATTERN]] > qdata.RawData.PtoC[PATTERN_NAME[i]] )
 			qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i)
 	}
@@ -165,6 +165,7 @@ func qDetailIdxShuffle(qdata QData) QData {
 
 // 7.
 func calculateDQS() []int {
+	
 
 }
 

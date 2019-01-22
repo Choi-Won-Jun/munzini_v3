@@ -116,11 +116,11 @@ func GetDQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
 	var responseValue string
 	var shoudEndSession bool = false
-	
+	// qData
 	
 	switch intentName{
 		case "Clova.YesIntent":
-			responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[/*변증 인덱스*/]][detIdx++]][question.QUESTION]
+			responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][detIdx++]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
 			statusDelta = 1
 		case "Clova.NoIntent":
 			responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
@@ -146,9 +146,10 @@ func GetDQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 func GetDQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Slots) (protocol.CEKResponsePayload, int) {
 	
 	
+	
+	
 }
 
-func 
 
 func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
