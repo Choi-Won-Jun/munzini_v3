@@ -113,26 +113,59 @@ func qRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 	return qdata
 }
 
-// 5. shuffle QDetIdx of the structure QData
-func qDetailIdxShuffle(qdata QData, pattern []int) QData {
+// 5. Calculate SQSProbPatternIdx
+func calculateSQS(qdata QData) QData{
+	qreplength := len(qdata.QRepIdx)
+	var score map[string]int
+	var biScore int // binary Score = { 0 ,1 }
+	
+	for i:=0;i<len(PATTEN_NAME);i++{ // Initialize score map
+		score[PATTEN_NAME[i]] = 0
+	}
+	
+	for i:=0;i<qreplength;i++{
+		//
+		if (qdata.Answer[QRepIdx[i]] > BI_CRITERIA) {
+			biScore = 1
+		}
+		else {
+			biScore = 0
+		}
+		score[qdata.RawData.QCWP[QRepIdx[i]][PATTERN]] += biScore * qdata.RawData.QCWP[QRepIdx[i]][WEIGHT]	// 기준치점수 * 가중치
+	}
+	
+	for i:=0;i<len(PATTEN_NAME);i++{
+		if(score[qdata.RawData.QCWP[QRepIdx[i]][PATTERN]] > qdata.RawData.PtoC[PATTERN_NAME[i]] )
+			qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i)
+	}
+	return qdata
+}
 
-	patlength := len(pattern)
+// 6. shuffle QDetIdx of the structure QData
+func qDetailIdxShuffle(qdata QData) QData {
+
+	patlength := len(qdata.SQSProbPatternIdx[i])
 
 	rand_seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(rand_seed) // To pick SliceIdx Randomly
 
 	for i := 0; i < patlength; i++ { // 패턴 슬라이스의 길이만큼 이터레이트
-		qdetlength := len(qdata.QDetailIdx[pattern[i]]) // 패턴 인덱스에 해당하는 질문 슬라이스의 길이
+		qdetlength := len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]) // 패턴 인덱스에 해당하는 질문 슬라이스의 길이
 		for j := 0; j < qdetlength; j++ {               // Using knuth Shuffle
 			idxpicker := r.Intn(qdetlength-j) + j
 			// index range : j ~ qdetlength-1
-			temp := qdata.QDetailIdx[pattern[i]][j]
-			qdata.QDetailIdx[pattern[i]][j] = qdata.QDetailIdx[pattern[i]][idxpicker]
-			qdata.QDetailIdx[pattern[i]][idxpicker] = temp
+			temp := qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j]
+			qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j] = qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][idxpicker]
+			qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][idxpicker] = temp
 			// Swap
 		}
 	}
 	return qdata
+}
+
+// 7.
+func calculateDQS() []int {
+
 }
 
 // DATA PREPARE 1 (Representative Questions): execute 1 ~ 4.
@@ -145,9 +178,10 @@ func PrepareRep(qdata QData) QData {
 	return qdata
 }
 
-// DATA PREPARE 2 (Detail Questions): execute 5.
-func PrepareDet(qdata Qdata, pattern []int) QData {
-	qdata = qDetailIdxShuffle(qdata, pattern) // 5.
+// DATA PREPARE 2 (Detail Questions): execute 6.
+func PrepareDet(qdata Qdata) QData {
+	qdata = calculateSQS(qdata)	// 5.
+	qdata = qDetailIdxShuffle(qdata) // 6.
 
 	return qdata
 }

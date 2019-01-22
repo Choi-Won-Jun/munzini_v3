@@ -23,6 +23,7 @@ var repMax int
 var detIdx int = 0
 var detMax int
 
+
 func GetSQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
 	var responseValue string
@@ -40,7 +41,6 @@ func GetSQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	default:
 		responseValue = "예 또는 아니오로 대답해주세요."
 	}
-	
 	// make an answer
 	responsePayload := protocol.CEKResponsePayload{
 		OutputSpeech: protocol.MakeOutputSpeechList(
@@ -113,12 +113,42 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 }
 
 func GetDQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
-
+	var statusDelta int = 0
+	var responseValue string
+	var shoudEndSession bool = false
+	
+	
+	switch intentName{
+		case "Clova.YesIntent":
+			responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[/*변증 인덱스*/]][detIdx++]][question.QUESTION]
+			statusDelta = 1
+		case "Clova.NoIntent":
+			responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
+			shouldEndSession = true
+		default:
+			responseValue = "예 또는 아니오로 대답해주세요."
+	}
+	// make an answer
+	responsePayload := protocol.CEKResponsePayload{
+		OutputSpeech: protocol.MakeOutputSpeechList(
+			protocol.Value{
+				Lang:  "ko",
+				Value: responseValue
+				Type:  "PlainText",
+			},
+		),
+		ShouldEndSession: shoudEndSession,
+	}
+	
+	return responsePayload, statusDelta	
 }
 
 func GetDQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Slots) (protocol.CEKResponsePayload, int) {
-
+	
+	
 }
+
+func 
 
 func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
@@ -152,3 +182,4 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	
 	return responsePayload, statusDelta
 }
+
