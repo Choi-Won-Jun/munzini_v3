@@ -113,7 +113,7 @@ func qRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 	return qdata
 }
 
-// 5. Calculate SQSProbPatternIdx
+// 5. calculate SQSProbPatternIdx
 func calculateSQS(qdata QData) QData{
 	qreplength := len(qdata.QRepIdx)
 	var score map[string]int
@@ -163,10 +163,9 @@ func qDetailIdxShuffle(qdata QData) QData {
 	return qdata
 }
 
-// 7.
-func calculateDQS() []int {
+// 7. calculate DQSProbPatternIdx
+func calculateDQS(qdata QData) QData {
 	
-
 }
 
 // DATA PREPARE 1 (Representative Questions): execute 1 ~ 4.
@@ -179,7 +178,7 @@ func PrepareRep(qdata QData) QData {
 	return qdata
 }
 
-// DATA PREPARE 2 (Detail Questions): execute 6.
+// DATA PREPARE 2 (Detail Questions): execute 5 ~ 6.
 func PrepareDet(qdata Qdata) QData {
 	qdata = calculateSQS(qdata)	// 5.
 	qdata = qDetailIdxShuffle(qdata) // 6.
