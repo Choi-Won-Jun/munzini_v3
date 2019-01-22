@@ -120,7 +120,7 @@ func GetDQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	
 	switch intentName{
 		case "Clova.YesIntent":
-			responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][detIdx++]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
+			responseValue = "그럼, 문진을 시작할게요." + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][detIdx++]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
 			statusDelta = 1
 		case "Clova.NoIntent":
 			responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
