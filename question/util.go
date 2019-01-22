@@ -66,7 +66,7 @@ func qDetailIdxInit(qdata QData) QData {
 	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); i++ {
 		if i == qdata.QRepIdx[qRepIdxIdx] { // if a value to put into restQIdx is same with the value of qRepIdx
 			//fmt.Println(qdata.QRepIdx[qRepIdxIdx])
-			if qRepIdxIdx+1 != len(qdata.QRepIdx) { // if not qRepIdx[qRepIdxIdx] is the very last value
+			if qRepIdxIdx+1 != len(qdata.QRepIdx) { // if qRepIdx[qRepIdxIdx] is not the very last value
 				qRepIdxIdx++
 			}
 			continue
@@ -137,17 +137,17 @@ func qDetailIdxShuffle(qdata QData, pattern []int) QData {
 
 // DATA PREPARE 1 (Representative Questions): execute 1 ~ 4.
 func PrepareRep(qdata QData) QData {
-	qdata.RawData = loadData()	// 1.
-	qdata = qRepIdxInit(qdata)	// 2.
-	qdata = qDetailIdxInit(qdata)	// 3.
-	qdata = qRepIdxShuffle(qdata)	// 4.
+	qdata.RawData = loadData()    // 1.
+	qdata = qRepIdxInit(qdata)    // 2.
+	qdata = qDetailIdxInit(qdata) // 3.
+	qdata = qRepIdxShuffle(qdata) // 4.
 
 	return qdata
 }
 
 // DATA PREPARE 2 (Detail Questions): execute 5.
 func PrepareDet(qdata Qdata, pattern []int) QData {
-	qdata = qDetailIdxShuffle(qdata, pattern)	// 5.
+	qdata = qDetailIdxShuffle(qdata, pattern) // 5.
 
 	return qdata
 }
