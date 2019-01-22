@@ -85,7 +85,7 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 			
 			// 대표 질문이 끝났을 때
 			if repIdx == repMax {
-				qData = question.PrepareDet(qData)
+				qData = question.PrepareDet(qData)	// 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
 				responseValue = "간단 문진 결과 " + len(qData.SQSProbPatternIdx) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요?"
 				statusDelta = 1	// next status
 			}
@@ -148,8 +148,6 @@ func GetDQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 	
 }
 
-func 
-
 func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
 	var responseValue string
@@ -157,10 +155,7 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	
 	switch intentName {
 	case "Clova.YesIntent":
-		qData = question.PrepareRep(qData)	// prepare representative questions
-		repMax = len(qData.QRepIdx)	
-		responseValue = qData.RawData.QCWP[qData.QRepIdx[repIdx++]][question.QUESTION]	// next question
-		statusDelta = 1	// next status
+		responseValue = /*진단 결과 재탕*/
 	case "Clova.NoIntent":
 		responseValue = "수고 많으셨어요. 문진을 끝낼게요."
 		shouldEndSession = true

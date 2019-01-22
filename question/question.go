@@ -26,4 +26,5 @@ type QData struct {
 	Answer            map[int]int // QCWP 인덱스 : 응답점수
 	SQSProbPatternIdx []int       // 간단한 문진 이후 컷오프 값을 넘긴 Pattern의 인덱스 슬라이스
 	DQSProbPatternIdx []int       // 최종 문진 이후 컷오프 값을 넘긴 Pattern의 인덱스 슬라이스
+	FinalScore	[][]int	// 간단한 문진 이후 컷오프 값을 넘긴 Pattern에 대한 표준점수
 }
