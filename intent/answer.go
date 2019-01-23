@@ -3,6 +3,7 @@ package intent
 import (
 	"munzini/protocol"
 	"munzini/question"
+	"strconv"
 	//"math/rand"
 	//"time"
 )
@@ -23,6 +24,7 @@ var repMax int
 var detIdx int = 0
 var detMax int
 
+var finalScoreNotification string // 최종 결과에 대한 설명
 
 func GetSQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
@@ -46,7 +48,7 @@ func GetSQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 		OutputSpeech: protocol.MakeOutputSpeechList(
 			protocol.Value{
 				Lang:  "ko",
-				Value: responseValue
+				Value: responseValue,
 				Type:  "PlainText",
 			},
 		),
@@ -102,7 +104,7 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 		OutputSpeech: protocol.MakeOutputSpeechList(
 			protocol.Value{
 				Lang:  "ko",
-				Value: responseValue
+				Value: responseValue,
 				Type:  "PlainText",
 			},
 		),
@@ -144,10 +146,55 @@ func GetDQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 }
 
 func GetDQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Slots) (protocol.CEKResponsePayload, int) {
+	var score int = 0
+	var statusDelta int = 0
+	var responseValue string
+	var shoudEndSession bool = false
 	
-	
-	
-	
+	switch intentName{
+		case "ScoreIntent":
+			// slot에 있는 score 값 파싱
+			if (slots != nil) {	// slots가 nil이 아니어야 
+				if (len(slots) != 0) {	// slots 요소 개수가 0이 아니어야 함
+					score := slots["inquryScore"].Value // map[string]CEKSlot , CEKSlot - Name, Value
+					score, err = strconv.Atoi(score)	// score 값 부여
+				if (err != nil) {	// feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
+					score = 0	// score 값에 문제가 있으므로 0으로 재부여
+				}
+			}
+		}
+		// score 값이 0이면 오류, 답을 재요구
+		if score == 0 {
+			responseValue = "다시 말씀해주세요."
+		}
+		// score 값이 정상적으로 부여된 경우
+		else {
+			qData.Answer[qData.QDetailIdx[detIdx]] = score // score 값 저장
+			
+			if detIdx == detMax {	
+				qData = question.PrepareFin(qData) // PrepareFin
+				responseValue = makeFinalScoreNotification() // 대답을 지정해준다.
+				statusDelta = 1
+			}
+			else{
+				responseValue = qData.RawData.QCWP[qData.QDetailIdx[detIdx++]][question.QUESTION] // next question
+			}
+		}
+	default:
+		responseValue = "다시 말씀해주시면 좋겠어요."
+	}
+	//make Answer
+	responsePayload := protocol.CEKResponsePayload{
+		OutputSpeech: protocol.MakeOutputSpeechList(
+			protocol.Value{
+				Lang:  "ko",
+				Value: responseValue,
+				Type:  "PlainText",
+			},
+		),
+		ShouldEndSession: shoudEndSession,
+	}
+	return responsePayload, statusDelta
 }
 
 func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
@@ -157,7 +204,7 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = /*진단 결과 재탕*/
+		responseValue = makeFinalScoreNotification()
 	case "Clova.NoIntent":
 		responseValue = "수고 많으셨어요. 문진을 끝낼게요."
 		shouldEndSession = true
@@ -170,13 +217,28 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 		OutputSpeech: protocol.MakeOutputSpeechList(
 			protocol.Value{
 				Lang:  "ko",
-				Value: responseValue
+				Value: responseValue,
 				Type:  "PlainText",
 			},
 		),
 		ShouldEndSession: shoudEndSession,
 	}
-	
 	return responsePayload, statusDelta
 }
 
+func makeFinalScoreNotification() string{
+	
+	//finalScoreNotification
+	//qData.FinalScore[] 사용
+	dqslength := len(qData.DQSProbPatternIdx)
+	finalScoreNotification := "검진결과가 나왔어요."
+	for i:=0; i<dqslength; i++{
+		finalScoreNotification += question.PATTERN_NAME[DQSProbPatternIdx[i]] + "부분에 있어서의 점수는"
+		+stconv.Itoa(qData.FinalScore[qData.DQSProbPatternIdx[i]])+"점,"
+	}
+	finalScoreNotification += "입니다."
+	// 나쁜 피가 뭉쳐있는 것(피멍, 혈액순환)
+		// 담음이랑 어혈이 같이 옴.
+		// 담음 : 몸속의 노폐물이 많음
+	return finalScoreNotification
+}

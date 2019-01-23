@@ -163,8 +163,9 @@ func qDetailIdxShuffle(qdata QData) QData {
 	return qdata
 }
 
-// 7. calculate DQSProbPatternIdx
+// 7. calculate DQSProbPatternIdx , calculate FinalScore
 func calculateDQS(qdata QData) QData {
+	// 정밀 검진 이상 Pattern의 슬string라이스 생성 - 경계/주의/심각
 	
 }
 

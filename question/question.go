@@ -2,7 +2,7 @@
 package question
 
 const PATTERN_NUM = 5 // 패턴 수
-const PATTEN_NAME = {"칠정", "노권", "담음", "식적", "어혈"}
+const PATTERN_NAME = {"칠정", "노권", "담음", "식적", "어혈"}
 const BI_CRITERIA = 3 // 이분화 기준
 
 const FIRST_IDX = 1 // QCWP 실제 데이터 시 행번호
@@ -25,6 +25,5 @@ type QData struct {
 	QDetailIdx        [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스]
 	Answer            map[int]int // QCWP 인덱스 : 응답점수
 	SQSProbPatternIdx []int       // 간단한 문진 이후 컷오프 값을 넘긴 Pattern의 인덱스 슬라이스
-	DQSProbPatternIdx []int       // 최종 문진 이후 컷오프 값을 넘긴 Pattern의 인덱스 슬라이스
-	FinalScore	[][]int	// 간단한 문진 이후 컷오프 값을 넘긴 Pattern에 대한 표준점수
+	FinalScore	[]int	// 간단한 문진 이후 컷오프 값을 넘긴 Pattern에 대한 표준점수
 }
