@@ -24,17 +24,17 @@ var repMax int
 var detIdx int = 0
 var detMax int
 
-var finalScoreNotification string // 최종 결과에 대한 설명
+var finalScoreNotification string	// 최종 결과에 대한 설명
 
 func GetSQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
 	var responseValue string
 	var shoudEndSession bool = false
-	
+
 	switch intentName {
 	case "Clova.YesIntent":
 		qData = question.PrepareRep(qData)	// prepare representative questions
-		repMax = len(qData.QRepIdx)	
+		repMax = len(qData.QRepIdx)
 		responseValue = qData.RawData.QCWP[qData.QRepIdx[repIdx++]][question.QUESTION]	// next question
 		statusDelta = 1	// next status
 	case "Clova.NoIntent":
@@ -54,7 +54,7 @@ func GetSQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 		),
 		ShouldEndSession: shoudEndSession,
 	}
-	
+
 	return responsePayload, statusDelta
 }
 
@@ -63,11 +63,11 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 	var statusDelta int = 0
 	var responseValue string
 	var shoudEndSession bool = false
-	
+
 	switch intentName {
 	case "ScoreIntent":
 		// slot에 있는 score 값 파싱
-		if (slots != nil) {	// slots가 nil이 아니어야 
+		if (slots != nil) {	// slots가 nil이 아니어야
 			if (len(slots) != 0) {	// slots 요소 개수가 0이 아니어야 함
 				score := slots["inquryScore"].Value
 				score, err = strconv.Atoi(score)	// score 값 부여
@@ -76,7 +76,7 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 				}
 			}
 		}
-		
+
 		// score 값이 0이면 오류, 답을 재요구
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
@@ -84,7 +84,7 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 		// score 값이 정상적으로 부여된 경우
 		else {
 			qData.Answer[qData.QRepIdx[repIdx]] = score	// score 값 저장
-			
+
 			// 대표 질문이 끝났을 때
 			if repIdx == repMax {
 				qData = question.PrepareDet(qData)	// 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
@@ -98,7 +98,7 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 	default:
 		responseValue = "다시 말씀해주세요."
 	}
-	
+
 	// make an answer
 	responsePayload := protocol.CEKResponsePayload{
 		OutputSpeech: protocol.MakeOutputSpeechList(
@@ -110,7 +110,7 @@ func GetSQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 		),
 		ShouldEndSession: shoudEndSession,
 	}
-	
+
 	return responsePayload, statusDelta
 }
 
@@ -119,7 +119,7 @@ func GetDQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var responseValue string
 	var shoudEndSession bool = false
 	// qData
-	
+
 	switch intentName{
 		case "Clova.YesIntent":
 			responseValue = "그럼, 문진을 시작할게요." + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][detIdx++]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
@@ -141,8 +141,8 @@ func GetDQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 		),
 		ShouldEndSession: shoudEndSession,
 	}
-	
-	return responsePayload, statusDelta	
+
+	return responsePayload, statusDelta
 }
 
 func GetDQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Slots) (protocol.CEKResponsePayload, int) {
@@ -150,11 +150,11 @@ func GetDQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 	var statusDelta int = 0
 	var responseValue string
 	var shoudEndSession bool = false
-	
+
 	switch intentName{
 		case "ScoreIntent":
 			// slot에 있는 score 값 파싱
-			if (slots != nil) {	// slots가 nil이 아니어야 
+			if (slots != nil) {	// slots가 nil이 아니어야
 				if (len(slots) != 0) {	// slots 요소 개수가 0이 아니어야 함
 					score := slots["inquryScore"].Value // map[string]CEKSlot , CEKSlot - Name, Value
 					score, err = strconv.Atoi(score)	// score 값 부여
@@ -170,8 +170,8 @@ func GetDQSAnswer(intentName string, slots protocol.CEKRequest.Request.Intent.Sl
 		// score 값이 정상적으로 부여된 경우
 		else {
 			qData.Answer[qData.QDetailIdx[detIdx]] = score // score 값 저장
-			
-			if detIdx == detMax {	
+
+			if detIdx == detMax {
 				qData = question.PrepareFin(qData) // PrepareFin
 				responseValue = makeFinalScoreNotification() // 대답을 지정해준다.
 				statusDelta = 1
@@ -201,17 +201,18 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
 	var responseValue string
 	var shoudEndSession bool = false
-	
+
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = makeFinalScoreNotification()
+		makeFinalScoreNotification()
+		responseValue = finalScoreNotification	// 최종 검사 결과
 	case "Clova.NoIntent":
-		responseValue = "수고 많으셨어요. 문진을 끝낼게요."
+		responseValue = "검사하느라 수고 많으셨어요. 다음에도 또 불러주세요."
 		shouldEndSession = true
 	default:
 		responseValue = "예 또는 아니오로 대답해주세요."
 	}
-	
+
 	// make an answer
 	responsePayload := protocol.CEKResponsePayload{
 		OutputSpeech: protocol.MakeOutputSpeechList(
@@ -226,12 +227,12 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	return responsePayload, statusDelta
 }
 
-func makeFinalScoreNotification() string{
-	
+func makeFinalScoreNotification() {
+
 	//finalScoreNotification
 	//qData.FinalScore[] 사용
 	dqslength := len(qData.DQSProbPatternIdx)
-	finalScoreNotification := "검진결과가 나왔어요."
+	finalScoreNotification = "검진결과가 나왔어요."
 	for i:=0; i<dqslength; i++{
 		finalScoreNotification += question.PATTERN_NAME[DQSProbPatternIdx[i]] + "부분에 있어서의 점수는"
 		+stconv.Itoa(qData.FinalScore[qData.DQSProbPatternIdx[i]])+"점,"
@@ -240,5 +241,4 @@ func makeFinalScoreNotification() string{
 	// 나쁜 피가 뭉쳐있는 것(피멍, 혈액순환)
 		// 담음이랑 어혈이 같이 옴.
 		// 담음 : 몸속의 노폐물이 많음
-	return finalScoreNotification
 }
