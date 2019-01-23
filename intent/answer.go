@@ -23,6 +23,7 @@ var repMax int
 var detIdx int = 0
 var detMax int
 
+var finalScoreNotification string	// 최종 결과에 대한 설명
 
 func GetSQPAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	var statusDelta int = 0
@@ -157,9 +158,9 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = /*진단 결과 재탕*/
+		responseValue = finalScoreNotification	// 최종 검사 결과
 	case "Clova.NoIntent":
-		responseValue = "수고 많으셨어요. 문진을 끝낼게요."
+		responseValue = "검사하느라 수고 많으셨어요. 다음에도 또 불러주세요."
 		shouldEndSession = true
 	default:
 		responseValue = "예 또는 아니오로 대답해주세요."
@@ -180,3 +181,6 @@ func GetRAnswer(intentName string) (protocol.CEKResponsePayload, int) {
 	return responsePayload, statusDelta
 }
 
+func makeFinalScoreNotification() {
+	
+}
