@@ -30,6 +30,8 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	reqType := req.Request.Type
 
 	var response protocol.CEKResponse
+	var result protocol.CEKResponsePayload
+	var statusDelta int
 
 	// 요청 타입에 따른 기능 수행
 	switch reqType {
@@ -38,20 +40,20 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	case "SessionEndedRequest": // 앱 종료 요청 시
 		response = protocol.MakeCEKResponse(handleEndRequest())
 	case "IntentRequest": // 의도가 담긴 요청 시
-		intent := req.Request.Intent // CEKIntent
+		cekIntent := req.Request.Intent // CEKIntent
 
 		// 사용자의 발화에 대한 응답을 현재 상태에 따라 세팅한다. 필요한 경우 응답을 세팅하는 과정에서 슬롯에 대한 처리를 포함한다.
 		switch status {
 		case SQP_S:
-			result, statusDelta := intent.GetSQPAnswer(intent)
+			result, statusDelta = intent.GetSQPAnswer(cekIntent)
 		case SQS_S:
-			result, statusDelta := intent.GetSQSAnswer(intent)
+			result, statusDelta = intent.GetSQSAnswer(cekIntent)
 		case DQP_S:
-			result, statusDelta := intent.GetDQPAnswer(intent)
+			result, statusDelta = intent.GetDQPAnswer(cekIntent)
 		case DQS_S:
-			result, statusDelta := intent.GetDQSAnswer(intent)
+			result, statusDelta = intent.GetDQSAnswer(cekIntent)
 		case R_S:
-			result, statusDelta := intent.GetRAnswer(intent)
+			result, statusDelta = intent.GetRAnswer(cekIntent)
 		}
 		response = protocol.MakeCEKResponse(result) // 응답 구조체 작성
 		status += statusDelta                       // 상태 변화 적용

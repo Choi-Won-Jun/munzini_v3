@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"munzini/handler"
-	"munzini/question"
 	"net/http"
 	"os"
 )

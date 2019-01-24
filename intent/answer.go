@@ -2,6 +2,7 @@ package intent
 
 import (
 	"fmt"
+	"munzini/nlp"
 	"munzini/protocol"
 	"munzini/question"
 	"strconv"
@@ -75,9 +76,10 @@ func GetSQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		// slot에 있는 score 값 파싱
 		if slots != nil { // slots가 nil이 아니어야
 			if len(slots) != 0 { // slots 요소 개수가 0이 아니어야 함
-				slotScore := slots["inquiryScore"].Value
-				score, err := strconv.Atoi(slotScore) // score 값 부여
-				if err != nil {                       // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
+				slotScore := nlp.ConvertInquiryScore(slots["inquiryScore"].Value)
+				sc, err := strconv.Atoi(slotScore) // score 값 부여
+				score = sc
+				if err != nil { // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
 					score = 0 // score 값에 문제가 있으므로 0으로 재부여
 				}
 			}
@@ -165,26 +167,28 @@ func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 	var slots = intent.Slots
 
 	detMax = len(qData.QDetailIdx[qData.SQSProbPatternIdx[detPat]])
-	detPat = /* 값 : 0~ len(SQSProbPatternIdx) */
+	detPat = 0
 
 	switch intentName {
 	case "ScoreIntent":
 		// slot에 있는 score 값 파싱
 		if slots != nil { // slots가 nil이 아니어야
 			if len(slots) != 0 { // slots 요소 개수가 0이 아니어야 함
-				slotScore := slots["inquiryScore"].Value // map[string]CEKSlot , CEKSlot - Name, Value
-				score, err := strconv.Atoi(slotScore)    // score 값 부여
-				if err != nil {                          // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
+				slotScore := nlp.ConvertInquiryScore(slots["inquiryScore"].Value) // map[string]CEKSlot , CEKSlot - Name, Value
+				sc, err := strconv.Atoi(slotScore)                                // score 값 부여
+				score = sc
+				if err != nil { // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
 					score = 0 // score 값에 문제가 있으므로 0으로 재부여
 				}
 			}
 		}
+
 		// score 값이 0이면 오류, 답을 재요구
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
 		} else { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QDetailIdx[detPat][detIdx]] = score // score 값 저장
-		
+
 			if detIdx == detMax {
 				detPat++ // 다음 패턴
 				detIdx = 0
@@ -193,16 +197,14 @@ func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 					makeFinalScoreNotification()       // 최종 결과에 대한 대답을 지정해준다.
 					responseValue = finalScoreNotification
 					statusDelta = 1
+				} else {
+					responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat][detIdx]][question.QUESTION] // next question
+					detIdx++                                                                                // next question
 				}
-				else{
-					responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat]][detIdx] // next question
-					detIdx++
-				}
-			} else{
-					responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat]detIdx]][question.QUESTION] // next question
-					detIdx++
+			} else {
+				responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat][detIdx]][question.QUESTION] // next question
+				detIdx++                                                                                // next question
 			}
-			
 		}
 	default:
 		responseValue = "다시 말씀해주시면 좋겠어요."
