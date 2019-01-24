@@ -175,7 +175,7 @@ func qDetailIdxShuffle(qdata QData) QData {
 func calculateFinalScore(qdata QData) QData {
 	// make FinalScore
 	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
-		for j := 0; j < len(qdata.QDetailIdx); j++ {
+		for j := 0; j < len(qdata.QDetailIdx[i]); j++ {
 			qdata.FinalScore[qdata.SQSProbPatternIdx[i]] += float64(qdata.QDetailIdx[i][j]) // 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
 		}
 	}

@@ -22,6 +22,7 @@ var qData question.QData
 
 var repIdx int = 0
 var repMax int
+var detPat int = 0 // GetDQSAnswer()에서 사용. 값 : 0~len(SQSProbPatternIdx)
 var detIdx int = 0
 var detMax int
 
@@ -74,7 +75,7 @@ func GetSQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		// slot에 있는 score 값 파싱
 		if slots != nil { // slots가 nil이 아니어야
 			if len(slots) != 0 { // slots 요소 개수가 0이 아니어야 함
-				slotScore := slots["inquryScore"].Value
+				slotScore := slots["inquiryScore"].Value
 				score, err := strconv.Atoi(slotScore) // score 값 부여
 				if err != nil {                       // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
 					score = 0 // score 값에 문제가 있으므로 0으로 재부여
@@ -91,8 +92,13 @@ func GetSQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 			// 대표 질문이 끝났을 때
 			if repIdx == repMax {
 				qData = question.PrepareDet(qData) // 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
-				responseValue = "간단 문진 결과 " + string(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요?"
-				statusDelta = 1 // next status
+				if len(qData.SQSProbPatternIdx) == 0 {
+					responseValue = "간단 문진 결과 의심되는 문제가 없습니다. 앞으로도 쭈욱 건강하시고, 제가 그리우시면 언제든지 다시 불러주세요!"
+					shouldEndSession = true
+				} else {
+					responseValue = "간단 문진 결과 " + string(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요?"
+					statusDelta = 1 // next status
+				}
 			} else {
 				responseValue = qData.RawData.QCWP[qData.QRepIdx[repIdx]][question.QUESTION] // next question
 				repIdx++
@@ -158,14 +164,17 @@ func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 	var intentName = intent.Name
 	var slots = intent.Slots
 
+	detMax = len(qData.QDetailIdx[qData.SQSProbPatternIdx[detPat]])
+	detPat = /* 값 : 0~ len(SQSProbPatternIdx) */
+
 	switch intentName {
 	case "ScoreIntent":
 		// slot에 있는 score 값 파싱
 		if slots != nil { // slots가 nil이 아니어야
 			if len(slots) != 0 { // slots 요소 개수가 0이 아니어야 함
-				slotScore := slots["inquryScore"].Value // map[string]CEKSlot , CEKSlot - Name, Value
-				score, err := strconv.Atoi(slotScore)   // score 값 부여
-				if err != nil {                         // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
+				slotScore := slots["inquiryScore"].Value // map[string]CEKSlot , CEKSlot - Name, Value
+				score, err := strconv.Atoi(slotScore)    // score 값 부여
+				if err != nil {                          // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
 					score = 0 // score 값에 문제가 있으므로 0으로 재부여
 				}
 			}
@@ -174,17 +183,26 @@ func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
 		} else { // score 값이 정상적으로 부여된 경우
-			qData.Answer[qData.QDetailIdx[detIdx]] = score // score 값 저장
-
+			qData.Answer[qData.QDetailIdx[detPat][detIdx]] = score // score 값 저장
+		
 			if detIdx == detMax {
-				qData = question.PrepareFin(qData) // PrepareFin
-				makeFinalScoreNotification()       // 최종 결과에 대한 대답을 지정해준다.
-				responseValue = finalScoreNotification
-				statusDelta = 1
-			} else {
-				responseValue = qData.RawData.QCWP[qData.QDetailIdx[detIdx]][question.QUESTION] // next question
-				detIdx++
+				detPat++ // 다음 패턴
+				detIdx = 0
+				if detPat > len(qData.SQSProbPatternIdx) {
+					qData = question.PrepareFin(qData) // PrepareFin
+					makeFinalScoreNotification()       // 최종 결과에 대한 대답을 지정해준다.
+					responseValue = finalScoreNotification
+					statusDelta = 1
+				}
+				else{
+					responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat]][detIdx] // next question
+					detIdx++
+				}
+			} else{
+					responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat]detIdx]][question.QUESTION] // next question
+					detIdx++
 			}
+			
 		}
 	default:
 		responseValue = "다시 말씀해주시면 좋겠어요."
