@@ -14,12 +14,11 @@ const DQP_S = 2 // Detail Question Proceed Status
 const DQS_S = 3 // Detail Question Score Status
 const R_S = 4   // Repeat Status
 
-var status int = SQP_S // initial status is SQP_S
-
 // ServeHTTP handles CEK requests
 func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	var req protocol.CEKRequest
+	var status int = SQP_S // initial status is SQP_S
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		log.Println("JSON decoding failed")
@@ -92,7 +91,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 func handleLaunchRequest() protocol.CEKResponsePayload {
 	return protocol.CEKResponsePayload{
-		OutputSpeech:     protocol.MakeSimpleOutputSpeech("부르셨나요? 오늘의 문진을 시작해볼까요?"),
+		OutputSpeech:     protocol.MakeSimpleOutputSpeech("안녕하세요, 문지니입니다.? 오늘의 문진을 시작해볼까요?"),
 		ShouldEndSession: false,
 	}
 }
