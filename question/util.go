@@ -5,8 +5,8 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
-	"math/rand"	// 임의 추출 관련
-	"math"	// 반올림 관련
+	"math"      // 반올림 관련
+	"math/rand" // 임의 추출 관련
 	"os"
 	"strconv" // string 관련 형변환
 	"time"    // 임의 추출 관련
@@ -115,51 +115,51 @@ func qRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 }
 
 // 5. calculate SQSProbPatternIdx, caculate FinalScore (only about the representative questions)
-func calculateSQS(qdata QData) QData{
-	qreplength := len(qdata.QRepIdx)	// 대표질문 개수
-	var score map[string]int	// 변증 : (기준치점수 * 가중치)
-	var biScore int // binary Score = { 0 ,1 }
-	
-	for i:=0;i<len(PATTERN_NAME);i++{ // Initialize score map
+func calculateSQS(qdata QData) QData {
+	qreplength := len(qdata.QRepIdx) // 대표질문 개수
+	var score map[string]int         // 변증 : (기준치점수 * 가중치)
+	var biScore int                  // binary Score = { 0 ,1 }
+
+	for i := 0; i < len(PATTERN_NAME); i++ { // Initialize score map
 		score[PATTERN_NAME[i]] = 0
 	}
-	
-	for i:=0;i<len(PATTERN_NAME);i++ {	// initialize FinalScore
+
+	for i := 0; i < len(PATTERN_NAME); i++ { // initialize FinalScore
 		qdata.FinalScore = append(qdata.FinalScore, 0)
 	}
-	
-	for i:=0;i<qreplength;i++{
+
+	for i := 0; i < qreplength; i++ {
 		// make binary score
-		if (qdata.Answer[qdata.QRepIdx[i]] > BI_CRITERIA) {
+		if qdata.Answer[qdata.QRepIdx[i]] > BI_CRITERIA {
 			biScore = 1
-		}
-		else {
+		} else {
 			biScore = 0
 		}
-		score[qdata.RawData.QCWP[qdata.QRepIdx[i]][PATTERN]] += biScore * qdata.RawData.QCWP[qdata.QRepIdx[i]][WEIGHT]	// 기준치점수 * 가중치
-		qdata.FinalScore[PATTERN_INDEX[qdata.QRepIdx[i]]] += qdata.Answer[qdata.QRepIdx[i]]	// 대표질문에 대한 패턴별 총점
+		weight, _ := strconv.Atoi(qdata.RawData.QCWP[qdata.QRepIdx[i]][WEIGHT])
+		score[qdata.RawData.QCWP[qdata.QRepIdx[i]][PATTERN]] += biScore * weight                                                  // 기준치점수 * 가중치
+		qdata.FinalScore[PATTERN_INDEX[qdata.RawData.QCWP[qdata.QRepIdx[i]][PATTERN]]] += float64(qdata.Answer[qdata.QRepIdx[i]]) // 대표질문에 대한 패턴별 총점
 	}
-	
-	for i:=0;i<len(PATTERN_NAME);i++{
+
+	for i := 0; i < len(PATTERN_NAME); i++ {
 		if score[qdata.RawData.QCWP[qdata.QRepIdx[i]][PATTERN]] > qdata.RawData.PtoC[PATTERN_NAME[i]] {
 			qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i)
 		}
 	}
-	
+
 	return qdata
 }
 
 // 6. shuffle QDetIdx of the structure QData
 func qDetailIdxShuffle(qdata QData) QData {
 
-	patlength := len(qdata.SQSProbPatternIdx[i])
+	patlength := len(qdata.SQSProbPatternIdx)
 
 	rand_seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(rand_seed) // To pick SliceIdx Randomly
 
 	for i := 0; i < patlength; i++ { // 패턴 슬라이스의 길이만큼 이터레이트
 		qdetlength := len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]) // 패턴 인덱스에 해당하는 질문 슬라이스의 길이
-		for j := 0; j < qdetlength; j++ {               // Using knuth Shuffle
+		for j := 0; j < qdetlength; j++ {                               // Using knuth Shuffle
 			idxpicker := r.Intn(qdetlength-j) + j
 			// index range : j ~ qdetlength-1
 			temp := qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j]
@@ -171,27 +171,21 @@ func qDetailIdxShuffle(qdata QData) QData {
 	return qdata
 }
 
-<<<<<<< HEAD
-// 7. calculate DQSProbPatternIdx , calculate FinalScore
-func calculateDQS(qdata QData) QData {
-	// 정밀 검진 이상 Pattern의 슬string라이스 생성 - 경계/주의/심각
-=======
 // 7. calculate and make complete FinalScore
 func calculateFinalScore(qdata QData) QData {
 	// make FinalScore
 	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
 		for j := 0; j < len(qdata.QDetailIdx); j++ {
-			qdata.FinalScore[qdata.SQSProbPatternIdx[i]] += qdata.QDetailIdx[i][j]	// 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
+			qdata.FinalScore[qdata.SQSProbPatternIdx[i]] += float64(qdata.QDetailIdx[i][j]) // 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
 		}
 	}
->>>>>>> f83d2750c2d0352ff86f3c2494182aacbe76b9a2
-	
+
 	// alter FinalScore as standard score
 	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
-		maxScore := (len(qdata.QDetailIdx[i]) + 1) * 5	// 한 변증의 만점은 해당 변증에 대한 QDetailIdx 에 있는 질문 개수에 QRepIdx 에 있는 질문 개수 (1개)를 더한 값에 5를 곱한 값임
-		qdata.FinalScore[qdata.SQSProbPatternIdx[i]] = math.Round((qdata.FinalScore[qdata.SQSProbPatternIdx[i]] * 100 / maxScore)*100)/100	// 표준점수로 변환, 소수점 2자리 반올림 (백분위 점수)
+		maxScore := (len(qdata.QDetailIdx[i]) + 1) * 5                                                                                            // 한 변증의 만점은 해당 변증에 대한 QDetailIdx 에 있는 질문 개수에 QRepIdx 에 있는 질문 개수 (1개)를 더한 값에 5를 곱한 값임
+		qdata.FinalScore[qdata.SQSProbPatternIdx[i]] = math.Round((qdata.FinalScore[qdata.SQSProbPatternIdx[i]]*100/float64(maxScore))*100) / 100 // 표준점수로 변환, 소수점 2자리 반올림 (백분위 점수)
 	}
-	
+
 	return qdata
 }
 
@@ -206,17 +200,17 @@ func PrepareRep(qdata QData) QData {
 }
 
 // DATA PREPARE 2 (Detail Questions): execute 5 ~ 6.
-func PrepareDet(qdata Qdata) QData {
-	qdata = calculateSQS(qdata)	// 5.
+func PrepareDet(qdata QData) QData {
+	qdata = calculateSQS(qdata)      // 5.
 	qdata = qDetailIdxShuffle(qdata) // 6.
 
 	return qdata
 }
 
 // DATA PREPARE 3 (Final Score): execite 7.
-func PrepareFin(qdata Qdata) QData {
-	qdata = calculateFinalScore(qdata)	// 7.
-	
+func PrepareFin(qdata QData) QData {
+	qdata = calculateFinalScore(qdata) // 7.
+
 	return qdata
 }
 

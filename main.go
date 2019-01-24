@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"munzini/handler"
-	"munzini/question" // for test
+	"munzini/question"
 	"net/http"
 	"os"
 )
