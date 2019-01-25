@@ -26,8 +26,6 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reqType := req.Request.Type
-	cekStatus := req.Session.SessionAttributes.(protocol.CEKStatus)
-	status := cekStatus.Status
 
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
@@ -37,11 +35,15 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	switch reqType {
 	case "LaunchRequest": // 앱 실행 요청 시
 		response = protocol.MakeCEKResponse(handleLaunchRequest())
+		var cekStatus protocol.CEKStatus
 		cekStatus.Status = 0
 		response = protocol.SetStatus(response, cekStatus)
 	case "SessionEndedRequest": // 앱 종료 요청 시
 		response = protocol.MakeCEKResponse(handleEndRequest())
 	case "IntentRequest": // 의도가 담긴 요청 시
+		cekStatus := req.Session.SessionAttributes.(protocol.CEKStatus)
+		status := cekStatus.Status
+
 		cekIntent := req.Request.Intent // CEKIntent
 
 		// 사용자의 발화에 대한 응답을 현재 상태에 따라 세팅한다. 필요한 경우 응답을 세팅하는 과정에서 슬롯에 대한 처리를 포함한다.
