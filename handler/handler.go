@@ -37,6 +37,8 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	switch reqType {
 	case "LaunchRequest": // 앱 실행 요청 시
 		response = protocol.MakeCEKResponse(handleLaunchRequest())
+		cekStatus.Status = 0
+		response = protocol.SetStatus(response, cekStatus)
 	case "SessionEndedRequest": // 앱 종료 요청 시
 		response = protocol.MakeCEKResponse(handleEndRequest())
 	case "IntentRequest": // 의도가 담긴 요청 시
