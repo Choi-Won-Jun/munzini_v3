@@ -4,7 +4,7 @@ import (
 	"log"
 	"munzini/handler"
 	"net/http"
-	//"os"
+	"os"
 )
 
 func main() {
