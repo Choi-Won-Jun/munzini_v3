@@ -110,13 +110,6 @@ func handleEndRequest() protocol.CEKResponsePayload {
 	}
 }
 
-func handleWrongAnnounce() protocol.CEKResponsePayload {
-	return protocol.CEKResponsePayload{
-		OutputSpeech:     protocol.MakeSimpleOutputSpeech("다시 말씀해주세요."),
-		ShouldEndSession: false,
-	}
-}
-
 func respondError(w http.ResponseWriter, msg string) {
 	response := protocol.MakeCEKResponse(
 		protocol.CEKResponsePayload{
