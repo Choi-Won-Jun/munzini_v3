@@ -18,7 +18,6 @@ const R_S = 4   // Repeat Status
 func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	var req protocol.CEKRequest
-	var status int = SQP_S // initial status is SQP_S
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		log.Println("JSON decoding failed")
@@ -27,6 +26,8 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reqType := req.Request.Type
+	cekStatus := req.Session.SessionAttributes.(protocol.CEKStatus)
+	status := cekStatus.Status
 
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
@@ -54,9 +55,11 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		case R_S:
 			result, statusDelta = intent.GetRAnswer(cekIntent)
 		}
-		response = protocol.MakeCEKResponse(result) // 응답 구조체 작성
-		status += statusDelta                       // 상태 변화 적용
+		response = protocol.MakeCEKResponse(result)        // 응답 구조체 작성
+		status += statusDelta                              // 상태 변화 적용
+		response = protocol.SetStatus(response, cekStatus) // json:status 값 추가
 
+		// var status int = protocol.CEKStatus.Status
 		// 슬롯 파싱 코드 (참조용)
 		/*
 			switch intentName {

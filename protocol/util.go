@@ -29,3 +29,8 @@ func MakeOutputSpeechList(value ...Value) OutputSpeech {
 		Values: value,
 	}
 }
+
+func SetStatus(response CEKResponse, status CEKStatus) CEKResponse {
+	response.SessionAttributes = status
+	return response
+}

@@ -6,6 +6,7 @@ type CEKIntent struct {
 	Name       string             `json:"name"`   //RULE should be set same as IntentType value.
 	Slots      map[string]CEKSlot `json:"slots"`
 }
+
 // 요청 json.Reqeust.Intent.Slots 리스트 요소
 type CEKSlot struct {
 	Name  string `json:"name"`
@@ -67,9 +68,9 @@ type CEKResponsePayload struct {
 	ShouldEndSession bool         `json:"shouldEndSession"`
 }
 
-// 응답 json.SessionAttributes
-type SessionAttributes struct {
-	Intent	string	`json:"intent"`
+// 응답 json.CEKStatus
+type CEKStatus struct {
+	Status int `json:"status"`
 }
 
 // 응답 json
