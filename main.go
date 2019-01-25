@@ -4,7 +4,7 @@ import (
 	"log"
 	"munzini/handler"
 	"net/http"
-	"os"
+	//"os"
 )
 
 func main() {
@@ -13,6 +13,7 @@ func main() {
 	http.HandleFunc("/munzini", handler.Dispatch)
 	http.HandleFunc("/health_check", handler.HealthCheck)
 	http.HandleFunc("/monitor/l7check", handler.HealthCheck)
-	port := os.Getenv("PORT")                       // added
+	port := os.Getenv("PORT") // for server
+	//port := "13780"
 	log.Fatalln(http.ListenAndServe(":"+port, nil)) // updated: ":13780" -> ":" + port
 }

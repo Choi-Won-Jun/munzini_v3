@@ -19,17 +19,9 @@ var answers = []string{
 }
 */
 
-var qData question.QData
-
-var repIdx int = 0
-var repMax int
-var detPat int = 0 // GetDQSAnswer()에서 사용. 값 : 0~len(SQSProbPatternIdx)
-var detIdx int = 0
-var detMax int
-
 var finalScoreNotification string // 최종 결과에 대한 설명
 
-func GetSQPAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) {
+func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
@@ -38,10 +30,11 @@ func GetSQPAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 	switch intentName {
 	case "Clova.YesIntent":
 		qData = question.PrepareRep(qData) // prepare representative questions
-		repMax = len(qData.QRepIdx)
-		responseValue = qData.RawData.QCWP[qData.QRepIdx[repIdx]][question.QUESTION] // current question
-		repIdx++                                                                     // next question
-		statusDelta = 1                                                              // next status
+
+		qData.RepMax = len(qData.QRepIdx)
+		responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
+		qData.RepIdx++                                                                     // next question
+		statusDelta = 1                                                                    // next status
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
 		shouldEndSession = true
@@ -60,10 +53,10 @@ func GetSQPAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		ShouldEndSession: shouldEndSession,
 	}
 
-	return responsePayload, statusDelta
+	return responsePayload, statusDelta, qData
 }
 
-func GetSQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) {
+func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -89,10 +82,10 @@ func GetSQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
 		} else { // score 값이 정상적으로 부여된 경우
-			qData.Answer[qData.QRepIdx[repIdx]] = score // score 값 저장
+			qData.Answer[qData.QRepIdx[qData.RepIdx]] = score // score 값 저장
 
 			// 대표 질문이 끝났을 때
-			if repIdx == repMax {
+			if qData.RepIdx == qData.RepMax {
 				qData = question.PrepareDet(qData) // 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
 				if len(qData.SQSProbPatternIdx) == 0 {
 					responseValue = "간단 문진 결과 의심되는 문제가 없습니다. 앞으로도 쭈욱 건강하시고, 제가 그리우시면 언제든지 다시 불러주세요!"
@@ -102,8 +95,8 @@ func GetSQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 					statusDelta = 1 // next status
 				}
 			} else {
-				responseValue = qData.RawData.QCWP[qData.QRepIdx[repIdx]][question.QUESTION] // next question
-				repIdx++
+				responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+				qData.RepIdx++
 			}
 		}
 	default:
@@ -122,10 +115,10 @@ func GetSQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		ShouldEndSession: shouldEndSession,
 	}
 
-	return responsePayload, statusDelta
+	return responsePayload, statusDelta, qData
 }
 
-func GetDQPAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) {
+func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
@@ -134,8 +127,8 @@ func GetDQPAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = "그럼, 문진을 시작할게요." + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][detIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
-		detIdx++                                                                                                                       // next question
+		responseValue = "그럼, 문진을 시작할게요." + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
+		qData.DetIdx++                                                                                                                       // next question
 		statusDelta = 1
 	case "Clova.NoIntent":
 		responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
@@ -155,10 +148,10 @@ func GetDQPAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		ShouldEndSession: shouldEndSession,
 	}
 
-	return responsePayload, statusDelta
+	return responsePayload, statusDelta, qData
 }
 
-func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) {
+func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -166,8 +159,8 @@ func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 	var intentName = intent.Name
 	var slots = intent.Slots
 
-	detMax = len(qData.QDetailIdx[qData.SQSProbPatternIdx[detPat]])
-	detPat = 0
+	qData.DetMax = len(qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]])
+	qData.DetPat = 0
 
 	switch intentName {
 	case "ScoreIntent":
@@ -187,23 +180,23 @@ func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
 		} else { // score 값이 정상적으로 부여된 경우
-			qData.Answer[qData.QDetailIdx[detPat][detIdx]] = score // score 값 저장
+			qData.Answer[qData.QDetailIdx[qData.DetPat][qData.DetIdx]] = score // score 값 저장
 
-			if detIdx == detMax {
-				detPat++ // 다음 패턴
-				detIdx = 0
-				if detPat > len(qData.SQSProbPatternIdx) {
+			if qData.DetIdx == qData.DetMax {
+				qData.DetPat++ // 다음 패턴
+				qData.DetIdx = 0
+				if qData.DetPat > len(qData.SQSProbPatternIdx) {
 					qData = question.PrepareFin(qData) // PrepareFin
-					makeFinalScoreNotification()       // 최종 결과에 대한 대답을 지정해준다.
+					makeFinalScoreNotification(qData)  // 최종 결과에 대한 대답을 지정해준다.
 					responseValue = finalScoreNotification
 					statusDelta = 1
 				} else {
-					responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat][detIdx]][question.QUESTION] // next question
-					detIdx++                                                                                // next question
+					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+					qData.DetIdx++                                                                                      // next question
 				}
 			} else {
-				responseValue = qData.RawData.QCWP[qData.QDetailIdx[detPat][detIdx]][question.QUESTION] // next question
-				detIdx++                                                                                // next question
+				responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+				qData.DetIdx++                                                                                      // next question
 			}
 		}
 	default:
@@ -220,10 +213,10 @@ func GetDQSAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) 
 		),
 		ShouldEndSession: shouldEndSession,
 	}
-	return responsePayload, statusDelta
+	return responsePayload, statusDelta, qData
 }
 
-func GetRAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) {
+func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
@@ -231,7 +224,7 @@ func GetRAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) {
 
 	switch intentName {
 	case "Clova.YesIntent":
-		makeFinalScoreNotification()
+		makeFinalScoreNotification(qData)
 		responseValue = finalScoreNotification // 최종 검사 결과
 	case "Clova.NoIntent":
 		responseValue = "검사하느라 수고 많으셨어요. 다음에도 또 불러주세요."
@@ -251,10 +244,10 @@ func GetRAnswer(intent protocol.CEKIntent) (protocol.CEKResponsePayload, int) {
 		),
 		ShouldEndSession: shouldEndSession,
 	}
-	return responsePayload, statusDelta
+	return responsePayload, statusDelta, qData
 }
 
-func makeFinalScoreNotification() {
+func makeFinalScoreNotification(qData question.QData) {
 
 	//finalScoreNotification
 	//qData.FinalScore[] 사용

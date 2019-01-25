@@ -195,6 +195,9 @@ func PrepareRep(qdata QData) QData {
 	qdata = qRepIdxInit(qdata)    // 2.
 	qdata = qDetailIdxInit(qdata) // 3.
 	qdata = qRepIdxShuffle(qdata) // 4.
+	qdata.RepIdx = 0
+	qdata.DetPat = 0
+	qdata.DetIdx = 0
 
 	return qdata
 }

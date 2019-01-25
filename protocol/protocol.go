@@ -1,5 +1,9 @@
 package protocol
 
+import (
+	"munzini/question"
+)
+
 // 요청 json.Request.Intent
 type CEKIntent struct {
 	IntentType string             `json:"intent"` //RULE 'json"intent' would be deprecated(keep this for compatibility for a while). instead of, use 'json:"name"'.
@@ -29,7 +33,7 @@ type CEKSession struct {
 		AccessToken string `json:"accessToken"`
 		UserId      string `json:"userId`
 	}
-	SessionAttributes interface{} `json:"sessionAttributes"`
+	SessionAttributes CEKSessionAttributes `json:"sessionAttributes"`
 }
 
 // 요청 json.Request
@@ -68,11 +72,6 @@ type CEKResponsePayload struct {
 	ShouldEndSession bool         `json:"shouldEndSession"`
 }
 
-// 응답 json.CEKStatus
-type CEKStatus struct {
-	Status int `json:"status"`
-}
-
 // 응답 json
 type CEKResponse struct {
 	Version           string             `json:"version"`
@@ -99,4 +98,10 @@ type Card struct {
 type CardValue struct {
 	Type  string `json:"type"`
 	Value string `json:"value"`
+}
+
+// SesstionAttributes 값
+type CEKSessionAttributes struct {
+	Status int            `json:"status"`
+	QData  question.QData `json:"qdata"`
 }
