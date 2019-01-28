@@ -33,7 +33,6 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 
 		qData.RepMax = len(qData.QRepIdx)
 		responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
-		qData.RepIdx++                                                                     // next question
 		statusDelta = 1                                                                    // next status
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
@@ -83,6 +82,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			responseValue = "다시 말씀해주세요."
 		} else { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QRepIdx[qData.RepIdx]] = score // score 값 저장
+			qData.RepIdx++                                    // next question
 
 			// 대표 질문이 끝났을 때
 			if qData.RepIdx == qData.RepMax {
@@ -96,7 +96,6 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 				}
 			} else {
 				responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
-				qData.RepIdx++
 			}
 		}
 	default:
@@ -128,7 +127,6 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	switch intentName {
 	case "Clova.YesIntent":
 		responseValue = "그럼, 문진을 시작할게요." + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
-		qData.DetIdx++                                                                                                                       // next question
 		statusDelta = 1
 	case "Clova.NoIntent":
 		responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
@@ -181,6 +179,7 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			responseValue = "다시 말씀해주세요."
 		} else { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QDetailIdx[qData.DetPat][qData.DetIdx]] = score // score 값 저장
+			qData.DetIdx++                                                     // next question
 
 			if qData.DetIdx == qData.DetMax {
 				qData.DetPat++ // 다음 패턴
@@ -191,12 +190,10 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 					responseValue = finalScoreNotification
 					statusDelta = 1
 				} else {
-					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
-					qData.DetIdx++                                                                                      // next question
+					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question                                                                                      // next question
 				}
 			} else {
 				responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
-				qData.DetIdx++                                                                                      // next question
 			}
 		}
 	default:
