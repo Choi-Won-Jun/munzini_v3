@@ -80,7 +80,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		// score 값이 0이면 오류, 답을 재요구
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
-		} else { // score 값이 정상적으로 부여된 경우
+		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QRepIdx[qData.RepIdx]] = score // score 값 저장
 			qData.RepIdx++                                    // next question
 
@@ -97,6 +97,8 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			} else {
 				responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 			}
+		} else { // score 값이 1~5 가 아닌 경우
+			responseValue = "1번에서 5번까지 다시 말씀해주세요."
 		}
 	default:
 		responseValue = "다시 말씀해주세요."
@@ -178,7 +180,7 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		// score 값이 0이면 오류, 답을 재요구
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
-		} else { // score 값이 정상적으로 부여된 경우
+		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QDetailIdx[qData.DetPat][qData.DetIdx]] = score // score 값 저장
 			qData.DetIdx++                                                     // next question
 
@@ -196,6 +198,8 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			} else {
 				responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 			}
+		} else {
+			responseValue = "1번부터 5번까지 다시 말씀해주세요."
 		}
 	default:
 		responseValue = "다시 말씀해주시면 좋겠어요."
