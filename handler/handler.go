@@ -28,8 +28,6 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	reqType := req.Request.Type
 
-	fmt.Println(req)
-
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
 	var statusDelta int
@@ -74,6 +72,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		sessionAttributesRes.Status = status
 		sessionAttributesRes.QData = qdata
 		response = protocol.SetSessionAttributes(response, sessionAttributesRes) // json:status 값 추가
+		fmt.Print(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
