@@ -198,6 +198,8 @@ func PrepareRep(qdata QData) QData {
 	qdata.RepIdx = 0
 	qdata.DetPat = 0
 	qdata.DetIdx = 0
+	qdata.Answer = make(map[int]int)
+	qdata.Answer[-1] = -1
 
 	return qdata
 }
