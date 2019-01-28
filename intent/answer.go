@@ -31,8 +31,8 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		qData = question.PrepareRep(qData) // prepare representative questions
 
 		qData.RepMax = len(qData.QRepIdx)
-		responseValue = "그럼, 이제부터 문진을 시작할게요. " + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
-		statusDelta = 1                                                                                             // next status
+		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문들에 대해 해당하는 정도를 1점에서 5점사이로 말씀해 주시면 되요." + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
+		statusDelta = 1                                                                                                                                    // next status
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
 		shouldEndSession = true
@@ -91,7 +91,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 					responseValue = "간단 문진 결과 의심되는 문제가 없습니다. 앞으로도 쭈욱 건강하시고, 제가 그리우시면 언제든지 다시 불러주세요!"
 					shouldEndSession = true
 				} else {
-					responseValue = "간단 문진 결과 " + string(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요?"
+					responseValue = "간단 문진 결과 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요?"
 					statusDelta = 1 // next status
 				}
 			} else {
@@ -129,7 +129,7 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = "그럼, 이제부터 정밀 문진을 시작할게요. " + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
+		responseValue = "그럼, 이제부터 정밀 문진을 시작할게요. 앞에서와 마찬가지로 질문들에 해당하는 정도를 1점에서 5점까지 말해주시면 되요. " + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
 		statusDelta = 1
 	case "Clova.NoIntent":
 		responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
