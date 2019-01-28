@@ -160,7 +160,6 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	var slots = intent.Slots
 
 	qData.DetMax = len(qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]])
-	qData.DetPat = 0
 
 	switch intentName {
 	case "ScoreIntent":
