@@ -32,8 +32,8 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		qData = question.PrepareRep(qData) // prepare representative questions
 
 		qData.RepMax = len(qData.QRepIdx)
-		responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
-		statusDelta = 1                                                                    // next status
+		responseValue = "그럼, 이제부터 문진을 시작할게요. " + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
+		statusDelta = 1                                                                                             // next status
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
 		shouldEndSession = true
@@ -126,7 +126,7 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = "그럼, 문진을 시작할게요." + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
+		responseValue = "그럼, 이제부터 정밀 문진을 시작할게요. " + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
 		statusDelta = 1
 	case "Clova.NoIntent":
 		responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"

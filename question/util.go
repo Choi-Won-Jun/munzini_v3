@@ -116,9 +116,9 @@ func qRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 
 // 5. calculate SQSProbPatternIdx, caculate FinalScore (only about the representative questions)
 func calculateSQS(qdata QData) QData {
-	qreplength := len(qdata.QRepIdx) // 대표질문 개수
-	var score map[string]int         // 변증 : (기준치점수 * 가중치)
-	var biScore int                  // binary Score = { 0 ,1 }
+	qreplength := len(qdata.QRepIdx)                // 대표질문 개수
+	var score map[string]int = make(map[string]int) // 변증 : (기준치점수 * 가중치)
+	var biScore int                                 // binary Score = { 0 ,1 }
 
 	for i := 0; i < len(PATTERN_NAME); i++ { // Initialize score map
 		score[PATTERN_NAME[i]] = 0
