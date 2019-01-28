@@ -208,6 +208,7 @@ func PrepareRep(qdata QData) QData {
 func PrepareDet(qdata QData) QData {
 	qdata = calculateSQS(qdata)      // 5.
 	qdata = qDetailIdxShuffle(qdata) // 6.
+	qdata.QDetailCount = 0
 
 	return qdata
 }

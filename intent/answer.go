@@ -62,6 +62,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	var shouldEndSession bool = false
 	var intentName = intent.Name
 	var slots = intent.Slots
+	var qNum int = 0
 
 	switch intentName {
 	case "ScoreIntent":
@@ -87,15 +88,26 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			// 대표 질문이 끝났을 때
 			if qData.RepIdx == qData.RepMax {
 				qData = question.PrepareDet(qData) // 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
+				for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
+					qNum += len(qData.QDetailIdx[qData.SQSProbPatternIdx[i]]) // 질문의 개수 이야기 해주기 위함. 모든 정밀 진단 질문 개수.
+				}
+				qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
+
 				if len(qData.SQSProbPatternIdx) == 0 {
 					responseValue = "간단 문진 결과 의심되는 문제가 없습니다. 앞으로도 쭈욱 건강하시고, 제가 그리우시면 언제든지 다시 불러주세요!"
 					shouldEndSession = true
 				} else {
-					responseValue = "간단 문진 결과 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요?"
+					responseValue = "간단 문진 결과 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
 					statusDelta = 1 // next status
 				}
 			} else {
-				responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+				if qData.RepIdx == question.REP_HALF {
+					responseValue = "이제 절반 남았어요! " + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+				} else if qData.RepIdx == question.REP_FINAL {
+					responseValue = "이제 5개의 질문이 남았어요!" + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+				} else {
+					responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+				}
 			}
 		} else { // score 값이 1~5 가 아닌 경우
 			responseValue = "1번에서 5번까지 다시 말씀해주세요."
@@ -125,11 +137,10 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	var responseValue string
 	var shouldEndSession bool = false
 	var intentName = intent.Name
-	// qData
 
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = "그럼, 이제부터 정밀 문진을 시작할게요. 앞에서와 마찬가지로 질문들에 해당하는 정도를 1점에서 5점까지 말해주시면 되요. " + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
+		responseValue = "그럼, 이제부터 정밀 문진을 시작할게요. 앞에서와 마찬가지로 질문들에 해당하는 정도를 1번에서 5번까지 말해주시면 되요. 자 그럼 시작할게요!" + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
 		statusDelta = 1
 	case "Clova.NoIntent":
 		responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
@@ -190,13 +201,21 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 				if qData.DetPat == len(qData.SQSProbPatternIdx) {
 					qData = question.PrepareFin(qData)        // PrepareFin
 					qData = makeFinalScoreNotification(qData) // 최종 결과에 대한 대답을 지정해준다.
-					responseValue = qData.FinalScoreNotification + " 문진 결과를 다시 알드려릴까요?"
+					responseValue = qData.FinalScoreNotification + " 문진 결과를 다시 알려드릴까요?"
 					statusDelta = 1
+				} else { // 다음 패턴 첫질문을 준비한다.
+					if qData.QDetailCount%question.DETAIL_GAP == 0 {
+						responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! " + qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+					} else {
+						responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question                                                                                      // next question
+					}
+				}
+			} else { // 같은 패턴 내 다음 질문을 준비한다.
+				if qData.QDetailCount%question.DETAIL_GAP == 0 {
+					responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! " + qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 				} else {
 					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question                                                                                      // next question
 				}
-			} else {
-				responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 			}
 		} else {
 			responseValue = "1번부터 5번까지 다시 말씀해주세요."

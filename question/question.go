@@ -8,6 +8,10 @@ const BI_CRITERIA = 3                                                           
 const SCORE_MAX = 5                                                             // 점수 최댓값
 var CATEGORY_NUM = []int{4, 6, 6, 4, 3}
 
+const DETAIL_GAP = 12 // 정밀진단 중 질문 수 확인 간격
+const REP_HALF = 11   // 간단진단 중 질문 수 확인 지점 1
+const REP_FINAL = 18  // 간단진단 중 질문 수 확인 지점 2
+
 const FIRST_IDX = 1 // QCWP 실제 데이터 시작 행번호
 const QUESTION = 0  // QCWP question 열번호
 const CATEGORY = 1  // QCWP category 열번호
@@ -26,6 +30,8 @@ type QData struct {
 	RawData                qDataConst
 	QRepIdx                []int       // 각 변증의 각 카테고리별 대표 질문들에 대한 QCWP 인덱스 슬라이스
 	QDetailIdx             [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스]
+	QDetailNum             int         // 정밀 진단 질문 개수
+	QDetailCount           int         // 정밀 진단 질문 카운트
 	Answer                 map[int]int // QCWP 인덱스 : 응답점수
 	SQSProbPatternIdx      []int       // 간단한 문진 이후 컷오프 값을 넘긴 Pattern의 인덱스 슬라이스
 	FinalScore             []float64   // 간단한 문진 이후 컷오프 값을 넘긴 Pattern 인덱스 에 대한 표준점수 슬라이스
