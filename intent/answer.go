@@ -19,8 +19,7 @@ var answers = []string{
 }
 */
 
-var finalScoreNotification string // 최종 결과에 대한 설명
-
+// 1. Get Simple Question Proceed Answer: 간단 문진 시작 여부 및 첫 질문 출력
 func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
@@ -55,6 +54,7 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	return responsePayload, statusDelta, qData
 }
 
+// 2. Get Simple Question Score Answer: 간단 문진 질문에 대한 응답 입력 및 전체 간단 문진 질문에 대한 점수 계산
 func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var score int = 0
 	var statusDelta int = 0
@@ -117,6 +117,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	return responsePayload, statusDelta, qData
 }
 
+// 3. Get Detail Question Proceed Answer: 정밀 문진에 대한 진행 여부 및 첫 정밀 문진 질문 출력
 func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
@@ -149,6 +150,7 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	return responsePayload, statusDelta, qData
 }
 
+// 4. Get Detail Question Score Answer: 정밀 진단 질문에 대한 응답 점수 입력 및 최종 점수 계산 및 문진 결과 출력
 func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var score int = 0
 	var statusDelta int = 0
@@ -183,10 +185,10 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			if qData.DetIdx == qData.DetMax {
 				qData.DetPat++ // 다음 패턴
 				qData.DetIdx = 0
-				if qData.DetPat > len(qData.SQSProbPatternIdx) {
-					qData = question.PrepareFin(qData) // PrepareFin
-					makeFinalScoreNotification(qData)  // 최종 결과에 대한 대답을 지정해준다.
-					responseValue = finalScoreNotification
+				if qData.DetPat == len(qData.SQSProbPatternIdx) {
+					qData = question.PrepareFin(qData)        // PrepareFin
+					qData = makeFinalScoreNotification(qData) // 최종 결과에 대한 대답을 지정해준다.
+					responseValue = qData.FinalScoreNotification + " 문진 결과를 다시 알드려릴까요?"
 					statusDelta = 1
 				} else {
 					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question                                                                                      // next question
@@ -212,6 +214,7 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	return responsePayload, statusDelta, qData
 }
 
+// 5. Get Repeat Answer: 최종 문진 결과에 대한 다시 듣기 여부 처리
 func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
@@ -221,7 +224,7 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKRe
 	switch intentName {
 	case "Clova.YesIntent":
 		makeFinalScoreNotification(qData)
-		responseValue = finalScoreNotification // 최종 검사 결과
+		responseValue = qData.FinalScoreNotification // 최종 검사 결과
 	case "Clova.NoIntent":
 		responseValue = "검사하느라 수고 많으셨어요. 다음에도 또 불러주세요."
 		shouldEndSession = true
@@ -243,19 +246,22 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKRe
 	return responsePayload, statusDelta, qData
 }
 
-func makeFinalScoreNotification(qData question.QData) {
+// 최종 문진 결과 생성
+func makeFinalScoreNotification(qData question.QData) question.QData {
 
 	//finalScoreNotification
 	//qData.FinalScore[] 사용
 	sqslength := len(qData.SQSProbPatternIdx)
-	finalScoreNotification = "검진결과가 나왔어요."
+	qData.FinalScoreNotification = "검진결과가 나왔어요. "
 	for i := 0; i < sqslength; i++ {
-		finalScoreString := fmt.Sprintf("%f", qData.FinalScore[qData.SQSProbPatternIdx[i]])
-		finalScoreNotification += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] +
-			"부분에 있어서의 점수는" + finalScoreString + "점,"
+		finalScoreString := fmt.Sprintf("%.2f", qData.FinalScore[qData.SQSProbPatternIdx[i]])
+		qData.FinalScoreNotification += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] +
+			"부분에 있어서의 점수는 " + finalScoreString + "점, "
 	}
-	finalScoreNotification += "입니다."
+	qData.FinalScoreNotification += "입니다."
 	// 나쁜 피가 뭉쳐있는 것(피멍, 혈액순환)
 	// 담음이랑 어혈이 같이 옴.
 	// 담음 : 몸속의 노폐물이 많음
+
+	return qData
 }
