@@ -2,12 +2,12 @@ package intent
 
 import (
 	"fmt"
+	"math/rand"
 	"munzini/nlp"
 	"munzini/protocol"
 	"munzini/question"
 	"strconv"
-	//"math/rand"
-	//"time"
+	"time"
 )
 
 // 구 대답 리스트
@@ -105,7 +105,14 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 				} else if qData.RepIdx == question.REP_FINAL {
 					responseValue = "이제 5개의 질문이 남았어요!" + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				} else {
+
+					rand_seed := rand.NewSource(time.Now().UnixNano())
+					r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
+
 					responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                 // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
+						responseValue = nlp.PlayUpto(score) + responseValue
+					}
 				}
 			}
 		} else { // score 값이 1~5 가 아닌 경우
@@ -206,14 +213,30 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 					if qData.QDetailCount%question.DETAIL_GAP == 0 {
 						responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! " + qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 					} else {
-						responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question                                                                                      // next question
+						responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+
+						rand_seed := rand.NewSource(time.Now().UnixNano())
+						r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
+
+						responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+						if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                 // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
+							responseValue = nlp.PlayUpto(score) + responseValue // next question
+						}
 					}
 				}
 			} else { // 같은 패턴 내 다음 질문을 준비한다.
 				if qData.QDetailCount%question.DETAIL_GAP == 0 {
 					responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! " + qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 				} else {
-					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question                                                                                      // next question
+					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+
+					rand_seed := rand.NewSource(time.Now().UnixNano())
+					r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
+
+					responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                 // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
+						responseValue = nlp.PlayUpto(score) + responseValue // next question
+					}
 				}
 			}
 		} else {

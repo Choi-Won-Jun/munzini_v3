@@ -21,6 +21,8 @@ const PATTERN = 3   // QCWP pattern 열번호
 const PTOC_PATTERN = 0 // PtoC pattern 열번호
 const PTOC_CUTOFF = 1  // PtoC cutoff 열번호
 
+const PROB_PLAYUPTO = 4 // 질문마다 맞장구 쳐주는 확률의 수치 , 4 => 1/4 (25%)확률로 맞장구 쳐줌.
+
 type qDataConst struct {
 	QCWP [][]string     // 질문, 카테고리, 가중치, 변증
 	PtoC map[string]int // 변증 : 컷오프
