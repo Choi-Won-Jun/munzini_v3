@@ -85,7 +85,7 @@ func qDetailIdxInit(qdata QData) QData {
 			curP = RAW_DATA.QCWP[restQIdx[j]][PATTERN]
 			if prevP != curP { // if pattern changed
 				prevP = curP
-				startPoint = j + 1
+				startPoint = j
 				break
 			}
 			prevP = curP
