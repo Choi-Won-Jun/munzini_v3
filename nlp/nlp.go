@@ -14,11 +14,11 @@ var exStrFif = []string{"오", "오정", "호점", "오전"}
 
 var exStrArr = [][]string{exStrOne, exStrTwo, exStrThr, exStrFor, exStrFif}
 
-var playUptoOnePoint = []string{"다행이에요.", "아주 좋은편에 속하시네요.", "건강왕이시네요."}
-var playUptoTwoPoint = []string{"괜찮으시네요.", "좋은편에 속하시네요.", "굿잡"}
-var playUptoThreePoint = []string{"평범하시군요.", "건강한 편에 속하시네요.", "좋아요!"}
-var playUptoFourPoint = []string{"굿", "와우", "예아"}
-var playUptoFivePoint = []string{"오우", "오호", "굳"}
+var playUptoOnePoint = []string{"다행이에요. ", "다행이네요. ", "정말 다행이에요. "}
+var playUptoTwoPoint = []string{"다행이에요. ", "다행이네요."}
+var playUptoThreePoint = []string{"아 그렇군요. ", "아 그러시군요. "}
+var playUptoFourPoint = []string{"그렇군요. ", "그러시군요. ", "그랬군요. "}
+var playUptoFivePoint = []string{"음... 그렇군요. ", "음... 그러시군요. ", "음... 그랬군요. "}
 
 var playUptoPoint = [][]string{playUptoOnePoint, playUptoTwoPoint, playUptoThreePoint, playUptoFourPoint, playUptoFivePoint}
 
@@ -41,31 +41,13 @@ func strIn(str string, arr []string) bool {
 }
 
 func PlayUpto(score int) string { // 사용자가 1~5점 사이로 대답을 하였을 때, 맞장구를 쳐주는 말
-
-	scoreIdx := ConvertScore(score)
+	scoreIdx := score - 1
 
 	rand_seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(rand_seed) // Randomly Choose Answer
 	answerPicker := r.Intn(len(playUptoPoint[scoreIdx]))
 
-	playUptoMessage := playUptoPoint[scoreIdx][answerPicker] // Choose Answer
+	playUptoMessage := playUptoPoint[scoreIdx][answerPicker] + "다음 질문입니다. " // Choose Answer
 
 	return playUptoMessage
-}
-
-func ConvertScore(score int) int { // score을 배열의 인덱스화 시켜주는 함수.
-	switch score {
-	case 1:
-		return 0
-	case 2:
-		return 1
-	case 3:
-		return 2
-	case 4:
-		return 3
-	case 5:
-		return 4
-	default:
-		return -1
-	}
 }
