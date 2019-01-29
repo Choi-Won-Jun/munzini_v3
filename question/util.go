@@ -175,14 +175,14 @@ func qDetailIdxShuffle(qdata QData) QData {
 func calculateFinalScore(qdata QData) QData {
 	// make FinalScore
 	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
-		for j := 0; j < len(qdata.QDetailIdx[i]); j++ {
-			qdata.FinalScore[qdata.SQSProbPatternIdx[i]] += float64(qdata.Answer[qdata.QDetailIdx[i][j]]) // 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
+		for j := 0; j < len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]); j++ {
+			qdata.FinalScore[qdata.SQSProbPatternIdx[i]] += float64(qdata.Answer[qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j]]) // 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
 		}
 	}
 
 	// alter FinalScore as standard score
 	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
-		maxScore := (len(qdata.QDetailIdx[i]) + CATEGORY_NUM[i]) * SCORE_MAX                                                                      // 한 변증의 만점은 해당 변증에 대한 QDetailIdx 에 있는 질문 개수에 QRepIdx 에 있는 질문 개수 (1개)를 더한 값에 5를 곱한 값임
+		maxScore := (len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]) + CATEGORY_NUM[i]) * SCORE_MAX                                             // 한 변증의 만점은 해당 변증에 대한 QDetailIdx 에 있는 질문 개수에 QRepIdx 에 있는 질문 개수 (1개)를 더한 값에 5를 곱한 값임
 		qdata.FinalScore[qdata.SQSProbPatternIdx[i]] = math.Round((qdata.FinalScore[qdata.SQSProbPatternIdx[i]]*100/float64(maxScore))*100) / 100 // 표준점수로 변환, 소수점 2자리 반올림 (백분위 점수)
 	}
 

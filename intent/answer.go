@@ -199,6 +199,7 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score // score 값 저장
 			qData.DetIdx++                                                                              // next question
+			qData.QDetailCount++                                                                        // 전체 정밀 진단 질문 수 카운트
 
 			if qData.DetIdx == qData.DetMax {
 				qData.DetPat++ // 다음 패턴
