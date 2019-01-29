@@ -197,9 +197,8 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
 		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
-			qData.Answer[qData.QDetailIdx[qData.DetPat][qData.DetIdx]] = score // score 값 저장
-			qData.DetIdx++                                                     // next question
-			qData.QDetailCount++                                               // 전체 정밀 진단 질문 수 카운트
+			qData.Answer[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score // score 값 저장
+			qData.DetIdx++                                                                              // next question
 
 			if qData.DetIdx == qData.DetMax {
 				qData.DetPat++ // 다음 패턴
@@ -211,9 +210,9 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 					statusDelta = 1
 				} else { // 다음 패턴 첫질문을 준비한다.
 					if qData.QDetailCount%question.DETAIL_GAP == 0 {
-						responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+						responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]][question.QUESTION] // next question
 					} else {
-						responseValue = question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+						responseValue = question.RAW_DATA.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]][question.QUESTION] // next question
 
 						rand_seed := rand.NewSource(time.Now().UnixNano())
 						r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
@@ -225,9 +224,9 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 				}
 			} else { // 같은 패턴 내 다음 질문을 준비한다.
 				if qData.QDetailCount%question.DETAIL_GAP == 0 {
-					responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+					responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]][question.QUESTION] // next question
 				} else {
-					responseValue = question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+					responseValue = question.RAW_DATA.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]][question.QUESTION] // next question
 
 					rand_seed := rand.NewSource(time.Now().UnixNano())
 					r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
@@ -301,7 +300,7 @@ func makeFinalScoreNotification(qData question.QData) question.QData {
 		qData.FinalScoreNotification += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] +
 			"부분에 있어서의 점수는 " + finalScoreString + "점, "
 	}
-	qData.FinalScoreNotification += "입니다."
+	qData.FinalScoreNotification += "입니다. 검진 결과를 다시 들으시겠어요?"
 	// 나쁜 피가 뭉쳐있는 것(피멍, 혈액순환)
 	// 담음이랑 어혈이 같이 옴.
 	// 담음 : 몸속의 노폐물이 많음

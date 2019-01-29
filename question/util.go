@@ -141,7 +141,7 @@ func calculateSQS(qdata QData) QData {
 	}
 
 	for i := 0; i < len(PATTERN_NAME); i++ {
-		if score[RAW_DATA.QCWP[qdata.QRepIdx[i]][PATTERN]] > RAW_DATA.PtoC[PATTERN_NAME[i]] {
+		if score[PATTERN_NAME[i]] > RAW_DATA.PtoC[PATTERN_NAME[i]] {
 			qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i)
 		}
 	}
