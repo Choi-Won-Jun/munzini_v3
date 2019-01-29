@@ -13,6 +13,5 @@ func ConvertInquiryScore(str string) string {
 	case "오":
 		str = "5"
 	}
-
 	return str
 }

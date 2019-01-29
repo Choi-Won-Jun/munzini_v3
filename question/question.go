@@ -8,9 +8,9 @@ const BI_CRITERIA = 3                                                           
 const SCORE_MAX = 5                                                             // 점수 최댓값
 var CATEGORY_NUM = []int{4, 6, 6, 4, 3}
 
-const DETAIL_GAP = 12 // 정밀진단 중 질문 수 확인 간격
 const REP_HALF = 11   // 간단진단 중 질문 수 확인 지점 1
 const REP_FINAL = 18  // 간단진단 중 질문 수 확인 지점 2
+const DETAIL_GAP = 12 // 정밀진단 중 질문 수 확인 간격
 
 const FIRST_IDX = 1 // QCWP 실제 데이터 시작 행번호
 const QUESTION = 0  // QCWP question 열번호

@@ -29,7 +29,6 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	switch intentName {
 	case "Clova.YesIntent":
 		qData = question.PrepareRep(qData) // prepare representative questions
-
 		qData.RepMax = len(qData.QRepIdx)
 		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문들에 대해 해당하는 정도를 1점에서 5점사이로 말씀해 주시면 되요." + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
 		statusDelta = 1                                                                                                                                    // next status
@@ -100,7 +99,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 					responseValue = "간단 문진 결과 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
 					statusDelta = 1 // next status
 				}
-			} else {
+			} else { // 정밀 진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
 				if qData.RepIdx == question.REP_HALF {
 					responseValue = "이제 절반 남았어요! " + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				} else if qData.RepIdx == question.REP_FINAL {
