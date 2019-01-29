@@ -267,7 +267,7 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKRe
 	switch intentName {
 	case "Clova.YesIntent":
 		makeFinalScoreNotification(qData)
-		responseValue = qData.FinalScoreNotification // 최종 검사 결과
+		responseValue = qData.FinalScoreNotification + "검진 결과를 다시 들으시겠어요?" // 최종 검사 결과
 	case "Clova.NoIntent":
 		responseValue = "검사하느라 수고 많으셨어요. 다음에도 또 불러주세요."
 		shouldEndSession = true
@@ -301,7 +301,7 @@ func makeFinalScoreNotification(qData question.QData) question.QData {
 		qData.FinalScoreNotification += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] +
 			"부분에 있어서의 점수는 " + finalScoreString + "점, "
 	}
-	qData.FinalScoreNotification += "입니다. 검진 결과를 다시 들으시겠어요?"
+	qData.FinalScoreNotification += "입니다. "
 	// 나쁜 피가 뭉쳐있는 것(피멍, 혈액순환)
 	// 담음이랑 어혈이 같이 옴.
 	// 담음 : 몸속의 노폐물이 많음
