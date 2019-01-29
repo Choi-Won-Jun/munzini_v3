@@ -21,13 +21,14 @@ const PATTERN = 3   // QCWP pattern 열번호
 const PTOC_PATTERN = 0 // PtoC pattern 열번호
 const PTOC_CUTOFF = 1  // PtoC cutoff 열번호
 
+var RAW_DATA qDataConst = loadData() // raw data
+
 type qDataConst struct {
 	QCWP [][]string     // 질문, 카테고리, 가중치, 변증
 	PtoC map[string]int // 변증 : 컷오프
 }
 
 type QData struct {
-	RawData                qDataConst
 	QRepIdx                []int       // 각 변증의 각 카테고리별 대표 질문들에 대한 QCWP 인덱스 슬라이스
 	QDetailIdx             [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스]
 	QDetailNum             int         // 정밀 진단 질문 개수
