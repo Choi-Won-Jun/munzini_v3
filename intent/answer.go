@@ -30,8 +30,8 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	case "Clova.YesIntent":
 		qData = question.PrepareRep(qData) // prepare representative questions
 		qData.RepMax = len(qData.QRepIdx)
-		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문들에 대해 해당하는 정도를 1점에서 5점사이로 말씀해 주시면 되요." + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
-		statusDelta = 1                                                                                                                                    // next status
+		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문을 듣고, 전혀 그렇지 않은경우 1번, 조금 그렇지 않은경우 2번, 보통인경우 3번, 조금 그런경우 4번, 매우 그런경우 5번으로 답해주시면 됩니다. 첫 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
+		statusDelta = 1                                                                                                                                                                                                // next status
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
 		shouldEndSession = true
@@ -101,16 +101,15 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 				}
 			} else { // 정밀 진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
 				if qData.RepIdx == question.REP_HALF {
-					responseValue = "이제 절반 남았어요! " + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+					responseValue = "이제 절반 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				} else if qData.RepIdx == question.REP_FINAL {
-					responseValue = "이제 5개의 질문이 남았어요!" + qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+					responseValue = "이제 5개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				} else {
-
 					rand_seed := rand.NewSource(time.Now().UnixNano())
 					r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
 
-					responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
-					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                 // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
+					responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
+					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
 						responseValue = nlp.PlayUpto(score) + responseValue
 					}
 				}
@@ -146,7 +145,7 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 
 	switch intentName {
 	case "Clova.YesIntent":
-		responseValue = "그럼, 이제부터 정밀 문진을 시작할게요. 앞에서와 마찬가지로 질문들에 해당하는 정도를 1번에서 5번까지 말해주시면 되요. 자 그럼 시작할게요!" + qData.RawData.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
+		responseValue = "그럼, 이제부터 정밀 문진을 시작할게요. 앞에서와 마찬가지로 질문들에 해당하는 정도를 1번에서 5번까지 말해주시면 되요. 자 그럼 시작할게요! " + question.RAW_DATA.QCWP[qData.QDetailIdx[qData.SQSProbPatternIdx[0]][qData.DetIdx]][question.QUESTION] // Detail Question 중 첫번째 질문을 이어서 내보낸다.
 		statusDelta = 1
 	case "Clova.NoIntent":
 		responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
@@ -211,30 +210,28 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 					statusDelta = 1
 				} else { // 다음 패턴 첫질문을 준비한다.
 					if qData.QDetailCount%question.DETAIL_GAP == 0 {
-						responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! " + qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+						responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 					} else {
-						responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+						responseValue = question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 
 						rand_seed := rand.NewSource(time.Now().UnixNano())
 						r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
 
-						responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
-						if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                 // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
+						if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 { // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
 							responseValue = nlp.PlayUpto(score) + responseValue // next question
 						}
 					}
 				}
 			} else { // 같은 패턴 내 다음 질문을 준비한다.
 				if qData.QDetailCount%question.DETAIL_GAP == 0 {
-					responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! " + qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+					responseValue = "앞으로 " + strconv.Itoa(qData.QDetailNum-qData.QDetailCount) + "개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 				} else {
-					responseValue = qData.RawData.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
+					responseValue = question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetPat][qData.DetIdx]][question.QUESTION] // next question
 
 					rand_seed := rand.NewSource(time.Now().UnixNano())
 					r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
 
-					responseValue = qData.RawData.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
-					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                 // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
+					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 { // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
 						responseValue = nlp.PlayUpto(score) + responseValue // next question
 					}
 				}

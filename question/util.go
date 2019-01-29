@@ -50,8 +50,8 @@ func loadData() qDataConst {
 // 2. initialize QRepIdx of the structure QData
 func qRepIdxInit(qdata QData) QData {
 	rand.Seed(time.Now().UTC().UnixNano())
-	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); {
-		qNum, _ := strconv.Atoi(qdata.RawData.QCWP[i][WEIGHT]) // question number per one category
+	for i := FIRST_IDX; i < len(RAW_DATA.QCWP); {
+		qNum, _ := strconv.Atoi(RAW_DATA.QCWP[i][WEIGHT]) // question number per one category
 		randVal := rand.Intn(qNum) + i
 		qdata.QRepIdx = append(qdata.QRepIdx, randVal)
 		i += qNum
@@ -64,7 +64,7 @@ func qDetailIdxInit(qdata QData) QData {
 	// make a restQIdx slice which includes all questions but the questions related to repIdx
 	var restQIdx []int
 	var qRepIdxIdx int = 0
-	for i := FIRST_IDX; i < len(qdata.RawData.QCWP); i++ {
+	for i := FIRST_IDX; i < len(RAW_DATA.QCWP); i++ {
 		if i == qdata.QRepIdx[qRepIdxIdx] { // if a value to put into restQIdx is same with the value of qRepIdx
 			//fmt.Println(qdata.QRepIdx[qRepIdxIdx])
 			if qRepIdxIdx+1 != len(qdata.QRepIdx) { // if qRepIdx[qRepIdxIdx] is not the very last value
@@ -76,13 +76,13 @@ func qDetailIdxInit(qdata QData) QData {
 	}
 
 	// make QDetailIdx
-	var prevP string = qdata.RawData.QCWP[FIRST_IDX][PATTERN]
+	var prevP string = RAW_DATA.QCWP[FIRST_IDX][PATTERN]
 	var curP string
 	var startPoint int = 0
 	for i := 0; i < PATTERN_NUM; i++ {
 		var qPIdx []int
 		for j := startPoint; j < len(restQIdx); j++ {
-			curP = qdata.RawData.QCWP[restQIdx[j]][PATTERN]
+			curP = RAW_DATA.QCWP[restQIdx[j]][PATTERN]
 			if prevP != curP { // if pattern changed
 				prevP = curP
 				startPoint = j + 1
@@ -135,13 +135,13 @@ func calculateSQS(qdata QData) QData {
 		} else {
 			biScore = 0
 		}
-		weight, _ := strconv.Atoi(qdata.RawData.QCWP[qdata.QRepIdx[i]][WEIGHT])
-		score[qdata.RawData.QCWP[qdata.QRepIdx[i]][PATTERN]] += biScore * weight                                                  // 기준치점수 * 가중치
-		qdata.FinalScore[PATTERN_INDEX[qdata.RawData.QCWP[qdata.QRepIdx[i]][PATTERN]]] += float64(qdata.Answer[qdata.QRepIdx[i]]) // 대표질문에 대한 패턴별 총점
+		weight, _ := strconv.Atoi(RAW_DATA.QCWP[qdata.QRepIdx[i]][WEIGHT])
+		score[RAW_DATA.QCWP[qdata.QRepIdx[i]][PATTERN]] += biScore * weight                                                  // 기준치점수 * 가중치
+		qdata.FinalScore[PATTERN_INDEX[RAW_DATA.QCWP[qdata.QRepIdx[i]][PATTERN]]] += float64(qdata.Answer[qdata.QRepIdx[i]]) // 대표질문에 대한 패턴별 총점
 	}
 
 	for i := 0; i < len(PATTERN_NAME); i++ {
-		if score[qdata.RawData.QCWP[qdata.QRepIdx[i]][PATTERN]] > qdata.RawData.PtoC[PATTERN_NAME[i]] {
+		if score[RAW_DATA.QCWP[qdata.QRepIdx[i]][PATTERN]] > RAW_DATA.PtoC[PATTERN_NAME[i]] {
 			qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i)
 		}
 	}
@@ -189,9 +189,8 @@ func calculateFinalScore(qdata QData) QData {
 	return qdata
 }
 
-// DATA PREPARE 1 (Representative Questions): execute 1 ~ 4.
+// DATA PREPARE 1 (Representative Questions): execute 2 ~ 4.
 func PrepareRep(qdata QData) QData {
-	qdata.RawData = loadData()    // 1.
 	qdata = qRepIdxInit(qdata)    // 2.
 	qdata = qDetailIdxInit(qdata) // 3.
 	qdata = qRepIdxShuffle(qdata) // 4.
@@ -232,8 +231,8 @@ func printArray(arr [][]string) {
 
 // debug: print the contents of struct QData
 func PrintStruct(qdata QData) {
-	fmt.Println(qdata.RawData.QCWP)
-	fmt.Println(qdata.RawData.PtoC)
+	fmt.Println(RAW_DATA.QCWP)
+	fmt.Println(RAW_DATA.PtoC)
 	fmt.Println(qdata.QRepIdx)
 	fmt.Println(qdata.QDetailIdx)
 	fmt.Println(qdata.Answer)
