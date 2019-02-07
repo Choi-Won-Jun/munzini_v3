@@ -1,1 +1,1 @@
-web: munzini
+web: munzinis
