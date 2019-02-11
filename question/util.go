@@ -140,9 +140,34 @@ func calculateSQS(qdata QData) QData {
 		qdata.FinalScore[PATTERN_INDEX[RAW_DATA.QCWP[qdata.QRepIdx[i]][PATTERN]]] += float64(qdata.Answer[qdata.QRepIdx[i]]) // 대표질문에 대한 패턴별 총점
 	}
 
-	for i := 0; i < len(PATTERN_NAME); i++ {
-		if score[PATTERN_NAME[i]] > RAW_DATA.PtoC[PATTERN_NAME[i]] {
-			qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i)
+	rand_seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(rand_seed) // qdata.SQSProbPatternIdx/NoSQSProbPatternIdx 를 랜덤으로 섞기 위함.
+
+	if len(qdata.SQSProbPatternIdx) != 0 {
+		qdata.SQSProb = true
+		for i := 0; i < len(PATTERN_NAME); i++ {
+			if score[PATTERN_NAME[i]] > RAW_DATA.PtoC[PATTERN_NAME[i]] {
+				qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i) // initialize SQSProbPatternIdx
+			}
+		}
+		for i := 0; i < len(qdata.SQSProbPatternIdx); i++ { // qdata.SQSProbPatternIdx의 순서를 섞음
+			idxpicker := r.Intn(len(qdata.SQSProbPatternIdx)-i) + i
+			// index range : i ~ qdata.SQSProbPatternIdx -1
+			temp := qdata.SQSProbPatternIdx[i]
+			qdata.SQSProbPatternIdx[i] = qdata.SQSProbPatternIdx[idxpicker]
+			qdata.SQSProbPatternIdx[idxpicker] = temp
+		}
+	} else {
+		qdata.SQSProb = false
+		for i := 0; i < PATTERN_NUM; i++ { // 간단문진 결과 문제가 되는 패턴이 없을 때, NoSQSProbPatternIdx를 준비한다.
+			qdata.NoSQSProbPatternIdx = append(qdata.NoSQSProbPatternIdx, i) // initialize NoSQSProbPatternIdx
+		}
+		for i := 0; i < len(qdata.NoSQSProbPatternIdx); i++ { // Shuffle NoSQSProbPatternIdx
+			idxpicker := r.Intn(len(qdata.NoSQSProbPatternIdx)-i) + i
+			// index range : i ~ qdata.NoSQSProbPatternIdx -1
+			temp := qdata.NoSQSProbPatternIdx[i]
+			qdata.NoSQSProbPatternIdx[i] = qdata.NoSQSProbPatternIdx[idxpicker]
+			qdata.NoSQSProbPatternIdx[idxpicker] = temp
 		}
 	}
 
@@ -152,20 +177,39 @@ func calculateSQS(qdata QData) QData {
 // 6. shuffle QDetIdx of the structure QData
 func qDetailIdxShuffle(qdata QData) QData {
 
-	patlength := len(qdata.SQSProbPatternIdx)
+	if qdata.SQSProb == true { //  간단문진에서 문제가 있는 패턴이 정해져 있는 경우.
+		patlength := len(qdata.SQSProbPatternIdx)
 
-	rand_seed := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(rand_seed) // To pick SliceIdx Randomly
+		rand_seed := rand.NewSource(time.Now().UnixNano())
+		r := rand.New(rand_seed) // To pick SliceIdx Randomly
 
-	for i := 0; i < patlength; i++ { // 패턴 슬라이스의 길이만큼 이터레이트
-		qdetlength := len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]) // 패턴 인덱스에 해당하는 질문 슬라이스의 길이
-		for j := 0; j < qdetlength; j++ {                               // Using knuth Shuffle
-			idxpicker := r.Intn(qdetlength-j) + j
-			// index range : j ~ qdetlength-1
-			temp := qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j]
-			qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j] = qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][idxpicker]
-			qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][idxpicker] = temp
-			// Swap
+		for i := 0; i < patlength; i++ { // 패턴 슬라이스의 길이만큼 이터레이트
+			qdetlength := len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]) // 패턴 인덱스에 해당하는 질문 슬라이스의 길이
+			for j := 0; j < qdetlength; j++ {                               // Using knuth Shuffle
+				idxpicker := r.Intn(qdetlength-j) + j
+				// index range : j ~ qdetlength-1
+				temp := qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j]
+				qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j] = qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][idxpicker]
+				qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][idxpicker] = temp
+				// Swap
+			}
+		}
+	} else { //  간단문진에서 문제가 있는 패턴이 없지만 정밀검진을 진행한다고 하는 경우.
+		patlength := len(qdata.NoSQSProbPatternIdx)
+
+		rand_seed := rand.NewSource(time.Now().UnixNano())
+		r := rand.New(rand_seed) // To pick SliceIdx Randomly
+
+		for i := 0; i < patlength; i++ { // 패턴 슬라이스의 길이만큼 이터레이트
+			qdetlength := len(qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]]) // 패턴 인덱스에 해당하는 질문 슬라이스의 길이
+			for j := 0; j < qdetlength; j++ {                                 // Using knuth Shuffle
+				idxpicker := r.Intn(qdetlength-j) + j
+				// index range : j ~ qdetlength-1
+				temp := qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]][j]
+				qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]][j] = qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]][idxpicker]
+				qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]][idxpicker] = temp
+				// Swap
+			}
 		}
 	}
 	return qdata
@@ -173,19 +217,70 @@ func qDetailIdxShuffle(qdata QData) QData {
 
 // 7. calculate and make complete FinalScore
 func calculateFinalScore(qdata QData) QData {
-	// make FinalScore
-	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
-		for j := 0; j < len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]); j++ {
-			qdata.FinalScore[qdata.SQSProbPatternIdx[i]] += float64(qdata.Answer[qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j]]) // 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
+
+	if qdata.SQSProb == true {
+		// make FinalScore when SQSProbPatternIdx exists
+		for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
+			for j := 0; j < len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]); j++ {
+				qdata.FinalScore[qdata.SQSProbPatternIdx[i]] += float64(qdata.Answer[qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]][j]]) // 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
+			}
+		}
+
+		// alter FinalScore as standard score
+		for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
+			maxScore := (len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]) + CATEGORY_NUM[qdata.SQSProbPatternIdx[i]]) * SCORE_MAX                    // 한 변증의 만점은 해당 변증에 대한 QDetailIdx 에 있는 질문 개수에 QRepIdx 에 있는 질문 개수 (1개)를 더한 값에 5를 곱한 값임
+			qdata.FinalScore[qdata.SQSProbPatternIdx[i]] = math.Round((qdata.FinalScore[qdata.SQSProbPatternIdx[i]]*100/float64(maxScore))*100) / 100 // 표준점수로 변환, 소수점 2자리 반올림 (백분위 점수)
+		}
+	} else {
+		// make FinalScore when NoSQSProbPatternIdx exists
+		for i := 0; i < len(qdata.NoSQSProbPatternIdx); i++ {
+			for j := 0; j < len(qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]]); j++ {
+				qdata.FinalScore[qdata.NoSQSProbPatternIdx[i]] += float64(qdata.Answer[qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]][j]]) // 문제가 있는 패턴에 대한 총점을 구하기 위해 점수를 더해나감
+			}
+		}
+
+		// alter FinalScore as standard score
+		for i := 0; i < len(qdata.NoSQSProbPatternIdx); i++ {
+			maxScore := (len(qdata.QDetailIdx[qdata.NoSQSProbPatternIdx[i]]) + CATEGORY_NUM[qdata.NoSQSProbPatternIdx[i]]) * SCORE_MAX                    // 한 변증의 만점은 해당 변증에 대한 QDetailIdx 에 있는 질문 개수에 QRepIdx 에 있는 질문 개수 (1개)를 더한 값에 5를 곱한 값임
+			qdata.FinalScore[qdata.NoSQSProbPatternIdx[i]] = math.Round((qdata.FinalScore[qdata.NoSQSProbPatternIdx[i]]*100/float64(maxScore))*100) / 100 // 표준점수로 변환, 소수점 2자리 반올림 (백분위 점수)
 		}
 	}
 
-	// alter FinalScore as standard score
-	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
-		maxScore := (len(qdata.QDetailIdx[qdata.SQSProbPatternIdx[i]]) + CATEGORY_NUM[qdata.SQSProbPatternIdx[i]]) * SCORE_MAX                    // 한 변증의 만점은 해당 변증에 대한 QDetailIdx 에 있는 질문 개수에 QRepIdx 에 있는 질문 개수 (1개)를 더한 값에 5를 곱한 값임
-		qdata.FinalScore[qdata.SQSProbPatternIdx[i]] = math.Round((qdata.FinalScore[qdata.SQSProbPatternIdx[i]]*100/float64(maxScore))*100) / 100 // 표준점수로 변환, 소수점 2자리 반올림 (백분위 점수)
-	}
+	return qdata
+}
 
+// 8. Sort SQSProbPatternIdx / NoSQSProbPatternIdx
+func sortProbPatternIdx(qdata QData) QData {
+
+	if qdata.SQSProb == true { // Sort SQSProbPatternIdx using SelectionSort ( 오름차순 )
+
+		if len(qdata.SQSProbPatternIdx) == 1 { // Sort할 필요가 없는 경우
+			return qdata
+		}
+		for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
+			min := qdata.SQSProbPatternIdx[i]
+			for j := i; j < len(qdata.SQSProbPatternIdx); j++ {
+				if min > qdata.SQSProbPatternIdx[j] {
+					temp := min
+					min = qdata.SQSProbPatternIdx[j]
+					qdata.SQSProbPatternIdx[j] = temp
+					//Swap
+				}
+			}
+		}
+	} else { // Sort NoSQSProbPatternIdx using SelectionSort ( 오름차순 )
+		for i := 0; i < len(qdata.NoSQSProbPatternIdx); i++ {
+			min := qdata.NoSQSProbPatternIdx[i]
+			for j := i; j < len(qdata.NoSQSProbPatternIdx); j++ {
+				if min > qdata.NoSQSProbPatternIdx[j] {
+					temp := min
+					min = qdata.NoSQSProbPatternIdx[j]
+					qdata.NoSQSProbPatternIdx[j] = temp
+					//Swap
+				}
+			}
+		}
+	}
 	return qdata
 }
 
@@ -212,10 +307,10 @@ func PrepareDet(qdata QData) QData {
 	return qdata
 }
 
-// DATA PREPARE 3 (Final Score): execite 7.
+// DATA PREPARE 3 (Final Score): execite 7 ~ 8
 func PrepareFin(qdata QData) QData {
 	qdata = calculateFinalScore(qdata) // 7.
-
+	qdata = sortProbPatternIdx(qdata)  // 8.
 	return qdata
 }
 

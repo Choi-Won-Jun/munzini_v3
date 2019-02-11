@@ -8,8 +8,14 @@ const BI_CRITERIA = 3                                                           
 const SCORE_MAX = 5                                                             // 점수 최댓값
 var CATEGORY_NUM = []int{4, 6, 6, 4, 3}
 
-const REP_HALF = 11     // 간단진단 중 질문 수 확인 지점 1
-const REP_FINAL = 18    // 간단진단 중 질문 수 확인 지점 2
+const SQ_NUM = 23 // 간단진단 질문 개수
+const Q_NUM = 91  // 전체 문진 질문 개수
+
+const REP_HALF = 11  // 간단진단 중 질문 수 확인 지점 1
+const REP_FINAL = 18 // 간단진단 중 질문 수 확인 지점 2
+const YES_SCORE = 4  // 간단진단의 질문에 대해 해당한다고 답하였을 때의 점수
+const NO_SCORE = 2   // 간단진단의 질문에 대해 해당하지 않는다고 답하였을 때의 점수
+
 const DETAIL_GAP = 12   // 정밀진단 중 질문 수 확인 간격
 const PROB_PLAYUPTO = 1 // 질문마다 맞장구 쳐주는 확률의 수치 , 1 => rand(1) : 0~1 => 2 => 1/2 (50%)확률로 맞장구 쳐줌.
 
@@ -30,16 +36,19 @@ type qDataConst struct {
 }
 
 type QData struct {
-	QRepIdx                []int       // 각 변증의 각 카테고리별 대표 질문들에 대한 QCWP 인덱스 슬라이스
-	QDetailIdx             [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스]
-	QDetailNum             int         // 정밀 진단 질문 개수
-	QDetailCount           int         // 정밀 진단 질문 카운트
-	Answer                 map[int]int // QCWP 인덱스 : 응답점수
-	SQSProbPatternIdx      []int       // 간단한 문진 이후 컷오프 값을 넘긴 Pattern의 인덱스 슬라이스
-	FinalScore             []float64   // 간단한 문진 이후 컷오프 값을 넘긴 Pattern 인덱스 에 대한 표준점수 슬라이스
+	QRepIdx           []int       // 각 변증의 각 카테고리별 대표 질문들에 대한 QCWP 인덱스 슬라이스
+	QDetailIdx        [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스]
+	QDetailNum        int         // 정밀 진단 질문 개수
+	QDetailCount      int         // 정밀 진단 질문 카운트
+	Answer            map[int]int // QCWP 인덱스 : 응답점수
+	SQSProbPatternIdx []int       // 간단한 문진 이후 컷오프 값을 넘긴 Pattern의 인덱스 슬라이스
+	FinalScore        []float64   // 간단한 문진 이후 컷오프 값을 넘긴 Pattern 인덱스 에 대한 표준점수 슬라이스
+	SQSProb           bool        // 간단한 문진 이후 문제가 없는 지의 여부
+	// 간단한 문진 이후 문제가 없지만 정밀 진단을 받겠다고 한 것의 여부
+	NoSQSProbPatternIdx    []int // 간단한 문진 이후 문제가 없지만, 정밀 진단을 받겠다고 했을 때, 출력할 질문 패턴의 순서를 섞어놓은 슬라이스
 	RepIdx                 int
 	RepMax                 int
-	DetPat                 int // GetDQSAnswer()에서 사용. 값 : 0~len(SQSProbPatternIdx)
+	DetPat                 int // GetDQSAnswer()에서 사용. 값 : 0~len(SQSProbPatternIdx) / 0~len(NoSQSProbPatternIdx)
 	DetIdx                 int
 	DetMax                 int
 	FinalScoreNotification string // 최종 결과
