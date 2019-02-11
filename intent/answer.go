@@ -131,8 +131,15 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
 
 			if qData.SQSProb == true {
-				responseValue = "간단 문진 결과 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
-				statusDelta = 1 // next status
+
+				var SQSResult string = "간단 문진 결과"
+
+				for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
+					SQSResult = SQSResult + question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] + ", "
+				}
+				SQSResult += "이렇게 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 부분에서 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
+
+				responseValue = SQSResult
 			} else {
 				responseValue = "간단 문진 결과 의심되는 문제가 없어요~ 하지만, 보다 정확한 문진을 위해서는 정밀검사를 하는 것이 좋을 것 같아요. 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 하는데, 해보시겠어요?"
 				statusDelta = 1 // next status
@@ -164,7 +171,15 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
 
 			if qData.SQSProb == true {
-				responseValue = "간단 문진 결과 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
+
+				var SQSResult string = "간단 문진 결과"
+
+				for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
+					SQSResult = SQSResult + question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] + " "
+				}
+				SQSResult += "이렇게 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 부분에서 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
+
+				responseValue = SQSResult
 				statusDelta = 1 // next status
 			} else {
 				responseValue = "간단 문진 결과 의심되는 문제가 없어요~ 하지만, 보다 정확한 문진을 위해서는 정밀검사를 하는 것이 좋을 것 같아요. 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 하는데, 해보시겠어요?" // 68개
