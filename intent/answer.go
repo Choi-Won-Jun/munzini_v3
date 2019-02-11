@@ -55,7 +55,7 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 
 // 2. Get Simple Question Score Answer: 간단 문진 질문에 대한 응답 입력 및 전체 간단 문진 질문에 대한 점수 계산
 func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
-	var score int = 0
+	//var score int = 0
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
@@ -64,61 +64,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	var qNum int = 0
 
 	switch intentName {
-	/*
-		case "ScoreIntent":
-			// slot에 있는 score 값 파싱
-			if slots != nil { // slots가 nil이 아니어야
-				if len(slots) != 0 { // slots 요소 개수가 0이 아니어야 함
-					slotScore := nlp.ConvertInquiryScore(slots["inquiryScore"].Value)
-					sc, err := strconv.Atoi(slotScore) // score 값 부여
-					score = sc
-					if err != nil { // feelingScore를 int형으로 변환한 값이 올바른 값이 아닐 때
-						score = 0 // score 값에 문제가 있으므로 0으로 재부여
-					}
-				}
-			}
 
-			// score 값이 0이면 오류, 답을 재요구
-			if score == 0 {
-				responseValue = "다시 말씀해주세요."
-			} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
-				qData.Answer[qData.QRepIdx[qData.RepIdx]] = score // score 값 저장
-				qData.RepIdx++                                    // next question
-
-				// 대표 질문이 끝났을 때
-				if qData.RepIdx == qData.RepMax {
-					qData = question.PrepareDet(qData) // 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
-					for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
-						qNum += len(qData.QDetailIdx[qData.SQSProbPatternIdx[i]]) // 질문의 개수 이야기 해주기 위함. 모든 정밀 진단 질문 개수.
-					}
-					qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
-
-					if len(qData.SQSProbPatternIdx) == 0 {
-						responseValue = "간단 문진 결과 의심되는 문제가 없습니다. 앞으로도 쭈욱 건강하시고, 제가 그리우시면 언제든지 다시 불러주세요!"
-						shouldEndSession = true
-					} else {
-						responseValue = "간단 문진 결과 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
-						statusDelta = 1 // next status
-					}
-				} else { // 정밀 진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
-					if qData.RepIdx == question.REP_HALF {
-						responseValue = "이제 절반 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
-					} else if qData.RepIdx == question.REP_FINAL {
-						responseValue = "이제 5개의 질문이 남았어요! 다음 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
-					} else {
-						rand_seed := rand.NewSource(time.Now().UnixNano())
-						r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
-
-						responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
-						if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-							responseValue = nlp.PlayUpto(score) + responseValue
-						}
-					}
-				}
-			} else { // score 값이 1~5 가 아닌 경우
-				responseValue = "1번에서 5번까지 다시 말씀해주세요."
-			}
-	*/
 	case "Clova.YesIntent": // 질문에 대해 문제가 있다고 이야기 할 때,
 		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.YES_SCORE // 점수 부여
 		qData.RepIdx++
@@ -155,7 +101,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = nlp.PlayUpto(score) + responseValue
+					responseValue = /*nlp.PlayUpto(score) + */ responseValue // nlp.PlayUpto 이제 설계 해야한다.
 				}
 			}
 		}
@@ -195,7 +141,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 				r := rand.New(rand_seed)                                                               // 정해진 확률로 맞장구 추가하기 위함.
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = nlp.PlayUpto(score) + responseValue
+					responseValue = /*nlp.PlayUpto(score) +*/ responseValue
 				}
 			}
 		}
