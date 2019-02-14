@@ -6,6 +6,17 @@ import (
 	"time"
 )
 
+var PlayUptoMessage PlayUptoConst = loadData() // raw data
+
+const FIRST_IDX_R = 1 // PlayUptoMessage 실제 시작 행 번호
+const FIRST_IDX_C = 1 // PlayUptoMessage 실제 시작 열 번호
+
+type PlayUptoConst struct {
+	PlayUptoLowPoint  [][]string // 1~2점에 대한 맞장구
+	PlayUptoMidPoint  [][]string // 3점에 대한 맞장구
+	PlayUptoHighPoint [][]string // 4~5점에 대한 맞장구
+}
+
 var exStrOne = []string{"일", "일본", "일정"}
 var exStrTwo = []string{"이", "이정"}
 var exStrThr = []string{"삼", "상점", "암점", "삼원", "한번"}

@@ -28,7 +28,6 @@ func loadData() qDataConst {
 		printArray(qcwp)
 		printArray(ptoc)
 	*/
-
 	// make map from slice ptoc
 	var ptocMap map[string]int
 	ptocMap = make(map[string]int)
@@ -143,13 +142,14 @@ func calculateSQS(qdata QData) QData {
 	rand_seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(rand_seed) // qdata.SQSProbPatternIdx/NoSQSProbPatternIdx 를 랜덤으로 섞기 위함.
 
+	for i := 0; i < len(PATTERN_NAME); i++ {
+		if score[PATTERN_NAME[i]] > RAW_DATA.PtoC[PATTERN_NAME[i]] {
+			qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i) // initialize SQSProbPatternIdx
+		}
+	}
+
 	if len(qdata.SQSProbPatternIdx) != 0 {
 		qdata.SQSProb = true
-		for i := 0; i < len(PATTERN_NAME); i++ {
-			if score[PATTERN_NAME[i]] > RAW_DATA.PtoC[PATTERN_NAME[i]] {
-				qdata.SQSProbPatternIdx = append(qdata.SQSProbPatternIdx, i) // initialize SQSProbPatternIdx
-			}
-		}
 		for i := 0; i < len(qdata.SQSProbPatternIdx); i++ { // qdata.SQSProbPatternIdx의 순서를 섞음
 			idxpicker := r.Intn(len(qdata.SQSProbPatternIdx)-i) + i
 			// index range : i ~ qdata.SQSProbPatternIdx -1
@@ -257,30 +257,36 @@ func sortProbPatternIdx(qdata QData) QData {
 		if len(qdata.SQSProbPatternIdx) == 1 { // Sort할 필요가 없는 경우
 			return qdata
 		}
+
 		for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
-			min := qdata.SQSProbPatternIdx[i]
+			var minIdx int = i
 			for j := i; j < len(qdata.SQSProbPatternIdx); j++ {
-				if min > qdata.SQSProbPatternIdx[j] {
-					temp := min
-					min = qdata.SQSProbPatternIdx[j]
-					qdata.SQSProbPatternIdx[j] = temp
-					//Swap
+				if qdata.SQSProbPatternIdx[minIdx] > qdata.SQSProbPatternIdx[j] {
+					minIdx = j
 				}
 			}
+			temp := qdata.SQSProbPatternIdx[i]
+			qdata.SQSProbPatternIdx[i] = qdata.SQSProbPatternIdx[minIdx]
+			qdata.SQSProbPatternIdx[minIdx] = temp
 		}
 	} else { // Sort NoSQSProbPatternIdx using SelectionSort ( 오름차순 )
 		for i := 0; i < len(qdata.NoSQSProbPatternIdx); i++ {
-			min := qdata.NoSQSProbPatternIdx[i]
+			var minIdx int = i
 			for j := i; j < len(qdata.NoSQSProbPatternIdx); j++ {
-				if min > qdata.NoSQSProbPatternIdx[j] {
-					temp := min
-					min = qdata.NoSQSProbPatternIdx[j]
-					qdata.NoSQSProbPatternIdx[j] = temp
-					//Swap
+				if qdata.NoSQSProbPatternIdx[minIdx] > qdata.NoSQSProbPatternIdx[j] {
+					minIdx = j
 				}
 			}
+			temp := qdata.NoSQSProbPatternIdx[i]
+			qdata.NoSQSProbPatternIdx[i] = qdata.NoSQSProbPatternIdx[minIdx]
+			qdata.NoSQSProbPatternIdx[minIdx] = temp
 		}
 	}
+
+	for i := 0; i < len(qdata.SQSProbPatternIdx); i++ {
+		fmt.Println(qdata.SQSProbPatternIdx[i])
+	}
+
 	return qdata
 }
 
@@ -324,6 +330,7 @@ func printArray(arr [][]string) {
 	}
 }
 
+/*
 // debug: print the contents of struct QData
 func PrintStruct(qdata QData) {
 	fmt.Println(RAW_DATA.QCWP)
@@ -332,3 +339,4 @@ func PrintStruct(qdata QData) {
 	fmt.Println(qdata.QDetailIdx)
 	fmt.Println(qdata.Answer)
 }
+*/

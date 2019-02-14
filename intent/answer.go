@@ -62,11 +62,14 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 	var intentName = intent.Name
 	// var slots = intent.Slots
 	var qNum int = 0
+	var playUptoMessage string
 
 	switch intentName {
 
 	case "Clova.YesIntent": // 질문에 대해 문제가 있다고 이야기 할 때,
 		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.YES_SCORE // 점수 부여
+		fmt.Println(qData.QRepIdx[qData.RepIdx])
+		playUptoMessage = nlp.GetPlayUptoMessage(question.YES_SCORE, qData.QRepIdx[qData.RepIdx])
 		qData.RepIdx++
 		// 대표 질문이 끝났을 때
 		if qData.RepIdx == qData.RepMax {
@@ -101,12 +104,13 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = /*nlp.PlayUpto(score) + */ responseValue // nlp.PlayUpto 이제 설계 해야한다.
+					responseValue = playUptoMessage + responseValue // nlp.PlayUpto 이제 설계 해야한다.
 				}
 			}
 		}
 	case "Clova.NoIntent": // 질문에 대해 문제가 있다고 이야기 할 때,
-		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.NO_SCORE // 점수 부여
+		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.NO_SCORE                            // 점수 부여
+		playUptoMessage = nlp.GetPlayUptoMessage(question.NO_SCORE, qData.QRepIdx[qData.RepIdx]) // 맞장구 메시지 가져오
 		qData.RepIdx++
 		// 대표 질문이 끝났을 때
 		if qData.RepIdx == qData.RepMax {
@@ -141,7 +145,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 				r := rand.New(rand_seed)                                                               // 정해진 확률로 맞장구 추가하기 위함.
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = /*nlp.PlayUpto(score) +*/ responseValue
+					responseValue = playUptoMessage + responseValue
 				}
 			}
 		}
@@ -222,9 +226,15 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData) (protocol.C
 	var shouldEndSession bool = false
 	var intentName = intent.Name
 	var slots = intent.Slots
+	var playUptoMessage string
 
 	qData.DetMax = len(qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]])
 
+	/*
+		for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
+			fmt.Println(qData.SQSProbPatternIdx[i])
+		}
+	*/
 	switch intentName {
 	case "ScoreIntent":
 		// slot에 있는 score 값 파싱
@@ -244,8 +254,15 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData) (protocol.C
 			responseValue = "다시 말씀해주세요."
 		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score // score 값 저장
-			qData.DetIdx++                                                                              // next question
-			qData.QDetailCount++                                                                        // 전체 정밀 진단 질문 수 카운트
+			playUptoMessage = nlp.GetPlayUptoMessage(score, qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx])
+
+			// 개발 노트)
+			// 이부분에 qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx] ( 방금 던진 질문 인덱스 )
+			// 를 이용해서 nlp.PlayUptoMessage 를 초기화해주어야 한다. GetSQSAnswer / GetDQSAnswer_S / GetDQSAnswer_NS
+			// 에도 구현해 주어야 한다.
+
+			qData.DetIdx++       // next question
+			qData.QDetailCount++ // 전체 정밀 진단 질문 수 카운트
 
 			if qData.DetIdx == qData.DetMax {
 				qData.DetPat++ // 다음 패턴
@@ -265,7 +282,7 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData) (protocol.C
 						r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
 
 						if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 { // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-							responseValue = nlp.PlayUpto(score) + responseValue // next question
+							responseValue = /*nlp.PlayUpto(score)*/ playUptoMessage + responseValue // next question
 						}
 					}
 				}
@@ -279,7 +296,7 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData) (protocol.C
 					r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
 
 					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 { // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-						responseValue = nlp.PlayUpto(score) + responseValue // next question
+						responseValue = /*nlp.PlayUpto(score)*/ playUptoMessage + responseValue // next question
 					}
 				}
 			}
@@ -310,6 +327,7 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData) (protocol.
 	var shouldEndSession bool = false
 	var intentName = intent.Name
 	var slots = intent.Slots
+	var playUptoMessage string
 
 	qData.DetMax = len(qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]]) // 해당하는 패턴에 대한 질문 개수
 
@@ -331,9 +349,10 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData) (protocol.
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
 		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
-			qData.Answer[qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score // score 값 저장
-			qData.DetIdx++                                                                                // next question
-			qData.QDetailCount++                                                                          // 전체 정밀 진단 질문 수 카운트
+			qData.Answer[qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score                            // score 값 저장
+			playUptoMessage = nlp.GetPlayUptoMessage(score, qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]) // 맞장구 가져오
+			qData.DetIdx++                                                                                                           // next question
+			qData.QDetailCount++                                                                                                     // 전체 정밀 진단 질문 수 카운트
 
 			if qData.DetIdx == qData.DetMax {
 				qData.DetPat++ // 다음 패턴
@@ -353,7 +372,7 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData) (protocol.
 						r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
 
 						if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 { // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-							responseValue = nlp.PlayUpto(score) + responseValue // next question
+							responseValue = /*nlp.PlayUpto(score)*/ playUptoMessage + responseValue // next question
 						}
 					}
 				}
@@ -367,7 +386,7 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData) (protocol.
 					r := rand.New(rand_seed) // 정해진 확률로 맞장구 추가하기 위함.
 
 					if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 { // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-						responseValue = nlp.PlayUpto(score) + responseValue // next question
+						responseValue = /*nlp.PlayUpto(score)*/ playUptoMessage + responseValue // next question
 					}
 				}
 			}
