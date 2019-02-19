@@ -11,13 +11,16 @@ var CATEGORY_NUM = []int{4, 6, 6, 4, 3}
 const SQ_NUM = 23 // 간단진단 질문 개수
 const Q_NUM = 91  // 전체 문진 질문 개수
 
-const REP_HALF = 11  // 간단진단 중 질문 수 확인 지점 1
-const REP_FINAL = 18 // 간단진단 중 질문 수 확인 지점 2
-const YES_SCORE = 4  // 간단진단의 질문에 대해 해당한다고 답하였을 때의 점수
-const NO_SCORE = 2   // 간단진단의 질문에 대해 해당하지 않는다고 답하였을 때의 점수
+const REP_HALF = 11         // 간단진단 중 질문 수 확인 지점 1
+const REP_FINAL = 18        // 간단진단 중 질문 수 확인 지점 2
+const YES_SCORE = 4         // 간단진단의 질문에 대해 해당한다고 답하였을 때의 점수
+const NO_SCORE = 2          // 간단진단의 질문에 대해 해당하지 않는다고 답하였을 때의 점수
+const SERIOUS_SQS = 3       // 간단진단의 결과 문제가 되는 패턴의 개수가 SERIOUS_SQS개 이상일 시, 동일한 간단문진 결과 출력
+const SERIOUS_DQS = 3       // 정밀진단의 결과 문제가 되는 패턴의 개수가 SERIOUS_DQS개 이상일 시, 동일한 간단문진 결과 출력
+const PROB_EXIST_SCORE = 60 // 정밀진단을 시행하는 패턴의 FinalScore를 계산했을 때, 해당 패턴이 문제가 있는지에 대한 기준.
 
 const DETAIL_GAP = 12   // 정밀진단 중 질문 수 확인 간격
-const PROB_PLAYUPTO = 1 // 질문마다 맞장구 쳐주는 확률의 수치 , 1 => rand(1) : 0~1 => 2 => 1/2 (50%)확률로 맞장구 쳐줌.
+const PROB_PLAYUPTO = 1 // 질문마다 맞장구 쳐주는 확률의 수치 , 1 => rand(1) == 0 일 때 확률, 100%
 
 const FIRST_IDX = 1 // QCWP 실제 데이터 시작 행번호
 const QUESTION = 0  // QCWP question 열번호

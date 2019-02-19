@@ -1,13 +1,13 @@
 package intent
 
 import (
-	"fmt"
-	"math/rand"
-	"munzini/nlp"
-	"munzini/protocol"
-	"munzini/question"
-	"strconv"
-	"time"
+	"fmt"              // 디버그 관련
+	"math/rand"        // 임의 추출 관련
+	"munzini/nlp"      // 맞장구 관련
+	"munzini/protocol" // CEK 관련 구조체
+	"munzini/question" // 문진 데이터 관련
+	"strconv"          // 문자열 함수 관련
+	"time"             // 임의 추출 관련
 )
 
 // 구 대답 리스트
@@ -80,17 +80,12 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
 
 			if qData.SQSProb == true {
-
-				var SQSResult string = "간단 문진 결과"
-
-				for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
-					SQSResult = SQSResult + question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] + ", "
-				}
-				SQSResult += "이렇게 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 부분에서 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
-
+				var SQSResult string = makeSQSResult(qData) // 간단 문지 결과.
+				SQSResult += " 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
 				responseValue = SQSResult
-			} else {
-				responseValue = "간단 문진 결과 의심되는 문제가 없어요~ 하지만, 보다 정확한 문진을 위해서는 정밀검사를 하는 것이 좋을 것 같아요. 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 하는데, 해보시겠어요?"
+				statusDelta = 1
+			} else { // NOSQSProbPatternIdx가 채워졌을 때
+				responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
 				statusDelta = 1 // next status
 			}
 		} else { // 간단진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
@@ -121,19 +116,12 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
 
 			if qData.SQSProb == true {
-
-				var SQSResult string = "간단 문진 결과"
-
-				for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
-					SQSResult = SQSResult + question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] + " "
-				}
-				SQSResult += "이렇게 " + strconv.Itoa(len(qData.SQSProbPatternIdx)) + "개의 부분에서 문제가 의심됩니다. 정밀 진단을 진행할까요? 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
-
+				var SQSResult string = makeSQSResult(qData)
+				SQSResult += " 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
 				responseValue = SQSResult
 				statusDelta = 1 // next status
 			} else {
-				responseValue = "간단 문진 결과 의심되는 문제가 없어요~ 하지만, 보다 정확한 문진을 위해서는 정밀검사를 하는 것이 좋을 것 같아요. 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 하는데, 해보시겠어요?" // 68개
-				statusDelta = 1                                                                                                                                                      // next status
+				responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요." // 68
 			}
 		} else { // 간단진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
 			if qData.RepIdx == question.REP_HALF {
@@ -419,7 +407,7 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKRe
 
 	switch intentName {
 	case "Clova.YesIntent":
-		makeFinalScoreNotification(qData)
+		// makeFinalScoreNotification(qData)
 		responseValue = qData.FinalScoreNotification + "검진 결과를 다시 들으시겠어요?" // 최종 검사 결과
 	case "Clova.NoIntent":
 		responseValue = "검사하느라 수고 많으셨어요. 다음에도 또 불러주세요."
@@ -442,27 +430,149 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKRe
 	return responsePayload, statusDelta, qData
 }
 
+func makeSQSResult(qData question.QData) string { // SQSProbPattern이 NULL이 아닌 경우, 간단문진 결과 출
+
+	var sqsResult string  // 간단 문진 결과
+	var identifier string // 문제 패턴 조사
+	var sortedSQS []int   // identifier 초기화에 이용
+
+	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
+		sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+		return sqsResult
+	}
+
+	sortedSQS = append(sortedSQS, qData.SQSProbPatternIdx...) // Copy SQSProbPatternIdx
+
+	for i := 0; i < len(sortedSQS); i++ { // 오름차순으로 정리
+		var minIdx int = i
+		for j := i; j < len(sortedSQS); j++ {
+			if sortedSQS[minIdx] > sortedSQS[j] {
+				minIdx = j
+			}
+		}
+		temp := sortedSQS[i]
+		sortedSQS[i] = sortedSQS[minIdx]
+		sortedSQS[minIdx] = temp
+	}
+
+	for i := 0; i < len(sortedSQS); i++ {
+		identifier += question.PATTERN_NAME[sortedSQS[i]]
+	}
+
+	fmt.Println(identifier)
+
+	switch identifier {
+	case "칠정":
+		sqsResult = "문진 결과를 알려드릴께요. 현재 정신적인 스트레스로 건강상태가 좋지 않아요. 스트레스가 지속되면 식욕이 줄고 수면의 질이 나빠질 수 있어요. 그리고, 이유 없이 불안하거나 가슴이 내려앉는 느낌이 종종 나타날 수도 있고요. 그러니까 하루 빨리 스트레스에서 벗어나야 해요! 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "노권":
+		sqsResult = "문진 결과를 알려드릴께요. 계속 무리를 하셔셔 몸이 항상 피곤한 상태시군요. 말하는 것조차 싫으시죠? 이런 경우 휴식을 취해도 피로가 쉽게 회복되지 않거나 오히려 심해지는 경우가 많아요. 이럴땐 휴식을 취하는 게 가장 좋은 방법이예요! 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요? "
+	case "담음":
+		sqsResult = "문진 결과를 알려드릴께요. 전반적으로 대사기능이 저하되어 있으시군요. 이런 상태가 계속되면 자주 두통이 생기거나 어지러울 수 있고, 소화기 기능이 약해질 수 있어요. 특히 몸의 이곳저곳이 아프거나, 기침이 자주 난다거나 가래가 끓는 호흡기의 문제로도 나타날 수 있어요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "식적":
+		sqsResult = "문진 결과를 알려드릴께요. 식사가 불규칙하시거나 식습관이 좋지 않은 것 같아요. 요즘 들어 입맛이 없거나, 소화가 잘 안되거나 복통 등이 있었나 생각해 보세요! 이런 증상이 계속되면 배가 아프고 설사를 할 수도 있어요. 타고나게 소화기가 약하신 분들이라면 증상이 더 안 좋게 나타나실 수 있어요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "어혈":
+		sqsResult = "문진 결과를 알려드릴께요. 현재 몸에 혈액이 제대로 돌지 못해서 한 곳에 정체되어 있을 수 있어요. 만약 몸의 특정 부위에 통증이 있거나 특히 밤에 심하게 아플 수 있어요. 특히 여성의 경우 생리통이 심하거나 생리 주기가 불규칙한 경우가 있을 수 있어요. 이런 증상이 계속되면 통증이 심해져서 하루하루가 괴로울 수 있어요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "칠정노권":
+		sqsResult = "문진 결과를 알려드릴께요. 현재 몸과 마음이 모두 지친상태시군요. 몸과 마음이 서로를 자극해 건강이 안좋은 상태예요. 이 상태를 극복하기 위해서는 충분히 휴식을 취하고, 당신만의 시간을 가져보는 것이 반드시 필요해요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "칠정담음":
+		sqsResult = "문진 결과를 알려드릴께요. 정신적 스트레스로 매우 다양한 증상에 시달리고 계시군요. 만병의 근원이 스트레스라고 하잖아요? 스트레스 때문에 몸이 아프고 몸이 아프니 스트레스 받고... 삶의 활력이 떨어진 상태네요. 우선 소화기 계통과 수면 관련 증상들을 해결해야 해요! 그럼 조금씩 건강 상태가 좋아지실 꺼예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "칠정식적":
+		sqsResult = "문진 결과를 알려드릴께요. 정신적인 스트레스가 심해서 소화 장애가 생긴 상태예요. 이런 상태일수록 폭식과 과식, 불규칙하게 음식을 먹으면 절대 앙데여. 한동안 소화가 잘되는 음식을 위주로 식사를 하시는 게 좋을 거 같아요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "칠정어혈":
+		sqsResult = "문진 결과를 알려드릴께요. 스트레스로 인해 몸에 혈액이 제대로 돌지 못해 컨디션이 별로인 상태시군요. 그러니 기분을 풀어줄 수 있는 간단한 운동을 권해 드려요. 운동을 하고 나면 기분이 좋아져서 스트레스도 한방에 없어질 꺼예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "노권담음":
+		sqsResult = "문진 결과를 알려드릴께요. 지금 지친 육체가 무너지려는 신호를 보내고 있어요. 육체적인 스트레스로 소화기, 호흡기, 신경계 등에 다양한 증상들이 건강을 위협하고 있는 거예요. 온몸에 활력이 떨어져 몸에 에너지를 복구하는 속도도 많이 느려져 있어요. 이런 상태를 방치하면 기운이 다 떨어져서 다시 체력을 회복하기에 힘이 많이 들꺼 같아요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "노권식적":
+		sqsResult = "문진 결과를 알려드릴께요. 체력 소모가 심해서 소화 기능이 많이 줄어든 상태예요. 식사 후에 유난히 졸리고 피곤하다면 약을 먹는 것 보다 속을 빠르게 비워주고 적절한 양의 규칙적인 식사 습관을 유지하는 것이 도움이 될꺼예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "노권어혈":
+		sqsResult = "문진 결과를 알려드릴께요. 지금의 건강상태는 일반적으론 드물게 나타나는 증상이예요. 피로가 심해서 평소보다 다친 곳이 잘 낫지 않을 수도 있어요. 낮에는 너무 피곤하고, 저녁에는 통증에 시달릴 수도 있어요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "담음식적":
+		sqsResult = "문진 결과를 알려드릴께요. 현재 건상상태는 특히 소화기 문제가 안좋은 상태예요. 식욕이 떨어지거나 잦은 소화불량에 두통, 속쓰림, 토가 나올 것 같은 느낌이 나타날 수 있어요. 이런 증상이 지속되면 소중한 피부도 탄력을 잃고 거칠어 질 꺼예요. 약해진 소화 기능을 회복하는 것이 가장 시급해요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "담음어혈":
+		sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 매우 다양한 증상들이 뒤섞여 나타나고 있어요.하루하루를 더욱 지치고 힘들게 할꺼예요. 그래도 지금부터 건강관리를 한다면 빠르게 회복할 수 있어요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	case "식적어혈":
+		sqsResult = "문진 결과를 알려드릴께요. 소화불량이나 아랫배를 눌렀을 때 찌르는 통증이 있을 수 있어요. 이런 증상들은 한번에 관리하기 보다는 하나씩 줄여나가는 것이 최선이예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	default:
+		sqsResult = ""
+	}
+	return sqsResult
+}
+
 // 최종 문진 결과 생성
 func makeFinalScoreNotification(qData question.QData) question.QData {
+
+	var identifier string // 문제 패턴 조사
+	var probNum int = 0   // 문제 패턴 개수
 
 	if qData.SQSProb == true { // SQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
 		//finalScoreNotification
 		//qData.FinalScore[] 사용
 		sqslength := len(qData.SQSProbPatternIdx)
-		qData.FinalScoreNotification = "검진결과가 나왔어요. "
-		for i := 0; i < sqslength; i++ {
-			finalScoreString := fmt.Sprintf("%.2f", qData.FinalScore[qData.SQSProbPatternIdx[i]])
-			qData.FinalScoreNotification += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]] + "부분에 있어서의 점수는 " + finalScoreString + "점, "
+		for i := 0; i < sqslength; i++ { // identifier 초기화
+			if qData.FinalScore[qData.SQSProbPatternIdx[i]] > question.PROB_EXIST_SCORE {
+				identifier += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]]
+				probNum++
+			}
 		}
-		qData.FinalScoreNotification += "입니다. " // 개발 노트) 어혈 / 식적 / 담음 / 노권 / 칠정에 대해 말을 다듬어서 최종결과를 출력하도록 하자.
+		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
+			qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
+			return qData
+		}
 	} else { // NoSQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
-		sqslength := len(qData.NoSQSProbPatternIdx)
-		qData.FinalScoreNotification = "검진결과가 나왔어요."
-		for i := 0; i < sqslength; i++ {
-			finalScoreString := fmt.Sprintf("%.2f", qData.FinalScore[qData.NoSQSProbPatternIdx[i]])
-			qData.FinalScoreNotification += question.PATTERN_NAME[qData.NoSQSProbPatternIdx[i]] + "부분에 있어서의 점수는 " + finalScoreString + "점, "
+		nosqslength := len(qData.NoSQSProbPatternIdx)
+		for i := 0; i < nosqslength; i++ { // identifier 초기화
+			if qData.FinalScore[qData.NoSQSProbPatternIdx[i]] > question.PROB_EXIST_SCORE {
+				identifier += question.PATTERN_NAME[qData.NoSQSProbPatternIdx[i]]
+				probNum++
+			}
 		}
-		qData.FinalScoreNotification += "입니다. " // 개발 노트) 어혈 / 식적 / 담음 / 노권 / 칠정에 대해 말을 다듬어서 최종결과를 출력하도록 하자.
+		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
+			qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
+			return qData
+		}
+	}
+
+	fmt.Println(strconv.Itoa(probNum) + "문제 있음.")
+	fmt.Println(identifier)
+
+	if probNum == 0 { // 정밀문진 결과 문제되는 패턴이 없을 때
+		qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
+		return qData
+	}
+
+	switch identifier {
+	case "칠정":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 정신적인 스트레스로 건강상태가 좋지 않아요. 스트레스가 지속되면 식욕이 줄고 수면의 질이 나빠질 수 있어요. 그리고, 이유 없이 불안하거나 가슴이 내려앉는 느낌이 종종 나타날 수도 있고요. 그러니까 하루 빨리 스트레스에서 벗어나야 해요! 그럼, 5분만 산책을 해보면 어떨까요? "
+	case "노권":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 계속 무리를 하셔셔 몸이 항상 피곤한 상태시군요. 말하는 것조차 싫으시죠? 이런 경우 휴식을 취해도 피로가 쉽게 회복되지 않거나 오히려 심해지는 경우가 많아요. 이럴땐 휴식을 취하는 게 가장 좋은 방법이예요! 이번 주말엔 집에서 푹 쉬시는건 어떨까요? 그럼 빠르게 회복하실 수 있을 꺼예요. "
+	case "담음":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 전반적으로 대사기능이 저하되어 있으시군요. 이런 상태가 계속되면 자주 두통이 생기거나 어지러울 수 있고, 소화기 기능이 약해질 수 있어요. 특히 몸의 이곳저곳이 아프거나, 기침이 자주 난다거나 가래가 끓는 호흡기의 문제로도 나타날 수 있어요. 특별히 증상을 명확히 설명하기도 힘든 상태라면 많은 병의 원인이 될 수 있으니 빠른 시일 내에 병원을 한번 방문해 보는 것이 좋은 방법 이예요. 주변에 적합한 병원 예약을 해드릴까요?"
+	case "식적":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 식사가 불규칙하시거나 식습관이 좋지 않은 것 같아요. 요즘 들어 입맛이 없거나, 소화가 잘 안되거나 복통 등이 있었나 생각해 보세요! 이런 증상이 계속되면 배가 아프고 설사를 할 수도 있어요. 타고나게 소화기가 약하신 분들이라면 증상이 더 안 좋게 나타나실 수 있어요. 참지 말고 가까운 병원을 방문해 보세요! 금방 좋아지실 꺼 예요. "
+	case "어혈":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 몸에 혈액이 제대로 돌지 못해서 한 곳에 정체되어 있을 수 있어요. 만약 몸의 특정 부위에 통증이 있거나 특히 밤에 심하게 아플 수 있어요. 특히 여성의 경우 생리통이 심하거나 생리 주기가 불규칙한 경우가 있을 수 있어요. 이런 증상이 계속되면 통증이 심해져서 하루하루가 괴로울 수 있어요. 가까운 한의원에 가서 의사선생님과 상담을 해보시는건 어떨까요?"
+	case "칠정노권":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 몸과 마음이 모두 지친상태시군요. 몸과 마음이 서로를 자극해 건강이 안좋은 상태예요. 이 상태를 극복하기 위해서는 충분히 휴식을 취하고, 당신만의 시간을 가져보는 것이 반드시 필요해요. 시간적 여유가 없다면 하루에 10분씩 명상을 해보는건 어떨까요?"
+	case "칠정담음":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 정신적 스트레스로 매우 다양한 증상에 시달리고 계시군요. 만병의 근원이 스트레스라고 하잖아요? 스트레스 때문에 몸이 아프고 몸이 아프니 스트레스 받고... 삶의 활력이 떨어진 상태네요. 우선 소화기 계통과 수면 관련 증상들을 해결해야 해요! 그럼 조금씩 건강 상태가 좋아지실 꺼예요. 그 비법이 궁금하시죠? 제가 알려드릴 수 있어요."
+	case "칠정식적":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 정신적인 스트레스가 심해서 소화 장애가 생긴 상태예요. 이런 상태일수록 폭식과 과식, 불규칙하게 음식을 먹으면 절대 앙데여. 한동안 소화가 잘되는 음식을 위주로 식사를 하시는 게 좋을 거 같아요. 제가 다양한 식이요법을 알고 있어요. 알려드릴까요?"
+	case "칠정어혈":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 스트레스로 인해 몸에 혈액이 제대로 돌지 못해 컨디션이 별로인 상태시군요. 그러니 기분을 풀어줄 수 있는 간단한 운동을 권해 드려요. 운동을 하고 나면 기분이 좋아져서 스트레스도 한방에 없어질 꺼예요. 도움이 될만한 좋은 운동 영상을 추천해 드릴까요?"
+	case "노권담음":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 지금 지친 육체가 무너지려는 신호를 보내고 있어요. 육체적인 스트레스로 소화기, 호흡기, 신경계 등에 다양한 증상들이 건강을 위협하고 있는 거예요. 온몸에 활력이 떨어져 몸에 에너지를 복구하는 속도도 많이 느려져 있어요. 이런 상태를 방치하면 기운이 다 떨어져서 다시 체력을 회복하기에 힘이 많이 들꺼 같아요. 빨리 건강 밧데리를 충전해야 해요! 비법이 궁금하시면 알려드릴 수 있어요!"
+	case "노권식적":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 체력 소모가 심해서 소화 기능이 많이 줄어든 상태예요. 식사 후에 유난히 졸리고 피곤하다면 약을 먹는 것 보다 속을 빠르게 비워주고 적절한 양의 규칙적인 식사 습관을 유지하는 것이 도움이 될꺼예요. 그럼 건강한 식사 습관 방법을 추천해 볼까요?"
+	case "노권어혈":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 지금의 건강상태는 일반적으론 드물게 나타나는 증상이예요. 피로가 심해서 평소보다 다친 곳이 잘 낫지 않을 수도 있어요. 낮에는 너무 피곤하고, 저녁에는 통증에 시달릴 수도 있어요. 아무래도 병원을 한 번 방문해서 상담을 받아보는걸 권하고 싶어요. 가까운 한의원을 예약해 드릴까요?"
+	case "담음식적":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건상상태는 특히 소화기 문제가 안좋은 상태예요. 식욕이 떨어지거나 잦은 소화불량에 두통, 속쓰림, 토가 나올 것 같은 느낌이 나타날 수 있어요. 이런 증상이 지속되면 소중한 피부도 탄력을 잃고 거칠어 질 꺼예요. 약해진 소화 기능을 회복하는 것이 가장 시급해요. 그러니까 음식의 양과 종류에 특히 신경을 써야 해요! 이럴 때 딱 맞는 음식들이 있어요. 레시피를 추천해 드려볼까요?"
+	case "담음어혈":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 매우 다양한 증상들이 뒤섞여 나타나고 있어요.하루하루를 더욱 지치고 힘들게 할꺼예요. 그래도 지금부터 건강관리를 한다면 빠르게 회복할 수 있어요. 몸에 좋은 음식과 간단한 운동을 지속적으로 한다면 간단한 증상들은 모두 사라질꺼예요. 제가 좋은 비법을 알려 드릴까요?"
+	case "식적어혈":
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 소화불량이나 아랫배를 눌렀을 때 찌르는 통증이 있을 수 있어요. 이런 증상들은 한번에 관리하기 보다는 하나씩 줄여나가는 것이 최선이예요. 건강개선을 위한 스케쥴을 추천해 드릴까요?"
+	default:
+		qData.FinalScoreNotification = ""
 	}
 	return qData
 }

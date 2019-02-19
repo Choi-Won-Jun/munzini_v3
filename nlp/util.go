@@ -4,25 +4,36 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
-	"io" // csv load 관련
-	"munzini/question"
-
-	// "math"      // 반올림 관련
+	"io"        // csv load 관련
 	"math/rand" // 임의 추출 관련
+	"munzini/question"
 	"os"
-	"time" // 임의 추출 관련
-	//	"strconv" // string 관련 형변환
-	//"unicode/utf8"
-	//"io/ioutil"
-	//"golang.org/x/text/encoding/korean"
-	//"golang.org/x/text/transform"
+	"strconv" // 문자열 함수 관련
+	"time"    // 임의 추출 관련
 )
+
+func ConvertInquiryScore(str string) string {
+	for i := 0; i < len(exStrArr); i++ {
+		if strIn(str, exStrArr[i]) {
+			return strconv.Itoa(i + 1)
+		}
+	}
+	return str
+}
+
+func strIn(str string, arr []string) bool {
+	for i := 0; i < len(arr); i++ {
+		if str == arr[i] {
+			return true
+		}
+	}
+	return false
+}
 
 // load Data to initialize PlayUptoMessage
 func loadData() PlayUptoConst {
 
-	/* old code
-	playUptoLow_file, _ := os.Open("resources/data/PlayUptoHigh.csv")  // open PlayUptoLow.csv
+	playUptoLow_file, _ := os.Open("resources/data/PlayUptoLow.csv")   // open PlayUptoLow.csv
 	playUptoMid_file, _ := os.Open("resources/data/PlayUptoMid.csv")   // open PlayUptoMid.csv
 	playUptoHigh_file, _ := os.Open("resources/data/PlayUptoHigh.csv") // open PlayUptoHigh.csv
 
@@ -30,54 +41,6 @@ func loadData() PlayUptoConst {
 	playUptoMid_reader := csv.NewReader(bufio.NewReader(playUptoMid_file))   // create csv reader for PlayUptoMid.csv
 	playUptoHigh_reader := csv.NewReader(bufio.NewReader(playUptoHigh_file)) // create csv reader for PlayUptoHigh.csv
 
-	playUptoLow, _ := playUptoLow_reader.ReadAll()   // read playUptoLow.csv
-	playUptoMid, _ := playUptoMid_reader.ReadAll()   // read playUptoMid.csv
-	playUptoHigh, _ := playUptoHigh_reader.ReadAll() // read playUptoHigh.csv
-
-	var playUptolow [][]string
-	var playUptomid [][]string
-	var playUptohigh [][]string
-
-	fmt.Print(playUptoLow)
-	printArray(playUptoLow)
-
-	for i := FIRST_IDX_R; i < len(playUptoLow); i++ { // initialize playUptolow
-		for j := FIRST_IDX_C; j < len(playUptoLow[i]); j++ {
-			playUptolow[i][j] = playUptoLow[i][j]
-		}
-	}
-	for i := FIRST_IDX_R; i < len(playUptoMid); i++ { // initialize playUptomid
-		for j := FIRST_IDX_C; j < len(playUptoMid[i]); j++ {
-			playUptomid[i][j] = playUptoMid[i][j]
-		}
-	}
-
-	for i := FIRST_IDX_R; i < len(playUptoHigh); i++ { // initialize playUptohigh
-		for j := FIRST_IDX_C; j < len(playUptoHigh[i]); j++ {
-			playUptohigh[i][j] = playUptoHigh[i][j]
-		}
-	}
-
-	playUptoconst := PlayUptoConst{
-		PlayUptoLowPoint:  playUptolow,
-		PlayUptoMidPoint:  playUptomid,
-		PlayUptoHighPoint: playUptohigh,
-	}
-
-	*/
-	playUptoLow_file, _ := os.Open("resources/data/PlayUptoLowV1.csv")   // open PlayUptoLow.csv
-	playUptoMid_file, _ := os.Open("resources/data/PlayUptoMidV1.csv")   // open PlayUptoMid.csv
-	playUptoHigh_file, _ := os.Open("resources/data/PlayUptoHighV3.csv") // open PlayUptoHigh.csv
-
-	playUptoLow_reader := csv.NewReader(bufio.NewReader(playUptoLow_file))   // create csv reader for PlayUptoLow.csv
-	playUptoMid_reader := csv.NewReader(bufio.NewReader(playUptoMid_file))   // create csv reader for PlayUptoMid.csv
-	playUptoHigh_reader := csv.NewReader(bufio.NewReader(playUptoHigh_file)) // create csv reader for PlayUptoHigh.csv
-
-	/*
-		playUptoLow_reader.Read()  // read one line not to load unnecessary data
-		playUptoMid_reader.Read()  // read one line not to load unnecessary data
-		playUptoHigh_reader.Read() // read one line not to load unnecessary data
-	*/
 	var playUptolow [][]string  // make 2-dimensional array to save PlayUptoLow.csv
 	var playUptomid [][]string  // make 2-dimensional array to save PlayUptoMid.csv
 	var playUptohigh [][]string // make 2-dimensional array to save PlayUptoHigh.csv
@@ -126,43 +89,6 @@ func loadData() PlayUptoConst {
 		row++
 	}
 
-	/* Test code to verify that the slice is well created.
-	// fmt.Println(playUptolow[0][2])
-	*/
-	/*
-		var playUptolow [][]string
-
-
-		for i := FIRST_IDX_R; i < len(playUptoLow); i++ { // initialize playUptolow
-			for j := FIRST_IDX_C; j < len(playUptoLow[i]); j++ {
-				playUptolow[i][j] = playUptoLow[i][j]
-			}
-		}
-	*/
-	/* Test Code to see how data looks like
-	s := playUptoLow[0]
-	fmt.Println(len(playUptoLow))
-	fmt.Print(s)
-	fmt.Println()
-	fmt.Println(playUptoLow[1])
-	fmt.Print(playUptoLow)
-	fmt.Println()
-
-	playUptoLow, _ = playUptoLow_reader.Read()
-
-	s = playUptoLow[0]
-	fmt.Print(s)
-	fmt.Print(playUptoLow)
-	fmt.Println()
-
-	playUptoLow, _ = playUptoLow_reader.Read()
-	s = playUptoLow[0]
-	fmt.Print(s)
-	fmt.Print(playUptoLow)
-	fmt.Println()
-	//	y := strcon(playUptoLow[0])
-	//	fmt.Print(y)
-	*/
 	playUptoconst := PlayUptoConst{
 		PlayUptoLowPoint:  playUptolow,
 		PlayUptoMidPoint:  playUptomid,
@@ -176,7 +102,7 @@ func loadData() PlayUptoConst {
 func GetPlayUptoMessage(current_score int, current_idx int) string {
 
 	var playUptoMessage string
-	fmt.Println(current_idx)
+	//fmt.Println(current_idx)	// debug
 
 	if current_score < question.BI_CRITERIA && current_score > 0 { // 1~2점 응답
 		playUptoMessage = GetPlayUptoLow(current_idx)
@@ -228,14 +154,15 @@ func printArray(arr [][]string) {
 }
 
 /*
-func Decode(s []byte) ([]byte, error) {
-	I := bytes.NewReader(s)
-	O := transform.NewReader(I, traditionalkorean.Big5.NewDecoder())
-	d, e := ioutil.ReadAll(O)
-	if e != nil {
-		return nil, e
-	}
+func PlayUpto(score int) string { // 사용자가 1~5점 사이로 대답을 하였을 때, 맞장구를 쳐주는 말
+	scoreIdx := score - 1
 
-	return d, nil
+	rand_seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(rand_seed) // Randomly Choose Answer
+	answerPicker := r.Intn(len(playUptoPoint[scoreIdx]))
+
+	playUptoMessage := playUptoPoint[scoreIdx][answerPicker] + "다음 질문입니다. " // Choose Answer
+
+	return playUptoMessage
 }
 */

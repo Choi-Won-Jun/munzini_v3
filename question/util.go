@@ -2,14 +2,14 @@
 package question
 
 import (
-	"bufio"
-	"encoding/csv"
-	"fmt"
-	"math"      // 반올림 관련
-	"math/rand" // 임의 추출 관련
-	"os"
-	"strconv" // string 관련 형변환
-	"time"    // 임의 추출 관련
+	"bufio"        // csv data load 관련
+	"encoding/csv" // csv data load 관련
+	"fmt"          // 출력 ( 디버그 )
+	"math"         // 반올림 관련
+	"math/rand"    // 임의 추출 관련
+	"os"           // csv data load 관련
+	"strconv"      // string 관련 형변환
+	"time"         // 임의 추출 관련
 )
 
 // 1. load data to initalize the structure qDataConst
@@ -113,7 +113,7 @@ func qRepIdxShuffle(qdata QData) QData { //qdata의 qRepIdx를 섞는다.
 	return qdata
 }
 
-// 5. calculate SQSProbPatternIdx, caculate FinalScore (only about the representative questions)
+// 5. calculate SQSProbPatternIdx or NoSQSProbPatternIdx and caculate FinalScore (only about the representative questions)
 func calculateSQS(qdata QData) QData {
 	qreplength := len(qdata.QRepIdx)                // 대표질문 개수
 	var score map[string]int = make(map[string]int) // 변증 : (기준치점수 * 가중치)
