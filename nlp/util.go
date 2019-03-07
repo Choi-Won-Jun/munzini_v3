@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"        // csv load 관련
 	"math/rand" // 임의 추출 관련
-	"munzinis_project/question"
+	"munzini/question"
 	"os"
 	"strconv" // 문자열 함수 관련
 	"time"    // 임의 추출 관련
