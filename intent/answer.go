@@ -1,13 +1,13 @@
 package intent
 
 import (
-	"fmt"               // 디버그 관련
-	"math/rand"         // 임의 추출 관련
-	"munzini/nlp"       // 맞장구 관련
-	"munzini/protocol"  // CEK 관련 구조체
-	"munzinit/question" // 문진 데이터 관련
-	"strconv"           // 문자열 함수 관련
-	"time"              // 임의 추출 관련
+	"fmt"                       // 디버그 관련
+	"math/rand"                 // 임의 추출 관련
+	"munzinis_project/nlp"      // 맞장구 관련
+	"munzinis_project/protocol" // CEK 관련 구조체
+	"munzinis_project/question" // 문진 데이터 관련
+	"strconv"                   // 문자열 함수 관련
+	"time"                      // 임의 추출 관련
 )
 
 // 구 대답 리스트

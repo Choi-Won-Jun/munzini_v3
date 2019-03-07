@@ -1,7 +1,7 @@
 package protocol
 
 import (
-	"munzini/question"
+	"munzinis_project/question"
 )
 
 // 요청 json.Request.Intent
