@@ -7,14 +7,6 @@ import (
 	"os"
 )
 
-// Imported Packages only for Local Test
-// import (
-// 	"fmt"
-// 	"log"
-// 	"munzinis_project/handler"
-// 	"net/http"
-// )
-
 func main() {
 	fileServer := http.FileServer(http.Dir("resources"))
 
