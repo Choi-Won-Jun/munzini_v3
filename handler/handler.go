@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"log"
-	"munzinis_project/intent"
-	"munzinis_project/protocol"
+	"munzini/intent"
+	"munzini/protocol"
 	"net/http"
 )
 
