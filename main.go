@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"munzinis_project/handler"
+	"munzini/handler"
 	"net/http"
 	"os"
 )
