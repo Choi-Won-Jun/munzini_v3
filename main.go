@@ -2,14 +2,13 @@ package main
 
 import (
 	"log"
-	"munzinis_project/handler"
+	"munzini/handler"
 	"net/http"
 	"os"
 )
 
 func main() {
 	fileServer := http.FileServer(http.Dir("resources"))
-
 	http.Handle("/resources/", http.StripPrefix("/resources/", fileServer))
 	http.HandleFunc("/munzini", handler.Dispatch)
 	http.HandleFunc("/health_check", handler.HealthCheck)
