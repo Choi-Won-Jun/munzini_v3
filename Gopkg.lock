@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  branch = "v2-unstable"
+  digest = "1:4bbf3e497bb1cb3102ae824b4ccc379638491edf6f3a3204839bb16f614adb57"
+  name = "github.com/go-mgo/mgo.git"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "7446a0344b7872c067b3d6e1b7642571eafbae17"
+
+[[projects]]
   digest = "1:586ea76dbd0374d6fb649a91d70d652b7fe0ccffb8910a77468e7702e7901f3d"
   name = "github.com/go-stack/stack"
   packages = ["."]
@@ -103,9 +111,25 @@
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
   version = "v0.3.0"
 
+[[projects]]
+  branch = "v2"
+  digest = "1:154793ba0bbc2724a832a88207a41c5c7268e49077c3346c7bcc5e468afa8914"
+  name = "gopkg.in/mgo.v2"
+  packages = [
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram",
+  ]
+  pruneopts = "UT"
+  revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["go.mongodb.org/mongo-driver/mongo"]
+  input-imports = [
+    "github.com/go-mgo/mgo.git",
+    "go.mongodb.org/mongo-driver/mongo",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
