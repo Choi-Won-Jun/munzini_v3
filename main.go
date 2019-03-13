@@ -34,24 +34,24 @@ func main() {
 	}
 	defer session.Close()
 
+	// // // Insert
+	// c := session.DB(DB.Database).C(DB.MRCollection)
+	// recordID := bson.NewObjectId()
+
+	// temp := DB.MedicalRecord{
+
+	// 	RecordID:     recordID,
+	// 	UserID:       "123",
+	// 	TimeStamp:    time.Now(),
+	// 	QuestionType: 1,
+	// 	Pattern:      []string{"담읍", "심혈"},
+	// 	TherapyID:    "123",
+	// }
+
 	// // Insert
-	c := session.DB(DB.Database).C(DB.MRCollection)
-	recordID := bson.NewObjectId()
-
-	temp := DB.MedicalRecord{
-
-		RecordID:     recordID,
-		UserID:       "123",
-		TimeStamp:    time.Now(),
-		QuestionType: 1,
-		Pattern:      []string{"담읍", "심혈"},
-		TherapyID:    "123",
-	}
-
-	// Insert
-	if err := c.Insert(temp); err != nil {
-		panic(err)
-	}
+	// if err := c.Insert(temp); err != nil {
+	// 	panic(err)
+	// }
 
 	fileServer := http.FileServer(http.Dir("resources"))
 	http.Handle("/resources/", http.StripPrefix("/resources/", fileServer))
