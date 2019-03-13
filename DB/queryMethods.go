@@ -56,25 +56,19 @@ func InsertMedicalRecord(mr MedicalRecord) {
 }
 
 func InsertUserRecord(ur UserRecord) {
-	Host := []string{
-		DB_URL,
-		// replica set addrs...
+	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		fmt.Println("no connection string provided")
+		os.Exit(1)
 	}
-	session, err := mgo.DialWithInfo(&mgo.DialInfo{
-		Addrs: Host,
-		// Username: Username,
-		// Password: Password,
-		// Database: Database,
-		// DialServer: func(addr *mgo.ServerAddr) (net.Conn, error) {
-		// 	return tls.Dial("tcp", addr.String(), &tls.Config{})
-		// },
-	})
-
+	session, err := mgo.Dial(uri)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
 	}
-
 	defer session.Close()
+	fmt.Printf("Connected to %v!\n", session.LiveServers())
+
 	c := session.DB(Database).C(URCollection)
 
 	// Insert
