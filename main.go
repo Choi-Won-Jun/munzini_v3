@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"log"
 	"munzini/handler"
 	"net/http"
@@ -18,11 +18,11 @@ import (
 // )
 
 func main() {
-	// uri := os.Getenv("MONGOLAB_URL")
-	// if uri == "" {
-	// 	//fmt.Println("no connection string provided")
-	// 	os.Exit(1)
-	// }
+	uri := os.Getenv("MONGOLAB_URL")
+	if uri == "" {
+		fmt.Println("no connection string provided")
+		os.Exit(1)
+	}
 	// sess, err := mgo.Dial(uri)
 	// if err != nil {
 	// 	//fmt.Printf("Can't connect to mongo, go error %v\n", err)
