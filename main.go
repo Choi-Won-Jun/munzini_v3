@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	//"time"
+	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -40,20 +40,20 @@ func main() {
 	c := session.DB(DB.Database).C(DB.MRCollection)
 	recordID := bson.NewObjectId()
 
-	// temp := DB.MedicalRecord{
+	temp := DB.MedicalRecord{
 
-	// 	RecordID:     recordID,
-	// 	UserID:       "123",
-	// 	TimeStamp:    time.Now(),
-	// 	QuestionType: 1,
-	// 	Pattern:      []string{"담읍", "심혈"},
-	// 	TherapyID:    "123",
-	// }
+		RecordID:     recordID,
+		UserID:       "123",
+		TimeStamp:    time.Now(),
+		QuestionType: 1,
+		Pattern:      []string{"담읍", "심혈"},
+		TherapyID:    "123",
+	}
 
-	// // Insert
-	// if err := c.Insert(temp); err != nil {
-	// 	panic(err)
-	// }
+	// Insert
+	if err := c.Insert(temp); err != nil {
+		panic(err)
+	}
 
 	fileServer := http.FileServer(http.Dir("resources"))
 	http.Handle("/resources/", http.StripPrefix("/resources/", fileServer))
