@@ -7,9 +7,10 @@ import (
 	"munzini/handler"
 	"net/http"
 	"os"
+	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // import (
@@ -26,12 +27,12 @@ func main() {
 		fmt.Println("no connection string provided")
 		os.Exit(1)
 	}
-	sess, err := mgo.Dial(uri)
+	session, err := mgo.Dial(uri)
 	if err != nil {
 		fmt.Printf("Can't connect to mongo, go error %v\n", err)
 		os.Exit(1)
 	}
-	defer sess.Close()
+	defer session.Close()
 
 	// // Insert
 	c := session.DB(DB.Database).C(DB.MRCollection)
