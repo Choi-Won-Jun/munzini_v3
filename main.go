@@ -54,6 +54,15 @@ func main() {
 	// 	panic(err)
 	// }
 
+	//TODO UserRecord Insert Sample
+	temp_user := DB.UserRecord{
+		UserID:           "125",
+		UserName:         "125",
+		RecordID:         []string{"obj23412", "129dhflb"},
+		RegistrationDate: time.Now(),
+	}
+	DB.InsertUserRecord(temp_user)
+
 	recordID := bson.NewObjectId()
 
 	temp := DB.MedicalRecord{
