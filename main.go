@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"munzini/DB"
 	"munzini/handler"
 	"net/http"
 	"os"
@@ -26,10 +27,29 @@ func main() {
 	}
 	sess, err := mgo.Dial(uri)
 	if err != nil {
-		//fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		fmt.Printf("Can't connect to mongo, go error %v\n", err)
 		os.Exit(1)
 	}
 	defer sess.Close()
+
+	// // Insert
+	c := session.DB(DB.Database).C(DB.MRCollection)
+	recordID := bson.NewObjectId()
+
+	temp := MedicalRecord{
+
+		RecordID:     recordID,
+		UserID:       "123",
+		TimeStamp:    time.Now(),
+		QuestionType: 1,
+		Pattern:      []string{"담읍", "심혈"},
+		TherapyID:    "123",
+	}
+
+	// Insert
+	if err := c.Insert(temp); err != nil {
+		panic(err)
+	}
 
 	fileServer := http.FileServer(http.Dir("resources"))
 	http.Handle("/resources/", http.StripPrefix("/resources/", fileServer))
