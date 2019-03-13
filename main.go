@@ -43,11 +43,11 @@ func main() {
 	temp := DB.MedicalRecord{
 
 		RecordID:     recordID,
-		UserID:       "123",
+		UserID:       "124",
 		TimeStamp:    time.Now(),
 		QuestionType: 1,
 		Pattern:      []string{"담읍", "심혈"},
-		TherapyID:    "123",
+		TherapyID:    "124",
 	}
 
 	// Insert
