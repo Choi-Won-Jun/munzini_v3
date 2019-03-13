@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"log"
 
-	// "munzini/DB"
+	"munzini/DB"
 	"munzini/handler"
 	"net/http"
 	"os"
 
-	// "time"
+	//"time"
 
 	"gopkg.in/mgo.v2"
-	// "gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // import (
@@ -36,9 +36,9 @@ func main() {
 	}
 	defer session.Close()
 
-	// // // Insert
-	// c := session.DB(DB.Database).C(DB.MRCollection)
-	// recordID := bson.NewObjectId()
+	// // Insert
+	c := session.DB(DB.Database).C(DB.MRCollection)
+	recordID := bson.NewObjectId()
 
 	// temp := DB.MedicalRecord{
 
