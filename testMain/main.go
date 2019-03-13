@@ -24,6 +24,7 @@ func main() {
 		Pattern:      []string{"담읍", "심혈"},
 		TherapyID:    "123",
 	}
+
 	DB.InsertMedicalRecord(temp)
 }
 

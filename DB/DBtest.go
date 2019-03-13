@@ -3,7 +3,7 @@ package DB
 import (
 	"fmt"
 
-	// "time"
+	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -12,14 +12,15 @@ import (
 //TODO 동일한 ID값을 가진 유저의 계정에 Medical Record의 key값을 추가하고, Medicalrecord collection에 해당 mr 추가
 func InsertMedicalRecord(mr MedicalRecord) {
 	Host := []string{
-		"127.0.0.1:27017",
+		DB_URL,
 		// replica set addrs...
 	}
+
 	session, err := mgo.DialWithInfo(&mgo.DialInfo{
 		Addrs: Host,
-		// Username: Username,
-		// Password: Password,
-		// Database: Database,
+		// Username: "partnersnco",
+		// Password: "sc06250625",
+		// Database: "CLOVA",
 		// DialServer: func(addr *mgo.ServerAddr) (net.Conn, error) {
 		// 	return tls.Dial("tcp", addr.String(), &tls.Config{})
 		// },
@@ -65,7 +66,7 @@ func InsertMedicalRecord(mr MedicalRecord) {
 
 func InsertUserRecord(ur UserRecord) {
 	Host := []string{
-		"127.0.0.1:27017",
+		DB_URL,
 		// replica set addrs...
 	}
 	session, err := mgo.DialWithInfo(&mgo.DialInfo{
@@ -104,7 +105,7 @@ func sample_main() {
 		Pattern:      []string{"담읍", "심혈"},
 		TherapyID:    "123",
 	}
-	insertMedicalRecord(temp)
+	InsertMedicalRecord(temp)
 
 	//TODO UserRecord Insert Sample
 	// temp_user := UserRecord{
