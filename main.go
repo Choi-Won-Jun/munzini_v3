@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"munzini/DB"
+
+	// "munzini/DB"
 	"munzini/handler"
 	"net/http"
 	"os"
