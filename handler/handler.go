@@ -9,13 +9,13 @@ import (
 
 	// "fmt"
 
-	// "munzini/DB"
-	"munzini/handler"
+	"munzini/DB"
 	"net/http"
 	"os"
 	"time"
-	// "gopkg.in/mgo.v2"
-	// "gopkg.in/mgo.v2/bson"
+
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 const SQP_S = 0 // Simple Question Proceed Status
