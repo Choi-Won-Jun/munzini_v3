@@ -7,7 +7,7 @@ import (
 	"munzini/protocol"
 	"net/http"
 
-	// "fmt"
+	"fmt"
 
 	"munzini/DB"
 	"net/http"
