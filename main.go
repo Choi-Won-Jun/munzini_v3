@@ -18,7 +18,7 @@ import (
 // )
 
 func main() {
-	uri := os.Getenv("MONGOLAB_URI")
+	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
 		fmt.Println("no connection string provided")
 		os.Exit(1)
