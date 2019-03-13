@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"gopkg.in/mgo.v2"
 )
 
@@ -36,7 +37,7 @@ func main() {
 	c := session.DB(DB.Database).C(DB.MRCollection)
 	recordID := bson.NewObjectId()
 
-	temp := MedicalRecord{
+	temp := DB.MedicalRecord{
 
 		RecordID:     recordID,
 		UserID:       "123",
