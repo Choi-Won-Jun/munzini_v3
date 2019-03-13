@@ -3,6 +3,7 @@ package DB
 import (
 	"fmt"
 
+	"os"
 	"time"
 
 	"gopkg.in/mgo.v2"
@@ -11,32 +12,22 @@ import (
 
 //TODO 동일한 ID값을 가진 유저의 계정에 Medical Record의 key값을 추가하고, Medicalrecord collection에 해당 mr 추가
 func InsertMedicalRecord(mr MedicalRecord) {
-	Host := []string{
-		DB_URL,
-		// replica set addrs...
+
+	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		fmt.Println("no connection string provided")
+		os.Exit(1)
 	}
-
-	session, err := mgo.DialWithInfo(&mgo.DialInfo{
-		Addrs: Host,
-		// Username: "partnersnco",
-		// Password: "sc06250625",
-		// Database: "CLOVA",
-		// DialServer: func(addr *mgo.ServerAddr) (net.Conn, error) {
-		// 	return tls.Dial("tcp", addr.String(), &tls.Config{})
-		// },
-	})
-
+	session, err := mgo.Dial(uri)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
 	}
-
 	defer session.Close()
 	fmt.Printf("Connected to %v!\n", session.LiveServers())
 
-	// // Insert
+	// Insert medical-record to the DB
 	c := session.DB(Database).C(MRCollection)
-
-	// Insert
 	if err := c.Insert(mr); err != nil {
 		panic(err)
 	}

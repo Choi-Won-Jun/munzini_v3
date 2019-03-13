@@ -26,14 +26,12 @@ type MedicalRecord struct {
 }
 
 const (
-	Username = "partnersnco"
-	Password = "sc06250625"
-	//Database     = "ClOVA"
+	Username     = "partnersnco"
+	Password     = "sc06250625"
 	Database     = "heroku_7v6nqjgb"
 	MRCollection = "MEDICALRECORD_COLLECTION"
 	URCollection = "USERRECOLD_COLLECTION"
-	//DB_URL       = "127.0.0.1:27017"
-	DB_URL = "mongodb://partnersnco:sc06250625@ds111791.mlab.com:11791/heroku_7v6nqjgb"
+	DB_URL       = "mongodb://partnersnco:sc06250625@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 )
 
 // func main() {

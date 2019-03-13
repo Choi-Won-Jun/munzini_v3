@@ -6,16 +6,6 @@ import (
 	"munzini/intent"
 	"munzini/protocol"
 	"net/http"
-
-	"fmt"
-
-	"munzini/DB"
-
-	"os"
-	"time"
-
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 const SQP_S = 0 // Simple Question Proceed Status
@@ -90,36 +80,36 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 func handleLaunchRequest() protocol.CEKResponsePayload {
 
-	uri := os.Getenv("MONGODB_URI")
-	if uri == "" {
-		fmt.Println("no connection string provided")
-		os.Exit(1)
-	}
-	session, err := mgo.Dial(uri)
-	if err != nil {
-		fmt.Printf("Can't connect to mongo, go error %v\n", err)
-		os.Exit(1)
-	}
-	defer session.Close()
+	// uri := os.Getenv("MONGODB_URI")
+	// if uri == "" {
+	// 	fmt.Println("no connection string provided")
+	// 	os.Exit(1)
+	// }
+	// session, err := mgo.Dial(uri)
+	// if err != nil {
+	// 	fmt.Printf("Can't connect to mongo, go error %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// defer session.Close()
+
+	// // // Insert
+	// c := session.DB(DB.Database).C(DB.MRCollection)
+	// recordID := bson.NewObjectId()
+
+	// temp := DB.MedicalRecord{
+
+	// 	RecordID:     recordID,
+	// 	UserID:       "125",
+	// 	TimeStamp:    time.Now(),
+	// 	QuestionType: 1,
+	// 	Pattern:      []string{"담읍", "심혈"},
+	// 	TherapyID:    "125",
+	// }
 
 	// // Insert
-	c := session.DB(DB.Database).C(DB.MRCollection)
-	recordID := bson.NewObjectId()
-
-	temp := DB.MedicalRecord{
-
-		RecordID:     recordID,
-		UserID:       "125",
-		TimeStamp:    time.Now(),
-		QuestionType: 1,
-		Pattern:      []string{"담읍", "심혈"},
-		TherapyID:    "125",
-	}
-
-	// Insert
-	if err := c.Insert(temp); err != nil {
-		panic(err)
-	}
+	// if err := c.Insert(temp); err != nil {
+	// 	panic(err)
+	// }
 
 	return protocol.CEKResponsePayload{
 		OutputSpeech:     protocol.MakeSimpleOutputSpeech("안녕하세요, 문지니입니다.? 오늘의 문진을 시작해볼까요?"),

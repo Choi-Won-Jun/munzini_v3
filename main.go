@@ -4,14 +4,14 @@ import (
 	// "fmt"
 	"log"
 
-	// "munzini/DB"
+	"munzini/DB"
 	"munzini/handler"
 	"net/http"
 	"os"
+	"time"
 
-	// "time"
 	// "gopkg.in/mgo.v2"
-	// "gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // import (
@@ -53,6 +53,19 @@ func main() {
 	// if err := c.Insert(temp); err != nil {
 	// 	panic(err)
 	// }
+
+	recordID := bson.NewObjectId()
+
+	temp := DB.MedicalRecord{
+
+		RecordID:     recordID,
+		UserID:       "124",
+		TimeStamp:    time.Now(),
+		QuestionType: 1,
+		Pattern:      []string{"담읍", "심혈"},
+		TherapyID:    "124",
+	}
+	DB.InsertMedicalRecord(temp)
 
 	fileServer := http.FileServer(http.Dir("resources"))
 	http.Handle("/resources/", http.StripPrefix("/resources/", fileServer))
