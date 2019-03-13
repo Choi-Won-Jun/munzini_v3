@@ -18,10 +18,10 @@ import (
 // )
 
 func main() {
-	uri := os.Getenv("MONGOLAB_URL")
+	uri := os.Getenv("MONGOLAB_URI")
 	if uri == "" {
 		fmt.Println("no connection string provided")
-		//os.Exit(1)
+		os.Exit(1)
 	}
 	// sess, err := mgo.Dial(uri)
 	// if err != nil {
