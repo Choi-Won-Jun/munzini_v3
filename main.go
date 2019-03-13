@@ -1,19 +1,22 @@
 package main
 
+import (
+	"fmt"
+	"log"
+	"munzini/handler"
+	"net/http"
+	"os"
+
+	"gopkg.in/mgo.v2"
+)
+
 // import (
 // 	"log"
+// 	"munzini/DB"
 // 	"munzini/handler"
 // 	"net/http"
 // 	"os"
 // )
-
-import (
-	"log"
-	"munzini/DB"
-	"munzini/handler"
-	"net/http"
-	"os"
-)
 
 func main() {
 	uri := os.Getenv("MONGOLAB_URL")
