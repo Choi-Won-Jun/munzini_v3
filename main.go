@@ -56,8 +56,8 @@ func main() {
 
 	//TODO UserRecord Insert Sample
 	temp_user := DB.UserRecord{
-		UserID:           "125",
-		UserName:         "125",
+		UserID:           "124",
+		UserName:         "124",
 		RecordID:         []string{"obj23412", "129dhflb"},
 		RegistrationDate: time.Now(),
 	}
@@ -68,7 +68,7 @@ func main() {
 	temp := DB.MedicalRecord{
 
 		RecordID:     recordID,
-		UserID:       "124",
+		UserID:       "125",
 		TimeStamp:    time.Now(),
 		QuestionType: 1,
 		Pattern:      []string{"담읍", "심혈"},
