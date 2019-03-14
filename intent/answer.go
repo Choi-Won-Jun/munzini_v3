@@ -469,7 +469,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	}
 	// Identifier를 이용해 Medical Record저장 수행
 	//TODO Therapy ID Update
-	therapyID = "will be updated later"
+	therapyID := "will be updated later"
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
 	fmt.Println(identifier)
 
