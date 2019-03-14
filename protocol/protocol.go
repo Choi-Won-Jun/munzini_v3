@@ -45,10 +45,10 @@ type CEKRequestPayload struct {
 
 // 요청 json
 type CEKRequest struct {
-	Version  string                 `json:"version"`
-	Session  CEKSession             `json:"session"`
-	Contexts map[string]string{} `json:"context"`
-	Request  CEKRequestPayload      `json:"request"`
+	Version  string            `json:"version"`
+	Session  CEKSession        `json:"session"`
+	Contexts map[string]string `json:"context"`
+	Request  CEKRequestPayload `json:"request"`
 }
 
 // 응답 json.Response.OutputSpeech.Values 리스트 요소
