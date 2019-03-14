@@ -29,7 +29,9 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	reqType := req.Request.Type
 
 	//
-	log.Println(req.Contexts["System"]["application"]["user"]["userId"])
+	log.Println(req.Contexts["System"])
+	temp := req.Contexts["System"].(map[string]string)
+	log.Println(temp["application"])
 	// dat := req.Contexts
 	// var temp map[string]string
 	// if err := json.NewDecoder(dat).Decode(&temp); err != nil {
