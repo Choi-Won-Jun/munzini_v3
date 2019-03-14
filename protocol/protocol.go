@@ -47,7 +47,7 @@ type CEKRequestPayload struct {
 type CEKRequest struct {
 	Version  string                 `json:"version"`
 	Session  CEKSession             `json:"session"`
-	Contexts map[string]interface{} `json:"context"`
+	Contexts map[string]string{} `json:"context"`
 	Request  CEKRequestPayload      `json:"request"`
 }
 
