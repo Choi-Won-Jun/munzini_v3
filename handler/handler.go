@@ -27,8 +27,15 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reqType := req.Request.Type
+	//
 	log.Println(req.Contexts["system"])
-
+	dat := req.Contexts
+	var temp map[string]string
+	if err := json.NewDecoder(dat).Decode(&temp); err != nil {
+		log.Println("Error occured")
+	}
+	log.Println(temp)
+	//
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
 	var statusDelta int
