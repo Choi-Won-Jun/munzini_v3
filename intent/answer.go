@@ -72,7 +72,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.YES_SCORE // 점수 부여
 		fmt.Println(qData.QRepIdx[qData.RepIdx])
 		playUptoMessage = nlp.GetPlayUptoMessage(question.YES_SCORE, qData.QRepIdx[qData.RepIdx])
-		qData.RepIdx++
+		qData.RepIdx++ //질문 index
 		// 대표 질문이 끝났을 때
 		if qData.RepIdx == qData.RepMax {
 			qData = question.PrepareDet(qData) // 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
@@ -463,7 +463,7 @@ func makeSQSResult(qData question.QData) string { // SQSProbPattern이 NULL이 �
 			identifier += " "
 		}
 	}
-
+	// Identifier를 이용해 Medical Record저장 수행
 	fmt.Println(identifier)
 
 	switch identifier {
