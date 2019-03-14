@@ -28,6 +28,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	reqType := req.Request.Type
 	log.Println(req.Contexts)
+	log.Println("123")
 
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
