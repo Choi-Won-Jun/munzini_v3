@@ -28,18 +28,8 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	reqType := req.Request.Type
 
-	//
 	log.Println(req.Session.User.UserId)
-	log.Println(req.Contexts)
-	// temp := req.Contexts["System"]["user"].(map[string]interface{})[""]
-	// log.Println(temp)
-	// dat := req.Contexts
-	// var temp map[string]string
-	// if err := json.NewDecoder(dat).Decode(&temp); err != nil {
-	// 	log.Println("Error occured")
-	// }
-	// log.Println(temp)
-	//
+	//log.Println(req.Contexts)
 
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
@@ -72,7 +62,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		case SQP_S: // status가 0인 경우
 			result, statusDelta, qdata = intent.GetSQPAnswer(cekIntent, qdata)
 		case SQS_S:
-			result, statusDelta, qdata = intent.GetSQSAnswer(cekIntent, qdata)
+			result, statusDelta, qdata = intent.GetSQSAnswer(cekIntent, qdata, req.Session.User.UserId)
 		case DQP_S:
 			result, statusDelta, qdata = intent.GetDQPAnswer(cekIntent, qdata)
 		case DQS_S:

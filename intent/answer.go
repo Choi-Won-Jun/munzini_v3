@@ -9,7 +9,8 @@ import (
 	"munzini/protocol" // CEK 관련 구조체
 	"munzini/question" // 문진 데이터 관련
 	"strconv"          // 문자열 함수 관련
-	"time"             // 임의 추출 관련
+	"strings"
+	"time" // 임의 추출 관련
 )
 
 // 구 대답 리스트
@@ -20,6 +21,9 @@ var answers = []string{
 	 "조증을 의심해 보세요.",
 }
 */
+
+const SIMPLE_QUESTION_TYPE = 0
+const DETAIL_QUESTION_TYPE = 1
 
 // 1. Get Simple Question Proceed Answer: 간단 문진 시작 여부 및 첫 질문 출력
 func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
@@ -56,7 +60,7 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 }
 
 // 2. Get Simple Question Score Answer: 간단 문진 질문에 대한 응답 입력 및 전체 간단 문진 질문에 대한 점수 계산
-func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
+func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) {
 	//var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -82,7 +86,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
 
 			if qData.SQSProb == true {
-				var SQSResult string = makeSQSResult(qData) // 간단 문지 결과.
+				var SQSResult string = makeSQSResult(qData, userID) // 간단 문지 결과.
 				SQSResult += " 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
 				responseValue = SQSResult
 				statusDelta = 1
@@ -118,7 +122,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 			qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
 
 			if qData.SQSProb == true {
-				var SQSResult string = makeSQSResult(qData)
+				var SQSResult string = makeSQSResult(qData, userID)
 				SQSResult += " 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
 				responseValue = SQSResult
 				statusDelta = 1 // next status
@@ -432,7 +436,7 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKRe
 	return responsePayload, statusDelta, qData
 }
 
-func makeSQSResult(qData question.QData) string { // SQSProbPattern이 NULL이 아닌 경우, 간단문진 결과 출
+func makeSQSResult(qData question.QData, userID string) string { // SQSProbPattern이 NULL이 아닌 경우, 간단문진 결과 출
 
 	var sqsResult string  // 간단 문진 결과
 	var identifier string // 문제 패턴 조사
@@ -464,7 +468,9 @@ func makeSQSResult(qData question.QData) string { // SQSProbPattern이 NULL이 �
 		}
 	}
 	// Identifier를 이용해 Medical Record저장 수행
-	//	saveUserMedicalResult(qData.)
+	//TODO Therapy ID Update
+	therapyID = "will be updated later"
+	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
 	fmt.Println(identifier)
 
 	switch identifier {
@@ -539,7 +545,6 @@ func makeSQSResult(qData question.QData) string { // SQSProbPattern이 NULL이 �
 // questionTYPE(0: 간단 문진, 1: 정밀 문진)
 func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, therapyID string) {
 
-	therapyID = "will be updated later"
 	DB.InsertMedicalRecord(userID, questionTYPE, patterns, therapyID)
 }
 
