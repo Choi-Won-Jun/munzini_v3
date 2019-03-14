@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
+
 	"log"
 	"munzini/intent"
 	"munzini/protocol"
@@ -27,7 +27,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reqType := req.Request.Type
-	fmt.Println(req.Contexts)
+	log.Println(req.Contexts)
 
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
