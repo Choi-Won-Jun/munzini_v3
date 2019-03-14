@@ -26,6 +26,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reqType := req.Request.Type
+	fmt.Println(req.Contexts)
 
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
@@ -49,11 +50,13 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		status := sesstionAttributesReq.Status
 		qdata := sesstionAttributesReq.QData
 
+		//userID := sesstionAttributesReq.
+
 		cekIntent := req.Request.Intent // CEKIntent
 
 		// 사용자의 발화에 대한 응답을 현재 상태에 따라 세팅한다. 필요한 경우 응답을 세팅하는 과정에서 슬롯에 대한 처리를 포함한다.
 		switch status {
-		case SQP_S:
+		case SQP_S: // status가 0인 경우
 			result, statusDelta, qdata = intent.GetSQPAnswer(cekIntent, qdata)
 		case SQS_S:
 			result, statusDelta, qdata = intent.GetSQSAnswer(cekIntent, qdata)

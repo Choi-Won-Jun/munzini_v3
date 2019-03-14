@@ -4,7 +4,7 @@ import (
 	"fmt"       // 디버그 관련
 	"math/rand" // 임의 추출 관련
 
-	//	"munzini/DB"
+	"munzini/DB"
 	"munzini/nlp"      // 맞장구 관련
 	"munzini/protocol" // CEK 관련 구조체
 	"munzini/question" // 문진 데이터 관련
@@ -464,6 +464,7 @@ func makeSQSResult(qData question.QData) string { // SQSProbPattern이 NULL이 �
 		}
 	}
 	// Identifier를 이용해 Medical Record저장 수행
+	//	saveUserMedicalResult(qData.)
 	fmt.Println(identifier)
 
 	switch identifier {
@@ -535,9 +536,12 @@ func makeSQSResult(qData question.QData) string { // SQSProbPattern이 NULL이 �
 
 }
 
-// func makeUserMedicalResult(string userID, int questionTYPE, pattern []string){
+// questionTYPE(0: 간단 문진, 1: 정밀 문진)
+func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, therapyID string) {
 
-// }
+	therapyID = "will be updated later"
+	DB.InsertMedicalRecord(userID, questionTYPE, patterns, therapyID)
+}
 
 // 최종 문진 결과 생성
 func makeFinalScoreNotification(qData question.QData) question.QData {

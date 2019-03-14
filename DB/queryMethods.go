@@ -11,7 +11,7 @@ import (
 )
 
 //TODO 동일한 ID값을 가진 유저의 계정에 Medical Record의 key값을 추가하고, Medicalrecord collection에 해당 mr 추가
-func InsertMedicalRecord(mr MedicalRecord) {
+func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, therapyID string) {
 
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
@@ -26,16 +26,28 @@ func InsertMedicalRecord(mr MedicalRecord) {
 	defer session.Close()
 	fmt.Printf("Connected to %v!\n", session.LiveServers())
 
+	recordID := bson.NewObjectId()
+	medicalRecord := MedicalRecord{
+		RecordID:     recordID,
+		UserID:       userID,
+		TimeStamp:    time.Now(),
+		QuestionType: questionTYPE,
+		Pattern:      patterns,
+		TherapyID:    therapyID,
+	}
+
 	// Insert medical-record to the DB
 	c := session.DB(Database).C(MRCollection)
-	if err := c.Insert(mr); err != nil {
+	if err := c.Insert(medicalRecord); err != nil {
 		panic(err)
 	}
 
+	// Find First, If user is not exist in database, add his data
+
 	//Push medical-record ID to the repective user's record
 	URc := session.DB(Database).C(URCollection)
-	query := bson.M{"userID": mr.UserID}
-	change := bson.M{"$push": bson.M{"recordID": mr.RecordID}}
+	query := bson.M{"userID": medicalRecord.UserID}
+	change := bson.M{"$push": bson.M{"recordID": medicalRecord.RecordID}}
 	updateErr := URc.Update(query, change)
 
 	if updateErr != nil {
@@ -77,27 +89,27 @@ func InsertUserRecord(ur UserRecord) {
 	}
 }
 
-func sample_main() {
+// func sample_main() {
 
-	recordID := bson.NewObjectId()
+// 	recordID := bson.NewObjectId()
 
-	temp := MedicalRecord{
+// 	temp := MedicalRecord{
 
-		RecordID:     recordID,
-		UserID:       "123",
-		TimeStamp:    time.Now(),
-		QuestionType: 1,
-		Pattern:      []string{"담읍", "심혈"},
-		TherapyID:    "123",
-	}
-	InsertMedicalRecord(temp)
+// 		RecordID:     recordID,
+// 		UserID:       "123",
+// 		TimeStamp:    time.Now(),
+// 		QuestionType: 1,
+// 		Pattern:      []string{"담읍", "심혈"},
+// 		TherapyID:    "123",
+// 	}
+// 	InsertMedicalRecord(temp)
 
-	//TODO UserRecord Insert Sample
-	// temp_user := UserRecord{
-	// 	UserID:           "125",
-	// 	UserName:         "125",
-	// 	RecordID:         []string{"obj23412", "129dhflb"},
-	// 	RegistrationDate: time.Now(),
-	// }
-	// insertUserRecord(temp_user)
-}
+// 	//TODO UserRecord Insert Sample
+// 	// temp_user := UserRecord{
+// 	// 	UserID:           "125",
+// 	// 	UserName:         "125",
+// 	// 	RecordID:         []string{"obj23412", "129dhflb"},
+// 	// 	RegistrationDate: time.Now(),
+// 	// }
+// 	// insertUserRecord(temp_user)
+// }
