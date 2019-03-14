@@ -37,18 +37,31 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 	}
 
 	// Insert medical-record to the DB
-	c := session.DB(Database).C(MRCollection)
-	if err := c.Insert(medicalRecord); err != nil {
+	insertC := session.DB(Database).C(MRCollection)
+	if err := insertC.Insert(medicalRecord); err != nil {
 		panic(err)
 	}
 
 	// Find First, If user is not exist in database, add his data
+	findC := session.DB(Database).C(URCollection)
+
+	result := findC.Find(bson.M{"userID": userID})
+
+	if result == nil {
+		temp_user := UserRecord{
+			UserID:           userID,
+			UserName:         "nil",
+			RecordID:         []string{},
+			RegistrationDate: time.Now(),
+		}
+		InsertUserRecord(temp_user)
+	}
 
 	//Push medical-record ID to the repective user's record
-	URc := session.DB(Database).C(URCollection)
+	updateC := session.DB(Database).C(URCollection)
 	query := bson.M{"userID": medicalRecord.UserID}
 	change := bson.M{"$push": bson.M{"recordID": medicalRecord.RecordID}}
-	updateErr := URc.Update(query, change)
+	updateErr := updateC.Update(query, change)
 
 	if updateErr != nil {
 		panic(updateErr)
