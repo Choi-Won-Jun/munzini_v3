@@ -30,7 +30,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	//
 	log.Println(req.Session.User.UserId)
-
+	log.Println(req.Contexts)
 	// temp := req.Contexts["System"]["user"].(map[string]interface{})[""]
 	// log.Println(temp)
 	// dat := req.Contexts
