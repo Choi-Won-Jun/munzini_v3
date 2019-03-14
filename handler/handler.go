@@ -29,7 +29,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	reqType := req.Request.Type
 
 	//
-	log.Println(req.Contexts["System"])
+	log.Println(req.Contexts["System"]["user"])
 	temp := req.Contexts["System"].(map[string]string)
 	log.Println(temp["application"])
 	// dat := req.Contexts
