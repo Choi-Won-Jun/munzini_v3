@@ -38,16 +38,19 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 
 	// Insert medical-record to the DB
 	insertC := session.DB(Database).C(MRCollection)
-	if err := insertC.Insert(medicalRecord); err != nil {
-		panic(err)
+	if insertErr := insertC.Insert(medicalRecord); insertErr != nil {
+		panic(insertErr)
 	}
 
 	// Find First, If user is not exist in database, add his data
 	findC := session.DB(Database).C(URCollection)
 
-	result := findC.Find(bson.M{"userID": userID})
+	var result []URCollection
+	if findErr := findC.Find(bson.M{"userID": userID}).All(&result); findErr != nil {
+		panic(findErr)
+	}
 
-	if result == nil {
+	if len(result) == 0 {
 		temp_user := UserRecord{
 			UserID:           userID,
 			UserName:         "nil",
