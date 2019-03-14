@@ -3,7 +3,8 @@ package intent
 import (
 	"fmt"       // 디버그 관련
 	"math/rand" // 임의 추출 관련
-	"munzini/DB"
+
+	//	"munzini/DB"
 	"munzini/nlp"      // 맞장구 관련
 	"munzini/protocol" // CEK 관련 구조체
 	"munzini/question" // 문진 데이터 관련
