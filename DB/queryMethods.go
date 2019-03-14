@@ -45,7 +45,7 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 	// Find First, If user is not exist in database, add his data
 	findC := session.DB(Database).C(URCollection)
 
-	var result []URCollection
+	var result []UserRecord
 	if findErr := findC.Find(bson.M{"userID": userID}).All(&result); findErr != nil {
 		panic(findErr)
 	}
