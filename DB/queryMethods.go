@@ -3,7 +3,7 @@ package DB
 import (
 	//"fmt"
 
-	"log"
+	//"log"
 	"os"
 	"time"
 
@@ -147,12 +147,9 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 
 	medicalRecords := []MedicalRecord{}
 
-	log.Println(mrIDs)
 	for _, mrID := range mrIDs {
 		var tempMR MedicalRecord
-		log.Println(mrID)
-		//item.ID.String()
-		//mrID := bson.ObjectId.Hex(mrID)
+
 		if FindMRError := findMR.Find(bson.M{"_id": mrID}).One(&tempMR); FindMRError != nil {
 			panic(FindMRError)
 		}
