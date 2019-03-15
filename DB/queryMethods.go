@@ -181,13 +181,13 @@ func getMedicalRecordTable(userID string) ([5][3]int, bool) {
 	//const PATTERN_NUM = 5
 
 	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
-
+	var mrTable [question.PATTERN_NUM][NUM_MR_to_CHECK]int
 	if flag == false { // 충분한 수의 문진 기록이 없는 경우
-		return nil, flag
+		return mrTable, flag
 	} else {
 
 		// patternRecords :=
-		var mrTable [question.PATTERN_NUM][NUM_MR_to_CHECK]int
+
 		for index, mrRecord := range medicalRecords {
 			for _, pattern := range mrRecord.Pattern {
 				mrTable[question.PATTERN_INDEX[pattern]][index] = 1
