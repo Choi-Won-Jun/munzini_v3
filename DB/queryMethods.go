@@ -190,12 +190,12 @@ func getMedicalRecordTable(userID string) ([][]int, bool) {
 		var mrTable [question.PATTERN_NUM][NUM_MR_to_CHECK]int
 		for index, mrRecord := range medicalRecords {
 			for _, pattern := range mrRecord.Pattern {
-				mrTable[question.PATTERN_INDEX[pattern]][index]
+				mrTable[question.PATTERN_INDEX[pattern]][index] = 1
 			}
 		}
 		log.Println(mrTable)
 
-		return medicalRecords, flag
+		return mrTable, flag
 
 	}
 
