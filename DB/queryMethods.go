@@ -180,16 +180,17 @@ func getMedicalRecordTable(userID string) ([][]int, bool) {
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 	//const PATTERN_NUM = 5
 
-	if len(medicalRecords) < 3{ // 저장된 문진 기록들이 충분하지 않은 경우
+	
+	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
 
-		flag := 0
+	if flag == false {// 충분한 수의 문진 기록이 없는 경우
 		return nil, flag
 	} else {
-		medicalRecords := RetreiveRecentMedicalRecordByUserID(userID)
-	patternRecords :=
-	mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
-
-		flag := 1
+	
+	// patternRecords :=
+	// mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
+	return nil, flag
+		
 	}
 
 }
