@@ -3,8 +3,8 @@ package DB
 import (
 	//"fmt"
 
-	//"log"
-	//"munzini/question"
+	"log"
+	"munzini/question"
 	"os"
 	"time"
 
@@ -175,24 +175,31 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 
 }
 
-// func getMedicalRecordTable(userID string) ([][]int, bool) {
-// 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
-// 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
-// 	//const PATTERN_NUM = 5
+func getMedicalRecordTable(userID string) ([][]int, bool) {
+	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
+	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
+	//const PATTERN_NUM = 5
 
-// 	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
+	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
 
-// 	if flag == false { // 충분한 수의 문진 기록이 없는 경우
-// 		return nil, flag
-// 	} else {
+	if flag == false { // 충분한 수의 문진 기록이 없는 경우
+		return nil, flag
+	} else {
 
-// 		// patternRecords :=
-// 		// mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
-// 		return medicalRecords, flag
+		// patternRecords :=
+		mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
+		for index, mrRecord := range medicalRecords{
+			for pattern := range mrRecord.Pattern{
+				mrTable[question.PATTERN_INDEX[pattern]][index]
+			}
+		}
+		log.Println(mrTable)
+		
+		return medicalRecords, flag
 
-// 	}
+	}
 
-// }
+}
 
 /*
 * Author: Jun
