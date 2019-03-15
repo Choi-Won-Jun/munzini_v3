@@ -142,7 +142,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 	findMR := session.DB(Database).C(MRCollection)
 
 	// List of IDs of Medical Records
-	mrIDs = urRecord.RecordID
+	mrIDs := urRecord.RecordID
 
 	medicalRecords := []MedicalRecord{}
 
