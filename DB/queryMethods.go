@@ -117,7 +117,7 @@ func InsertUserRecord(ur UserRecord) {
 * Author: Jun
 * Look up the recent medical records by userID
  */
-func RetreiveRecentMedicalRecordByUserID(userID string) UserRecord {
+func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
 		//fmt.Println("no connection string provided")
@@ -139,11 +139,24 @@ func RetreiveRecentMedicalRecordByUserID(userID string) UserRecord {
 		panic(findErr)
 	}
 
-	// medicalRecords := urRecord.RecordID
+	
 
-	// findMR := session.DB(Database).C(MRCollection)
-
-	return urRecord
+	findMR := session.DB(Database).C(MRCollection)
+	
+	// List of IDs of Medical Records 
+	mrIDs = urRecord.RecordID
+	
+	medicalRecords := []MedicalRecord{}
+	
+	for _, mrID := range mrIDs {
+		var tempMR MedicalRecord
+		if FindMRError := findMR.Find(bson.M{"recordID":mrID}).One(tempMR&); FindMRError != nil{
+			panic(FindMRError)
+		}
+		medicalRecords = append(medicalRecords, tempMR)
+		
+	}
+	return medicalRecords
 
 }
 
