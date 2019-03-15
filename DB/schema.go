@@ -21,12 +21,12 @@ type UserRecord struct {
 
 //TODO ObjectID가 type이 깨져서 Get이 안될 시에는 ObjectID.Hex()-> String 형태로 디비에 저장할
 type MedicalRecord struct {
-	RecordID     bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	UserID       string        `bson:"userID"`
-	TimeStamp    time.Time     `bson:"timeStamp"`
-	QuestionType int           `bson:"questionType"` //0 = 간단문진, 1 = 전체문진, 2 = Interrupt
-	Pattern      []string      `bson:"pattern"`
-	TherapyID    string        `bson:"therapyID"`
+	RecordID     string    `json:"id" bson:"_id,omitempty"`
+	UserID       string    `bson:"userID"`
+	TimeStamp    time.Time `bson:"timeStamp"`
+	QuestionType int       `bson:"questionType"` //0 = 간단문진, 1 = 전체문진, 2 = Interrupt
+	Pattern      []string  `bson:"pattern"`
+	TherapyID    string    `bson:"therapyID"`
 }
 
 const (
