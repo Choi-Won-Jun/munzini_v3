@@ -4,7 +4,7 @@ import (
 	//"fmt"
 
 	//"log"
-	"munzini/question"
+	//"munzini/question"
 	"os"
 	"time"
 
@@ -140,7 +140,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 	iter := findC.Find(bson.M{"userID": userID}).Limit(NUM_MR_to_CHECK).Iter()
 	findErr := iter.All(&urRecord)
 	if findErr != nil {
-		panit(err)
+		panic(err)
 	}
 	// if findErr := findC.Find(bson.M{"userID": userID}).One(&urRecord); findErr != nil {
 	// 	panic(findErr)
