@@ -66,7 +66,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		case DQP_S:
 			result, statusDelta, qdata = intent.GetDQPAnswer(cekIntent, qdata)
 		case DQS_S:
-			result, statusDelta, qdata = intent.GetDQSAnswer(cekIntent, qdata) // 개발노트) qData.SQSProb에 따라 다르게 처리 하도록 구현해야 함.
+			result, statusDelta, qdata = intent.GetDQSAnswer(cekIntent, qdata, req.Session.User.UserId) // 개발노트) qData.SQSProb에 따라 다르게 처리 하도록 구현해야 함.
 		case R_S:
 			result, statusDelta, qdata = intent.GetRAnswer(cekIntent, qdata)
 		}

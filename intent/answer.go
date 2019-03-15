@@ -200,20 +200,20 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 }
 
 // 4. Get Detail Question Score Answer: 정밀 진단 질문에 대한 응답 점수 입력 및 최종 점수 계산 및 문진 결과 출력
-func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
+func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) {
 
 	var responsePayload protocol.CEKResponsePayload
 	var statusDelta int = 0
 
 	if qData.SQSProb == true { // 간단문진 결과 문제 패턴(SQSProbPatternIdx)이 있는 경우
-		responsePayload, statusDelta, qData = GetDQSAnswer_S(intent, qData)
+		responsePayload, statusDelta, qData = GetDQSAnswer_S(intent, qData, userID)
 	} else { // 간단문진 결과 문제 패턴이 없는데, 정밀검사를 진행하는 경우.
-		responsePayload, statusDelta, qData = GetDQSAnswer_NS(intent, qData)
+		responsePayload, statusDelta, qData = GetDQSAnswer_NS(intent, qData, userID)
 	}
 	return responsePayload, statusDelta, qData
 }
 
-func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) { // SQSProbPatternIdx가 존재할 때의 질문
+func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) { // SQSProbPatternIdx가 존재할 때의 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -262,8 +262,8 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData) (protocol.C
 				qData.DetPat++ // 다음 패턴
 				qData.DetIdx = 0
 				if qData.DetPat == len(qData.SQSProbPatternIdx) {
-					qData = question.PrepareFin(qData)        // PrepareFin
-					qData = makeFinalScoreNotification(qData) // 최종 결과에 대한 대답을 지정해준다.
+					qData = question.PrepareFin(qData)                // PrepareFin
+					qData = makeFinalScoreNotification(qData, userID) // 최종 결과에 대한 대답을 지정해준다.
 					responseValue = qData.FinalScoreNotification + " 문진 결과를 다시 알려드릴까요?"
 					statusDelta = 1
 				} else { // 다음 패턴 첫질문을 준비한다.
@@ -314,7 +314,7 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData) (protocol.C
 	return responsePayload, statusDelta, qData
 }
 
-func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) { // SQSProbPattern이 존재하지 않을 때 질문
+func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) { // SQSProbPattern이 존재하지 않을 때 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -352,8 +352,8 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData) (protocol.
 				qData.DetPat++ // 다음 패턴
 				qData.DetIdx = 0
 				if qData.DetPat == len(qData.NoSQSProbPatternIdx) {
-					qData = question.PrepareFin(qData)        // PrepareFin
-					qData = makeFinalScoreNotification(qData) // 최종 결과에 대한 대답을 지정해준다.
+					qData = question.PrepareFin(qData)                // PrepareFin
+					qData = makeFinalScoreNotification(qData, userID) // 최종 결과에 대한 대답을 지정해준다.
 					responseValue = qData.FinalScoreNotification + " 문진 결과를 다시 알려드릴까요?"
 					statusDelta = 1
 				} else { // 다음 패턴 첫질문을 준비한다.
@@ -471,7 +471,6 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	//TODO Therapy ID Update
 	therapyID := "will be updated later"
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
-	fmt.Println(identifier)
 
 	switch identifier {
 	case "칠정":
@@ -508,48 +507,20 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 		sqsResult = ""
 	}
 	return sqsResult
-
-	// uri := os.Getenv("MONGODB_URI")
-	// if uri == "" {
-	// 	fmt.Println("no connection string provided")
-	// 	os.Exit(1)
-	// }
-	// session, err := mgo.Dial(uri)
-	// if err != nil {
-	// 	fmt.Printf("Can't connect to mongo, go error %v\n", err)
-	// 	os.Exit(1)
-	// }
-	// defer session.Close()
-
-	// // // Insert
-	// c := session.DB(DB.Database).C(DB.MRCollection)
-	// recordID := bson.NewObjectId()
-
-	// temp := DB.MedicalRecord{
-
-	// 	RecordID:     recordID,
-	// 	UserID:       "125",
-	// 	TimeStamp:    time.Now(),
-	// 	QuestionType: 1,
-	// 	Pattern:      []string{"담읍", "심혈"},
-	// 	TherapyID:    "125",
-	// }
-
-	// // Insert
-	// if err := c.Insert(temp); err != nil {
-	// 	panic(err)
-	// }
-
 }
 
-// questionTYPE(0: 간단 문진, 1: 정밀 문진)
+/**
+* Author: Jun
+* 문진 결과, 판별된 Pattern들을 DB에 저장, in form of Medical Record
+* questionTYPE(0: 간단 문진, 1: 정밀 문진)
+ */
 func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, therapyID string) {
 
 	DB.InsertMedicalRecord(userID, questionTYPE, patterns, therapyID)
 }
 
 // 최종 문진 결과 생성
-func makeFinalScoreNotification(qData question.QData) question.QData {
+func makeFinalScoreNotification(qData question.QData, userID string) question.QData {
 
 	var identifier string // 문제 패턴 조사
 	var probNum int = 0   // 문제 패턴 개수
@@ -569,6 +540,11 @@ func makeFinalScoreNotification(qData question.QData) question.QData {
 		}
 		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
 			qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
+
+			//Insert Generated MedicalReuslt to DB
+			//TODO Therapy ID Update
+			therapyID := "will be updated later"
+			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, []string{DB.COMPLECATION}, therapyID)
 			return qData
 		}
 	} else { // NoSQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
@@ -584,6 +560,11 @@ func makeFinalScoreNotification(qData question.QData) question.QData {
 		}
 		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
 			qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
+
+			//Insert Generated MedicalReuslt to DB
+			//TODO Therapy ID Update
+			therapyID := "will be updated later"
+			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, []string{DB.COMPLECATION}, therapyID)
 			return qData
 		}
 	}

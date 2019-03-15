@@ -1,6 +1,10 @@
 //package DB
 package DB
 
+/*
+* Author: Jun
+* DB에 저장될 데이터들의 Schema(Document)의 Structure 정의
+ */
 import (
 	// "fmt"
 	"time"
@@ -32,6 +36,9 @@ const (
 	MRCollection = "MEDICALRECORD_COLLECTION"
 	URCollection = "USERRECOLD_COLLECTION"
 	DB_URL       = "mongodb://partnersnco:sc06250625@ds111791.mlab.com:11791/heroku_7v6nqjgb"
+
+	COMPLECATION = "미병의심"
+	PATTERN_NON  = "건강"
 )
 
 // func main() {

@@ -11,6 +11,10 @@ import (
 )
 
 //TODO 동일한 ID값을 가진 유저의 계정에 Medical Record의 key값을 추가하고, Medicalrecord collection에 해당 mr 추가
+/*
+* Author: Jun
+* 동일한 ID값을 가진 유저의 계정에 Medical Record의 key값을 추가하고, Medicalrecord collection에 해당 mr 추가
+*/
 func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, therapyID string) {
 
 	uri := os.Getenv("MONGODB_URI")
@@ -83,6 +87,10 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 
 }
 
+/*
+* Author: Jun
+* 사용자 정보를 DB안의 UserRecordCollection에 추가
+*/
 func InsertUserRecord(ur UserRecord) {
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
