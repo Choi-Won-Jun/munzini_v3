@@ -3,7 +3,7 @@ package DB
 import (
 	//"fmt"
 
-	//"log"
+	"log"
 	"os"
 	"time"
 
