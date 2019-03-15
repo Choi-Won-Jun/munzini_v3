@@ -153,7 +153,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 
 	medicalRecords := []MedicalRecord{}
 
-	for _index, mrID := range mrIDs {
+	for _, mrID := range mrIDs {
 
 		var tempMR MedicalRecord
 
