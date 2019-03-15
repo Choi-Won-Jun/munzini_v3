@@ -142,7 +142,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 	// if findErr != nil {
 	// 	panic(err)
 	// }
-	if findErr := findC.Find(bson.M{"userID": userID}).Limit(3).All(&urRecord); findErr != nil {
+	if findErr := findC.Find(bson.M{"userID": userID}).All(&urRecord); findErr != nil {
 		panic(findErr)
 	}
 
