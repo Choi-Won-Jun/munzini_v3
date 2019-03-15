@@ -19,16 +19,16 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
-		fmt.Println("no connection string provided")
+		//	fmt.Println("no connection string provided")
 		os.Exit(1)
 	}
 	session, err := mgo.Dial(uri)
 	if err != nil {
-		fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		//	fmt.Printf("Can't connect to mongo, go error %v\n", err)
 		os.Exit(1)
 	}
 	defer session.Close()
-	fmt.Printf("Connected to %v!\n", session.LiveServers())
+	//fmt.Printf("Connected to %v!\n", session.LiveServers())
 
 	recordID := bson.NewObjectId()
 	medicalRecord := MedicalRecord{
@@ -94,16 +94,16 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 func InsertUserRecord(ur UserRecord) {
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
-		fmt.Println("no connection string provided")
+		//fmt.Println("no connection string provided")
 		os.Exit(1)
 	}
 	session, err := mgo.Dial(uri)
 	if err != nil {
-		fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		//fmt.Printf("Can't connect to mongo, go error %v\n", err)
 		os.Exit(1)
 	}
 	defer session.Close()
-	fmt.Printf("Connected to %v!\n", session.LiveServers())
+	//fmt.Printf("Connected to %v!\n", session.LiveServers())
 
 	c := session.DB(Database).C(URCollection)
 
@@ -120,16 +120,16 @@ func InsertUserRecord(ur UserRecord) {
 func RetreiveRecentMedicalRecordByUserID(userID string) UserRecord {
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
-		fmt.Println("no connection string provided")
+		//fmt.Println("no connection string provided")
 		os.Exit(1)
 	}
 	session, err := mgo.Dial(uri)
 	if err != nil {
-		fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		//fmt.Printf("Can't connect to mongo, go error %v\n", err)
 		os.Exit(1)
 	}
 	defer session.Close()
-	fmt.Printf("Connected to %v!\n", session.LiveServers())
+	//fmt.Printf("Connected to %v!\n", session.LiveServers())
 
 	// Find First, If user is not exist in database, add his data
 	findC := session.DB(Database).C(URCollection)
