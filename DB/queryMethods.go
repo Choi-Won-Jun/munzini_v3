@@ -137,14 +137,14 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 	findC := session.DB(Database).C(URCollection)
 
 	var urRecord UserRecord
-	iter := findC.Find(bson.M{"userID": userID}).Limit(NUM_MR_to_CHECK).Iter()
-	findErr := iter.All(&urRecord)
-	if findErr != nil {
-		panic(err)
-	}
-	// if findErr := findC.Find(bson.M{"userID": userID}).One(&urRecord); findErr != nil {
-	// 	panic(findErr)
+	// iter := findC.Find(bson.M{"userID": userID}).Limit(NUM_MR_to_CHECK).Iter()
+	// findErr := iter.All(&urRecord)
+	// if findErr != nil {
+	// 	panic(err)
 	// }
+	if findErr := findC.Find(bson.M{"userID": userID}).Limit(3).All(&urRecord); findErr != nil {
+		panic(findErr)
+	}
 
 	findMR := session.DB(Database).C(MRCollection)
 
