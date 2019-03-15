@@ -188,7 +188,7 @@ func getMedicalRecordTable(userID string) ([][]int, bool) {
 
 		// patternRecords :=
 		// mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
-		return nil, flag
+		return medicalRecords, flag
 
 	}
 
