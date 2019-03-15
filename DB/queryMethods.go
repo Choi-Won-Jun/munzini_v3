@@ -164,7 +164,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 
 	}
 
-	return medicalRecords[len(medicalRecords)-NUM_MR_to_CHECK : len(medicalRecords)-1]
+	return medicalRecords[len(medicalRecords)-NUM_MR_to_CHECK : len(medicalRecords)]
 
 }
 
