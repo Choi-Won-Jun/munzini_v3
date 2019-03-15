@@ -14,7 +14,7 @@ import (
 /*
 * Author: Jun
 * 동일한 ID값을 가진 유저의 계정에 Medical Record의 key값을 추가하고, Medicalrecord collection에 해당 mr 추가
-*/
+ */
 func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, therapyID string) {
 
 	uri := os.Getenv("MONGODB_URI")
@@ -90,7 +90,7 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 /*
 * Author: Jun
 * 사용자 정보를 DB안의 UserRecordCollection에 추가
-*/
+ */
 func InsertUserRecord(ur UserRecord) {
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
@@ -112,6 +112,44 @@ func InsertUserRecord(ur UserRecord) {
 		panic(err)
 	}
 }
+
+/*
+* Author: Jun
+* Look up the recent medical records by userID
+ */
+func RetreiveRecentMedicalRecordByUserID(userID string) []UserRecord {
+	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		fmt.Println("no connection string provided")
+		os.Exit(1)
+	}
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
+	}
+	defer session.Close()
+	fmt.Printf("Connected to %v!\n", session.LiveServers())
+
+	// Find First, If user is not exist in database, add his data
+	findC := session.DB(Database).C(URCollection)
+
+	var result []UserRecord
+	if findErr := findC.Find(bson.M{"userID": userID}).All(&result); findErr != nil {
+		panic(findErr)
+	}
+
+	return result
+
+}
+
+/*
+* Author: Jun
+* DB와의 Connection을 생성 뒤 반환
+ */
+// func CreateSession() {
+
+// }
 
 // func sample_main() {
 

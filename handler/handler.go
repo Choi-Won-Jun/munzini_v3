@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"log"
+	"munzini/DB"
 	"munzini/intent"
 	"munzini/protocol"
 	"net/http"
@@ -28,7 +29,8 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	reqType := req.Request.Type
 
-	log.Println(req.Session.User.UserId)
+	log.Println(DB.RetreiveRecentMedicalRecordByUserID(req.Session.User.UserId))
+
 	//log.Println(req.Contexts)
 
 	var response protocol.CEKResponse
