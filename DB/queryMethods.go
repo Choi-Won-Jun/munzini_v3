@@ -175,7 +175,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 
 }
 
-func getMedicalRecordTable(userID string) ([][]int, bool) {
+func getMedicalRecordTable(userID string) ([5][3]int, bool) {
 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 	//const PATTERN_NUM = 5
