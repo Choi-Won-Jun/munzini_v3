@@ -148,6 +148,8 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 
 	for _, mrID := range mrIDs {
 		var tempMR MedicalRecord
+		Log.Println(mrID)
+		mrID := bson.ObjectId.Hex()
 		if FindMRError := findMR.Find(bson.M{"recordID": mrID}).One(&tempMR); FindMRError != nil {
 			panic(FindMRError)
 		}
