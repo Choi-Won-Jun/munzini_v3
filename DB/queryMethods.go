@@ -154,12 +154,17 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 	medicalRecords := []MedicalRecord{}
 
 	for _, mrID := range mrIDs {
-		var tempMR MedicalRecord
 
-		if FindMRError := findMR.Find(bson.M{"_id": mrID}).One(&tempMR); FindMRError != nil {
-			panic(FindMRError)
+		if _ < NUM_MR_to_CHECK {
+			var tempMR MedicalRecord
+
+			if FindMRError := findMR.Find(bson.M{"_id": mrID}).One(&tempMR); FindMRError != nil {
+				panic(FindMRError)
+			}
+			medicalRecords = append(medicalRecords, tempMR)
+		} else {
+			break
 		}
-		medicalRecords = append(medicalRecords, tempMR)
 
 	}
 
