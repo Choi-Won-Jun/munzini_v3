@@ -140,25 +140,25 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 		panic(findErr)
 	}
 
-	// findMR := session.DB(Database).C(MRCollection)
+	findMR := session.DB(Database).C(MRCollection)
 
-	// // List of IDs of Medical Records
-	// mrIDs := urRecord.RecordID
+	// List of IDs of Medical Records
+	mrIDs := urRecord.RecordID
 
-	// medicalRecords := []MedicalRecord{}
+	medicalRecords := []MedicalRecord{}
 
-	// for _, mrID := range mrIDs {
-	// 	var tempMR MedicalRecord
-	// 	log.Println(mrID)
-	// 	item.ID.String()
-	// 	mrID := bson.ObjectId.Hex(mrID)
-	// 	if FindMRError := findMR.Find(bson.M{"recordID": mrID}).One(&tempMR); FindMRError != nil {
-	// 		panic(FindMRError)
-	// 	}
-	// 	medicalRecords = append(medicalRecords, tempMR)
+	for _, mrID := range mrIDs {
+		var tempMR MedicalRecord
+		//log.Println(mrID)
+		//item.ID.String()
+		//mrID := bson.ObjectId.Hex(mrID)
+		if FindMRError := findMR.Find(bson.M{"recordID": mrID}).One(&tempMR); FindMRError != nil {
+			panic(FindMRError)
+		}
+		medicalRecords = append(medicalRecords, tempMR)
 
-	// }
-	return []MedicalRecord{}
+	}
+	return medicalRecords
 
 }
 
