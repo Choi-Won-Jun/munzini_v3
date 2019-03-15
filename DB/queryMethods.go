@@ -153,9 +153,9 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 
 	medicalRecords := []MedicalRecord{}
 
-	for _, mrID := range mrIDs {
+	for _index, mrID := range mrIDs {
 
-		if _ < NUM_MR_to_CHECK {
+		if _index < NUM_MR_to_CHECK {
 			var tempMR MedicalRecord
 
 			if FindMRError := findMR.Find(bson.M{"_id": mrID}).One(&tempMR); FindMRError != nil {
