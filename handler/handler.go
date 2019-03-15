@@ -29,7 +29,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	reqType := req.Request.Type
 
-	log.Println(DB.RetreiveRecentMedicalRecordByUserID(req.Session.User.UserId))
+	log.Println(DB.RetreiveRecentMedicalRecordByUserID(req.Session.User.UserId).RecordID)
 
 	//log.Println(req.Contexts)
 
