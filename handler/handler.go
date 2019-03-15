@@ -30,7 +30,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	reqType := req.Request.Type
 
 	//log.Println(DB.RetreiveRecentMedicalRecordByUserID(req.Session.User.UserId))
-	log.Println(DB.getMedicalRecordTable(req.Session.User.UserId))
+	log.Println(DB.GetMedicalRecordTable(req.Session.User.UserId))
 	//log.Println(req.Contexts)
 
 	var response protocol.CEKResponse
