@@ -119,7 +119,7 @@ func InsertUserRecord(ur UserRecord) {
 * Author: Jun
 * Look up the recent medical records by userID
  */
-func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord, bool {
+func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) {
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
 		//fmt.Println("no connection string provided")
@@ -161,15 +161,15 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord, bool {
 			panic(FindMRError)
 		}
 		medicalRecords = append(medicalRecords, tempMR)
-	
+
 	}
-	
+
 	// 충분한 수의 문진기록이 저장되어있는지 확인
-	if len(medicalRecords)< NUM_MR_to_CHECK{
+	if len(medicalRecords) < NUM_MR_to_CHECK {
 		flag := false
 		return nil, flag
 	}
-	
+
 	flag := true
 	return medicalRecords[len(medicalRecords)-NUM_MR_to_CHECK : len(medicalRecords)], flag
 
@@ -180,17 +180,16 @@ func getMedicalRecordTable(userID string) ([][]int, bool) {
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 	//const PATTERN_NUM = 5
 
-	
 	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
 
-	if flag == false {// 충분한 수의 문진 기록이 없는 경우
+	if flag == false { // 충분한 수의 문진 기록이 없는 경우
 		return nil, flag
 	} else {
-	
-	// patternRecords :=
-	// mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
-	return nil, flag
-		
+
+		// patternRecords :=
+		// mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
+		return nil, flag
+
 	}
 
 }
