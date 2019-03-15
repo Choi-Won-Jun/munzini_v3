@@ -119,7 +119,7 @@ func InsertUserRecord(ur UserRecord) {
 * Author: Jun
 * Look up the recent medical records by userID
  */
-func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
+func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord, bool {
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
 		//fmt.Println("no connection string provided")
@@ -161,34 +161,38 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 			panic(FindMRError)
 		}
 		medicalRecords = append(medicalRecords, tempMR)
-
+	
 	}
-
-	return medicalRecords[len(medicalRecords)-NUM_MR_to_CHECK : len(medicalRecords)]
+	
+	// 충분한 수의 문진기록이 저장되어있는지 확인
+	if len(medicalRecords)< NUM_MR_to_CHECK{
+		flag := false
+		return nil, flag
+	}
+	
+	flag := true
+	return medicalRecords[len(medicalRecords)-NUM_MR_to_CHECK : len(medicalRecords)], flag
 
 }
 
-// func getMedicalRecordTable(userID string) ([][]int, bool) {
-// 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
-// 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
-// 	//const PATTERN_NUM = 5
+func getMedicalRecordTable(userID string) ([][]int, bool) {
+	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
+	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
+	//const PATTERN_NUM = 5
 
-// 	// 확인할 최근 문진 기록들의 수
-// 	var num_Records = 3
+	if len(medicalRecords) < 3{ // 저장된 문진 기록들이 충분하지 않은 경우
 
-// 	if len(medicalRecords) < 3{ // 저장된 문진 기록들이 충분하지 않은 경우
+		flag := 0
+		return nil, flag
+	} else {
+		medicalRecords := RetreiveRecentMedicalRecordByUserID(userID)
+	patternRecords :=
+	mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
 
-// 		flag := 0
-// 		return nil, flag
-// 	} else {
-// 		medicalRecords := RetreiveRecentMedicalRecordByUserID(userID)
-// 	patternRecords :=
-// 	mrTable = [question.PATTERN_NUM][num_Records]int
+		flag := 1
+	}
 
-// 		flag := 1
-// 	}
-
-// }
+}
 
 /*
 * Author: Jun
