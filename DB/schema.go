@@ -39,6 +39,8 @@ const (
 
 	COMPLECATION = "미병의심"
 	PATTERN_NON  = "건강"
+
+	NUM_MR_to_CHECK = 3
 )
 
 // func main() {

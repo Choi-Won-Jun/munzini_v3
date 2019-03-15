@@ -4,6 +4,7 @@ import (
 	//"fmt"
 
 	//"log"
+	"munzini/question"
 	"os"
 	"time"
 
@@ -136,9 +137,14 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 	findC := session.DB(Database).C(URCollection)
 
 	var urRecord UserRecord
-	if findErr := findC.Find(bson.M{"userID": userID}).One(&urRecord); findErr != nil {
-		panic(findErr)
+	iter := findC.Find(bson.M{"userID": userID}).Limit(NUM_MR_to_CHECK).Iter()
+	findErr := iter.All(&urRecord)
+	if findErr != nil {
+		panit(err)
 	}
+	// if findErr := findC.Find(bson.M{"userID": userID}).One(&urRecord); findErr != nil {
+	// 	panic(findErr)
+	// }
 
 	findMR := session.DB(Database).C(MRCollection)
 
@@ -156,9 +162,32 @@ func RetreiveRecentMedicalRecordByUserID(userID string) []MedicalRecord {
 		medicalRecords = append(medicalRecords, tempMR)
 
 	}
+
 	return medicalRecords
 
 }
+
+// func getMedicalRecordTable(userID string) ([][]int, bool) {
+// 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
+// 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
+// 	//const PATTERN_NUM = 5
+
+// 	// 확인할 최근 문진 기록들의 수
+// 	var num_Records = 3
+
+// 	if len(medicalRecords) < 3{ // 저장된 문진 기록들이 충분하지 않은 경우
+
+// 		flag := 0
+// 		return nil, flag
+// 	} else {
+// 		medicalRecords := RetreiveRecentMedicalRecordByUserID(userID)
+// 	patternRecords :=
+// 	mrTable = [question.PATTERN_NUM][num_Records]int
+
+// 		flag := 1
+// 	}
+
+// }
 
 /*
 * Author: Jun
