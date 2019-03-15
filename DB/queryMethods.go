@@ -134,12 +134,16 @@ func RetreiveRecentMedicalRecordByUserID(userID string) UserRecord {
 	// Find First, If user is not exist in database, add his data
 	findC := session.DB(Database).C(URCollection)
 
-	var result UserRecord
-	if findErr := findC.Find(bson.M{"userID": userID}).One(&result); findErr != nil {
+	var urRecord UserRecord
+	if findErr := findC.Find(bson.M{"userID": userID}).One(&urRecord); findErr != nil {
 		panic(findErr)
 	}
 
-	return result
+	// medicalRecords := urRecord.RecordID
+
+	// findMR := session.DB(Database).C(MRCollection)
+
+	return urRecord
 
 }
 
