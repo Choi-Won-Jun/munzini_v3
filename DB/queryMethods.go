@@ -187,7 +187,7 @@ func getMedicalRecordTable(userID string) ([][]int, bool) {
 	} else {
 
 		// patternRecords :=
-		mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
+		var mrTable = [question.PATTERN_NUM][NUM_MR_to_CHECK]int
 		for index, mrRecord := range medicalRecords{
 			for pattern := range mrRecord.Pattern{
 				mrTable[question.PATTERN_INDEX[pattern]][index]
