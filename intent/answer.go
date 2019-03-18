@@ -91,7 +91,11 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				responseValue = SQSResult
 				statusDelta = 1
 			} else { // NOSQSProbPatternIdx가 채워졌을 때
+
 				responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
+
+				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
+
 				statusDelta = 1 // next status
 			}
 		} else { // 간단진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
@@ -128,6 +132,8 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				statusDelta = 1 // next status
 			} else {
 				responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요." // 68
+
+				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
 			}
 		} else { // 간단진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
 			if qData.RepIdx == question.REP_HALF {
@@ -474,11 +480,8 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	// Identifier를 이용해 Medical Record저장 수행
 
 	//질환이 발견되지 않은 경우
-	if len(sortedSQS) == 0 {
-		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
-	} else {
-		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
-	}
+
+	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
 
 	switch identifier {
 	case "칠정":
