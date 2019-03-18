@@ -576,11 +576,11 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 				notification := "최근 건강 상태가 아주 훌륭하시네요!"
 
 			} else {
-				notification := "이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords.Pattern, " ") + "이 치료되었어요!"
+				notification := "이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-1]Pattern, " ") + "이 치료되었어요!"
 			}
 			return notification, flag
 		} else { // 현재 진행중인 문진을 통한 결과가 하나 혹은 두 가지 패턴의 조합 인 경우 ex)'칠정 노권', '칠정 담음'
-
+			return notification, flag
 		}
 	}
 }
