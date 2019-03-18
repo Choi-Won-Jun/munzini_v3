@@ -191,6 +191,9 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHEC
 		for index, mrRecord := range medicalRecords {
 			for _, pattern := range mrRecord.Pattern {
 				// 사용자가 해당 질환(패턴)을 가진 경우 Table 내의 값은 1로 저장
+				if pattern == COMPLECATION || pattern == PATTERN_NON {
+					continue
+				}
 				mrTable[question.PATTERN_INDEX[pattern]][index] = 1
 			}
 		}
