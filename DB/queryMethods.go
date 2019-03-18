@@ -181,11 +181,13 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHEC
 	//const PATTERN_NUM = 5
 
 	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
-	var mrTable [question.PATTERN_NUM][NUM_MR_to_CHECK]int
 
-	if flag == false { // 충분한 수의 문진 기록이 없는 경우
-		return mrTable, flag
+	if flag == false { // 충분한 수의 문진 기록이 없는 경우 : False Flag를 반환하여, 최근 문진 기록에 대한 설명기능을 비활성
+		var nilTable [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int
+		return nilTable, flag
 	} else {
+		var mrTable [question.PATTERN_NUM][NUM_MR_to_CHECK]int
+
 		for index, mrRecord := range medicalRecords {
 			for _, pattern := range mrRecord.Pattern {
 				// 사용자가 해당 질환(패턴)을 가진 경우 Table 내의 값은 1로 저장
@@ -193,9 +195,9 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHEC
 			}
 		}
 		////////
-		var mrTable_ChgReport [question.PATTER수N_NUM][NUM_MR_to_CHECK - 1]int // MRTABLE내 사용자의 질환기록 중 변화(쾌유 혹은 발병 등)를 저장하는 테이블 (Change Report)
-		for i = 0; i < question.PATTERN_NUM; i++ {
-			for j = 0; j < NUM_MR_to_CHECK-1; j++ {
+		var mrTable_ChgReport [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int // MRTABLE내 사용자의 질환기록 중 변화(쾌유 혹은 발병 등)를 저장하는 테이블 (Change Report)
+		for i := 0; i < question.PATTERN_NUM; i++ {
+			for j := 0; j < NUM_MR_to_CHECK-1; j++ {
 				mrTable_ChgReport[i][j] = (mrTable[i][j+1] - mrTable[i][j])
 			}
 		}
