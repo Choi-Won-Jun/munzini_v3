@@ -547,8 +547,8 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, t
 * 최근 세 번의 건강 검진 결과를 바탕으로 건강 상태에 대한 정보를 추가 제공
 *
  */
-func makeRecentCheckUPResult(userID string, patterns []string) (notification string, bool flag) {
-	mrRecords, mrTABLE, flag := DB.GetMedicalRecordTable(userID)
+func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
+	mrTABLE, mrRecords, flag := DB.GetMedicalRecordTable(userID)
 	var notification string
 	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
 		return mrTABLE, flag //종합적인 문진 결과를 notify할 수 없음
