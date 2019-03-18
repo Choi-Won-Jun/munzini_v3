@@ -568,10 +568,11 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
 
 				notification := year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요."
+				return notification, flag
 			} else {
 				notification := "이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "문진 결과보다 종합적인 건강 상태가 나빠졌어요. "
+				return notification, flag
 			}
-			return notification, flag
 
 		} else if patterns[0] == DB.PATTERN_NON { // 현재 진행중인 문진을 통한 진단결과가 건강(의심되는 패턴이 없음)인 경우
 			year_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
@@ -580,11 +581,13 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 
 			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-1] == 1 {
 				notification := "최근 건강 상태가 아주 훌륭하시네요!"
+				return notification, flag
 
 			} else {
 				notification := "이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-1].Pattern, " ") + "이 치료되었어요!"
+				return notification, flag
 			}
-			return notification, flag
+
 		} else { // 현재 진행중인 문진을 통한 결과가 하나 혹은 두 가지 패턴의 조합 인 경우 ex)'칠정 노권', '칠정 담음'
 			return notification, flag
 		}
