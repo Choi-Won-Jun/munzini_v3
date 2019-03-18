@@ -3,7 +3,7 @@ package DB
 import (
 	//"fmt"
 
-	//"log"
+	"log"
 	"munzini/question"
 	"os"
 	"time"
@@ -175,7 +175,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 
 }
 
-func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int, bool) { //기본 5가지의 패턴과 미병의심, 건강의 2 가지 패턴을 추가하여 (총 7가지의 패턴) 테이블을 구성
+func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int, []MedicalRecord, bool) { //기본 5가지의 패턴과 미병의심, 건강의 2 가지 패턴을 추가하여 (총 7가지의 패턴) 테이블을 구성
 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 	//const PATTERN_NUM = 5
@@ -184,7 +184,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 
 	if flag == false { // 충분한 수의 문진 기록이 없는 경우 : False Flag를 반환하여, 최근 문진 기록에 대한 설명기능을 비활성
 		var nilTable [question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int
-		return nilTable, flag
+		return nilTable, medicalRecords, flag
 	} else {
 		var mrTable [question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int //기본 5가지의 패턴과 미병의심, 건강의 2 가지 패턴을 추가하여 (총 7가지) 테이블을 구성
 
@@ -202,6 +202,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 			}
 		}
 
+		log.Println(medicalRecords[0].TimeStamp.Year())
 		////////
 		// var mrTable_ChgReport [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int // MRTABLE내 사용자의 질환기록 중 변화(쾌유 혹은 발병 등)를 저장하는 테이블 (Change Report)
 		// for i := 0; i < question.PATTERN_NUM; i++ {
@@ -210,7 +211,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 		// 	}
 		// }
 		////////
-		return mrTable, flag
+		return mrTable, medicalRecords, flag
 	}
 
 }
