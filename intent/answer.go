@@ -472,11 +472,11 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	// Identifier를 이용해 Medical Record저장 수행
 	//TODO Therapy ID Update
 	therapyID := "will be updated later"
-	if identifier == ""{ //질환이 발견되지 않은 경우
-	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, DB.PATTERN_NON, therapyID)
-		}
-	else {
-	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
+	//질환이 발견되지 않은 경우
+	if identifier == "" {
+		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, DB.PATTERN_NON, therapyID)
+	} else {
+		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
 	}
 
 	switch identifier {
