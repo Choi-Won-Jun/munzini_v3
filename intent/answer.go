@@ -548,7 +548,7 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, t
 *
  */
 func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
-	mrTABLE, mrRecords, flag = DB.GetMedicalRecordTable(userID)
+	mrTABLE, mrRecords, flag := DB.GetMedicalRecordTable(userID)
 	var notification string
 	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
 		return notification, flag //종합적인 문진 결과를 notify할 수 없음
