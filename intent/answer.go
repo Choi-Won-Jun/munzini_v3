@@ -4,6 +4,7 @@ import (
 	"fmt"       // 디버그 관련
 	"math/rand" // 임의 추출 관련
 
+	"log"
 	"munzini/DB"
 	"munzini/nlp"      // 맞장구 관련
 	"munzini/protocol" // CEK 관련 구조체
@@ -579,7 +580,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			year_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
 			month_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month())
 			day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
-
+			log.Println(year_of_Record, month_of_Record, day_of_Record)
 			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -1
 			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
 
@@ -594,7 +595,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			year_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
 			month_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month())
 			day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
-
+			log.Println(year_of_Record, month_of_Record, day_of_Record)
 			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-1] == 1 {
 				notification := "최근 건강 상태가 아주 훌륭하시네요!"
 				return notification, flag
