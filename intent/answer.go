@@ -451,10 +451,19 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	var identifier string // 문제 패턴 조사
 	var sortedSQS []int   // identifier 초기화에 이용
 
-	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
-		sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+	var recentCKU_result string //Recent Check up result, 최근 문진 결과를 분석하여 sqsResult에 반영
+	var flag bool               //Recent Check up 분석을 할 최근 문진기록이 충분한지 여부를 저장하는 변수
 
+	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
+
+		recentCKU_result, flag := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), therapyID)
+		if flag == false {
+			sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+		} else {
+			sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요." + recentCKU_result + "그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
+		}
+
 		return sqsResult
 	}
 
@@ -483,6 +492,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	//질환이 발견되지 않은 경우
 
 	patterns := strings.Split(identifier, " ")
+	recentCKU_result, flag := makeRecentCheckUPResult(userID, patterns)
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, therapyID)
 
 	switch identifier {
@@ -519,7 +529,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	default:
 		sqsResult = ""
 	}
-	return sqsResult
+	return sqsResult + recentCKU_result
 }
 
 /**
@@ -537,25 +547,36 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, t
 * 최근 세 번의 건강 검진 결과를 바탕으로 건강 상태에 대한 정보를 추가 제공
 *
  */
-// func makeRecentCheckUPResult(userID string, patterns []string) (notification string, bool flag) {
-// 	mrTABLE, flag := DB.GetMedicalRecordTable(userID)
-// 	string notification
-// 	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
-// 		return mrTABLE, flag //종합적인 문진 결과를 notify할 수 없음
-// 	} else {
-// 		if patterns[0] == DB.COMPLECATION { //현재 진행중인 문진을 통한 진단결과가 미병의심(3 가지 이상 패턴의 조합)인 경우
+func makeRecentCheckUPResult(userID string, patterns []string) (notification string, bool flag) {
+	mrRecords, mrTABLE, flag := DB.GetMedicalRecordTable(userID)
+	var notification string
+	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
+		return mrTABLE, flag //종합적인 문진 결과를 notify할 수 없음
+	} else {
+		if patterns[0] == DB.COMPLECATION { //현재 진행중인 문진을 통한 진단결과가 미병의심(3 가지 이상 패턴의 조합)인 경우
 
-// 		 //NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -1
-// 			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
-// 			return notification, flag
+			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -1
+			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
 
-// 		} else if patterns[0] == DB.PATTERN_NON { // 현재 진행중인 문진을 통한 진단결과가 건강(의심되는 패턴이 없음)인 경우
+				notification := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year() + "년 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month() + "월 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day() + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요."
+			} else {
+				notification := "이전 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year() + "년 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month() + "월 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day() + "일 " + "문진 결과보다 종합적인 건강 상태가 나빠졌어요. "
+			}
+			return notification, flag
 
-// 		} else { // 현재 진행중인 문진을 통한 결과가 하나 혹은 두 가지 패턴의 조합 인 경우 ex)'칠정 노권', '칠정 담음'
+		} else if patterns[0] == DB.PATTERN_NON { // 현재 진행중인 문진을 통한 진단결과가 건강(의심되는 패턴이 없음)인 경우
+			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-1] == 1 {
+				notification := "최근 건강 상태가 아주 훌륭하시네요!"
 
-// 		}
-// 	}
-// }
+			} else {
+				notification := "이전 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year() + "년 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month() + "월 " + mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day() + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords.Pattern, " ") + "이 치료되었어요!"
+			}
+			return notification, flag
+		} else { // 현재 진행중인 문진을 통한 결과가 하나 혹은 두 가지 패턴의 조합 인 경우 ex)'칠정 노권', '칠정 담음'
+
+		}
+	}
+}
 
 // 최종 문진 결과 생성
 func makeFinalScoreNotification(qData question.QData, userID string) question.QData {
