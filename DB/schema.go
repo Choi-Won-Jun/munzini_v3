@@ -37,8 +37,10 @@ const (
 	URCollection = "USERRECOLD_COLLECTION"
 	DB_URL       = "mongodb://partnersnco:sc06250625@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 
-	COMPLECATION = "미병의심"
-	PATTERN_NON  = "건강"
+	COMPLECATION       = "미병의심"
+	COMPLECATION_INDEX = 5
+	PATTERN_NON        = "건강"
+	PATTERN_NON_INDEX  = 6
 
 	NUM_MR_to_CHECK = 3
 )

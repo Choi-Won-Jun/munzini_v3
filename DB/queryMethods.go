@@ -186,26 +186,31 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHEC
 		var nilTable [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int
 		return nilTable, flag
 	} else {
-		var mrTable [question.PATTERN_NUM][NUM_MR_to_CHECK]int
+		var mrTable [question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int //기본 5가지의 패턴과 미병의심, 건강의 2 가지 패턴을 추가하여 (총 7가지) 테이블을 구성
 
 		for index, mrRecord := range medicalRecords {
 			for _, pattern := range mrRecord.Pattern {
 				// 사용자가 해당 질환(패턴)을 가진 경우 Table 내의 값은 1로 저장
-				if pattern == COMPLECATION || pattern == PATTERN_NON {
-					continue
+				if pattern == COMPLECATION {
+					mrTable[COMPLECATION_INDEX][index] = 1
+				} else if pattern == PATTERN_NON {
+					mrTable[PATTERN_NON_INDEX][index] = 1
+				} else {
+					mrTable[question.PATTERN_INDEX[pattern]][index] = 1
 				}
-				mrTable[question.PATTERN_INDEX[pattern]][index] = 1
+
 			}
 		}
+
 		////////
-		var mrTable_ChgReport [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int // MRTABLE내 사용자의 질환기록 중 변화(쾌유 혹은 발병 등)를 저장하는 테이블 (Change Report)
-		for i := 0; i < question.PATTERN_NUM; i++ {
-			for j := 0; j < NUM_MR_to_CHECK-1; j++ {
-				mrTable_ChgReport[i][j] = (mrTable[i][j+1] - mrTable[i][j])
-			}
-		}
+		// var mrTable_ChgReport [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int // MRTABLE내 사용자의 질환기록 중 변화(쾌유 혹은 발병 등)를 저장하는 테이블 (Change Report)
+		// for i := 0; i < question.PATTERN_NUM; i++ {
+		// 	for j := 0; j < NUM_MR_to_CHECK-1; j++ {
+		// 		mrTable_ChgReport[i][j] = (mrTable[i][j+1] - mrTable[i][j])
+		// 	}
+		// }
 		////////
-		return mrTable_ChgReport, flag
+		return mrTable, flag
 	}
 
 }
