@@ -582,7 +582,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			// day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
 			year_of_Record, month_of_Record, day_of_Record := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Date()
 			ab := strconv.Itoa(year_of_Record)
-			bv := strconv.Itoa(month_of_Record)
+			bv := strconv.Itoa(int(month_of_Record))
 			ds := strconv.Itoa(day_of_Record)
 			log.Println("*********************")
 			log.Println(ab)
