@@ -96,7 +96,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				statusDelta = 1
 			} else { // NOSQSProbPatternIdx가 채워졌을 때
 
-				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
+				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
 				if isDataENOUGH == true {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. " + recentCKU_result + "하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
@@ -145,7 +145,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				// responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요." // 68
 				// //
 
-				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
+				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
 				if isDataENOUGH == true {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. " + recentCKU_result + "하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
@@ -577,9 +577,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 		return notification, flag //종합적인 문진 결과를 notify할 수 없음
 	} else {
 		if patterns[0] == DB.COMPLECATION { //현재 진행중인 문진을 통한 진단결과가 미병의심(3 가지 이상 패턴의 조합)인 경우
-			// year_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
-			// month_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month())
-			// day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
+
 			_year_of_Record, _month_of_Record, _day_of_Record := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Date()
 			year_of_Record := strconv.Itoa(_year_of_Record)
 			month_of_Record := strconv.Itoa(int(_month_of_Record))
