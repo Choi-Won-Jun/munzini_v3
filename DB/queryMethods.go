@@ -175,7 +175,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 
 }
 
-func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int, bool) {
+func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int, bool) { //기본 5가지의 패턴과 미병의심, 건강의 2 가지 패턴을 추가하여 (총 7가지의 패턴) 테이블을 구성
 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 	//const PATTERN_NUM = 5
