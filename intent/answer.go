@@ -491,7 +491,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	//질환이 발견되지 않은 경우
 
 	patterns := strings.Split(identifier, " ")
-	recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, patterns)
+	recentCKU_result2, isDataENOUGH2 := makeRecentCheckUPResult(userID, patterns)
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, therapyID)
 
 	switch identifier {
