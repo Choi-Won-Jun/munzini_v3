@@ -445,7 +445,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
 		sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
 
-		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, DB.COMPLECATION, therapyID)
+		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), therapyID)
 		return sqsResult
 	}
 
@@ -474,7 +474,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	therapyID := "will be updated later"
 	//질환이 발견되지 않은 경우
 	if identifier == "" {
-		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, DB.PATTERN_NON, therapyID)
+		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
 	} else {
 		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
 	}
