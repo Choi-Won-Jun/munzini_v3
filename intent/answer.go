@@ -492,7 +492,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	//질환이 발견되지 않은 경우
 
 	patterns := strings.Split(identifier, " ")
-	recentCKU_result, flag := makeRecentCheckUPResult(userID, patterns)
+	recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, patterns)
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, therapyID)
 
 	switch identifier {
@@ -529,7 +529,13 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	default:
 		sqsResult = ""
 	}
-	return sqsResult + recentCKU_result
+
+	if isDataENOUGH == false {
+		return sqsResult
+	} else {
+		return sqsResult + recentCKU_result
+	}
+
 }
 
 /**
