@@ -98,7 +98,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 
 				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
-				if isDataENOUGH == false {
+				if isDataENOUGH == true {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. " + recentCKU_result + "하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
 				} else {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
@@ -147,7 +147,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 
 				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
-				if isDataENOUGH == false {
+				if isDataENOUGH == true {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. " + recentCKU_result + "하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
 				} else {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
@@ -588,10 +588,10 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -1
 			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
 
-				notification := year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요."
+				notification := " " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요. "
 				return notification, flag
 			} else {
-				notification := "이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "문진 결과보다 종합적인 건강 상태가 나빠졌어요. "
+				notification := " 이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "문진 결과보다 종합적인 건강 상태가 나빠졌어요. "
 				return notification, flag
 			}
 
@@ -601,11 +601,11 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
 			log.Println(year_of_Record, month_of_Record, day_of_Record)
 			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-1] == 1 {
-				notification := "최근 건강 상태가 아주 훌륭하시네요!"
+				notification := " 최근 건강 상태가 아주 훌륭하시네요! "
 				return notification, flag
 
 			} else {
-				notification := "이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-1].Pattern, " ") + "이 치료되었어요!"
+				notification := " 이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-1].Pattern, " ") + "이 치료되었어요!"
 				return notification, flag
 			}
 
