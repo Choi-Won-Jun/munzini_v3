@@ -548,7 +548,7 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, t
 *
  */
 func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
-	mrTABLE, mrRecords, flag := DB.GetMedicalRecordTable(userID)
+	mrTABLE, mrRecords, flag = DB.GetMedicalRecordTable(userID)
 	var notification string
 	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
 		return notification, flag //종합적인 문진 결과를 notify할 수 없음
@@ -556,7 +556,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 		if patterns[0] == DB.COMPLECATION { //현재 진행중인 문진을 통한 진단결과가 미병의심(3 가지 이상 패턴의 조합)인 경우
 			year_of_Record := strconv.Itoa(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
 			month_of_Record := strconv.Itoa(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month())
-			day_of_Record := strconv.Itoa(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.day())
+			day_of_Record := strconv.Itoa(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
 
 			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -1
 			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
