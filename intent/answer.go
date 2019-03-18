@@ -580,24 +580,18 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			// year_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
 			// month_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month())
 			// day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
-			year_of_Record, month_of_Record, day_of_Record := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Date()
-			ab := strconv.Itoa(year_of_Record)
-			bc := strconv.Itoa(int(month_of_Record))
-			cd := strconv.Itoa(day_of_Record)
-			log.Println("*********************")
-			log.Println(ab)
-			log.Println("*********************")
-			log.Println(bc)
-			log.Println("*********************")
-			log.Println(cd)
-			log.Println("*********************")
+			_year_of_Record, _month_of_Record, _day_of_Record := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Date()
+			year_of_Record := strconv.Itoa(_year_of_Record)
+			month_of_Record := strconv.Itoa(int(_month_of_Record))
+			day_of_Record := strconv.Itoa(_day_of_Record)
+
 			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -1
 			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
 
-				notification := ab + "년 " + bc + "월 " + cd + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요."
+				notification := year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요."
 				return notification, flag
 			} else {
-				notification := "이전 " + ab + "년 " + bc + "월 " + cd + "일 " + "문진 결과보다 종합적인 건강 상태가 나빠졌어요. "
+				notification := "이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "문진 결과보다 종합적인 건강 상태가 나빠졌어요. "
 				return notification, flag
 			}
 
