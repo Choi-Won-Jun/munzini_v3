@@ -175,7 +175,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 
 }
 
-func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHECK]int, bool) {
+func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int, bool) {
 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 	//const PATTERN_NUM = 5
@@ -188,13 +188,19 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM][NUM_MR_to_CHEC
 	} else {
 		for index, mrRecord := range medicalRecords {
 			for _, pattern := range mrRecord.Pattern {
+				// 사용자가 해당 질환(패턴)을 가진 경우 Table 내의 값은 1로 저장
 				mrTable[question.PATTERN_INDEX[pattern]][index] = 1
 			}
 		}
 		////////
-
+		var mrTable_ChgReport [question.PATTER수N_NUM][NUM_MR_to_CHECK - 1]int // MRTABLE내 사용자의 질환기록 중 변화(쾌유 혹은 발병 등)를 저장하는 테이블 (Change Report)
+		for i = 0; i < question.PATTERN_NUM; i++ {
+			for j = 0; j < NUM_MR_to_CHECK-1; j++ {
+				mrTable_ChgReport[i][j] = (mrTable[i][j+1] - mrTable[i][j])
+			}
+		}
 		////////
-		return mrTable, flag
+		return mrTable_ChgReport, flag
 	}
 
 }
