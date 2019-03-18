@@ -451,10 +451,9 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	var identifier string // 문제 패턴 조사
 	var sortedSQS []int   // identifier 초기화에 이용
 
-	var recentCKU_result string //Recent Check up result, 최근 문진 결과를 분석하여 sqsResult에 반영
-	var isDataENOUGH bool       //Recent Check up 분석을 할 최근 문진기록이 충분한지 여부를 저장하는 변수
-
 	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
+		var recentCKU_result string //Recent Check up result, 최근 문진 결과를 분석하여 sqsResult에 반영
+		var isDataENOUGH bool       //Recent Check up 분석을 할 최근 문진기록이 충분한지 여부를 저장하는 변수
 
 		recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), therapyID)
@@ -492,7 +491,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	//질환이 발견되지 않은 경우
 
 	patterns := strings.Split(identifier, " ")
-	var recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
+	recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, patterns)
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, therapyID)
 
 	switch identifier {
