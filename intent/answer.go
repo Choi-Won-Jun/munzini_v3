@@ -587,8 +587,8 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			month_of_Record := strconv.Itoa(int(_month_of_Record))
 			day_of_Record := strconv.Itoa(_day_of_Record)
 
-			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -1
-			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
+			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -2
+			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-2] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -2] == 1 => 이전 문진에서도 미병의심 진단을 받음
 
 				notification := " " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요. "
 				return notification, flag
@@ -598,11 +598,11 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 			}
 
 		} else if patterns[0] == DB.PATTERN_NON { // 현재 진행중인 문진을 통한 진단결과가 건강(의심되는 패턴이 없음)인 경우
-			year_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
-			month_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month())
-			day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
+			year_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-2].TimeStamp.Year())
+			month_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-2].TimeStamp.Month())
+			day_of_Record := string(mrRecords[DB.NUM_MR_to_CHECK-2].TimeStamp.Day())
 			log.Println(year_of_Record, month_of_Record, day_of_Record)
-			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-1] == 1 {
+			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-2] == 1 {
 				notification := " 최근 건강 상태가 아주 훌륭하시네요! "
 				return notification, flag
 
