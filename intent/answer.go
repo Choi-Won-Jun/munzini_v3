@@ -452,13 +452,13 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	var sortedSQS []int   // identifier 초기화에 이용
 
 	var recentCKU_result string //Recent Check up result, 최근 문진 결과를 분석하여 sqsResult에 반영
-	var flag bool               //Recent Check up 분석을 할 최근 문진기록이 충분한지 여부를 저장하는 변수
+	var isDataENOUGH bool       //Recent Check up 분석을 할 최근 문진기록이 충분한지 여부를 저장하는 변수
 
 	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
 
-		recentCKU_result, flag := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
+		recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), therapyID)
-		if flag == false {
+		if isDataENOUGH == false {
 			sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
 		} else {
 			sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요." + recentCKU_result + "그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
