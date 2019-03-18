@@ -464,7 +464,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 		sortedSQS[i] = sortedSQS[minIdx]
 		sortedSQS[minIdx] = temp
 	}
-	i
+
 	for i := 0; i < len(sortedSQS); i++ {
 		identifier += question.PATTERN_NAME[sortedSQS[i]]
 		if i < len(sortedSQS)-1 { // 후에 질병들을 " "를 기준으로 Split하기 위해 추가
