@@ -183,7 +183,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
 
 	if flag == false { // 충분한 수의 문진 기록이 없는 경우 : False Flag를 반환하여, 최근 문진 기록에 대한 설명기능을 비활성
-		var nilTable [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int
+		var nilTable [question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int
 		return nilTable, flag
 	} else {
 		var mrTable [question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int //기본 5가지의 패턴과 미병의심, 건강의 2 가지 패턴을 추가하여 (총 7가지) 테이블을 구성
