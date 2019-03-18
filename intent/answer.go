@@ -464,7 +464,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 		sortedSQS[i] = sortedSQS[minIdx]
 		sortedSQS[minIdx] = temp
 	}
-
+	i
 	for i := 0; i < len(sortedSQS); i++ {
 		identifier += question.PATTERN_NAME[sortedSQS[i]]
 		if i < len(sortedSQS)-1 { // 후에 질병들을 " "를 기준으로 Split하기 위해 추가
@@ -474,7 +474,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	// Identifier를 이용해 Medical Record저장 수행
 
 	//질환이 발견되지 않은 경우
-	if identifier == " " {
+	if len(sortedSQS) == 0 {
 		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), therapyID)
 	} else {
 		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(identifier, " "), therapyID)
