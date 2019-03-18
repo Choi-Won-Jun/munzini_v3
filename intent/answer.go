@@ -25,6 +25,9 @@ var answers = []string{
 const SIMPLE_QUESTION_TYPE = 0
 const DETAIL_QUESTION_TYPE = 1
 
+//TODO Therapy ID Update
+const therapyID = "will be updated later"
+
 // 1. Get Simple Question Proceed Answer: 간단 문진 시작 여부 및 첫 질문 출력
 func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
@@ -447,8 +450,6 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	var sqsResult string  // 간단 문진 결과
 	var identifier string // 문제 패턴 조사
 	var sortedSQS []int   // identifier 초기화에 이용
-	//TODO Therapy ID Update
-	therapyID := "will be updated later"
 
 	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
 		sqsResult = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
