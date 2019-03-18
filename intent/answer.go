@@ -554,7 +554,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 		return notification, flag //종합적인 문진 결과를 notify할 수 없음
 	} else {
 		if patterns[0] == DB.COMPLECATION { //현재 진행중인 문진을 통한 진단결과가 미병의심(3 가지 이상 패턴의 조합)인 경우
-			year_of_Record := strconv.Itoa(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year())
+			year_of_Record := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Year().String()
 			month_of_Record := strconv.Itoa(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Month())
 			day_of_Record := strconv.Itoa(mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Day())
 
