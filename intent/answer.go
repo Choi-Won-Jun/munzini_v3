@@ -645,7 +645,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 			//Insert Generated MedicalReuslt to DB
 			//TODO Therapy ID Update and Save Medical Result
-			therapyID := "will be updated later"
+			//therapyID := "will be updated later"
 			//saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, []string{DB.COMPLECATION}, therapyID)
 			return qData
 		}
@@ -665,7 +665,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 			//Insert Generated MedicalReuslt to DB
 			//TODO Therapy ID Update and Save Medical Result
-			therapyID := "will be updated later"
+			//therapyID := "will be updated later"
 			//saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, []string{DB.COMPLECATION}, therapyID)
 			return qData
 		}
