@@ -17,9 +17,9 @@ type UserRecord struct {
 	UserID           string    `bson:"userID"`
 	RecordID         []string  `bson:"recordID"`
 	RegistrationDate time.Time `bson:"registrationDate"`
+	SimpleMRs []Simple_MedicalRecord 'bson:simple_Medical_Records'
 }
 
-//TODO ObjectID가 type이 깨져서 Get이 안될 시에는 ObjectID.Hex()-> String 형태로 디비에 저장할
 type MedicalRecord struct {
 	RecordID     string    `json:"id" bson:"_id,omitempty"`
 	UserID       string    `bson:"userID"`
@@ -36,7 +36,15 @@ type ResultAndCuration struct {
 	Explanation  []string `bson:"explanation"`
 	DietCuration []string `bson:"diet_curation"`
 	// 운동요법 등등 다른 처방 필드 아래에 추가
+}
 
+// Light version of MedicalRecord which is stored in UserRecord Schema
+type Simple_MedicalRecord struct {
+	TimeStamp    time.Time `bson:"timeStamp"`
+	QuestionType int       `bson:"questionType"` //0 = 간단문진, 1 = 전체문진, 2 = Interrupt
+	Pattern      []string  `bson:"pattern"`
+	CurationType int       `bson:curationType` // 0= NONE(간단문진의 경우 추천요법이 없음) 1 = 식이요법, 2 = 운동요법 ...
+	Curation     string    `bson:"curation"`
 }
 
 const (

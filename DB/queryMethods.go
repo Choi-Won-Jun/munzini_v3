@@ -67,6 +67,7 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 			UserName:         "nil",
 			RecordID:         []string{},
 			RegistrationDate: time.Now(),
+			SimpleMRs:        []Simple_MedicalRecord{},
 		}
 		InsertUserRecord(temp_user)
 	}
