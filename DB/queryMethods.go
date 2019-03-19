@@ -254,7 +254,7 @@ func SaveResult_and_CurationDataAtDB() {
 
 		//복합 질환인 경우 pattern 변수하나에 두 질환을 합쳐 저
 		if rows[i][1] != "" {
-			pattern += rows[i][1]
+			pattern += (" " + rows[i][1])
 		}
 
 		description := rows[i][2]
