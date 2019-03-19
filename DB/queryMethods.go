@@ -260,7 +260,9 @@ func SaveResult_and_CurationDataAtDB() {
 		description := rows[i][2]
 		explanation := []string{rows[i][3], rows[i][4], rows[i][5], rows[i][6]}
 		var curation []string
+		log.Println(len(rows[i]))
 		for j := 7; j < len(rows[i]); j++ {
+
 			curation = append(curation, rows[i][j])
 		}
 		temp := ResultAndCuration{
