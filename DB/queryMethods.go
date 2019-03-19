@@ -5,7 +5,8 @@ import (
 
 	"bufio"
 	"encoding/csv"
-	"log"
+
+	//"log"
 	"munzini/question"
 	"os"
 	"time"
