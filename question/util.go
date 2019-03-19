@@ -8,7 +8,7 @@ import (
 	"log"
 	"math"      // 반올림 관련
 	"math/rand" // 임의 추출 관련
-	"munzini/DB"
+
 	"os"      // csv data load 관련
 	"strconv" // string 관련 형변환
 	"strings"
