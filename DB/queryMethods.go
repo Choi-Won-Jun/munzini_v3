@@ -216,6 +216,43 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 
 }
 
+func SaveResult_and_CurationDataAtDB() {
+	rc_file, _ := os.Open("resources/data/CDI_AISpeaker_ResultAndCuration0317.csv") //result&curation file
+	rc_reader := csv.NewReader(bufio.NewReader(rc_file))
+	rows, _ := rc_reader.ReadAll()
+
+	for i, row := range rows {
+		for j := range row {
+			log.Printf("%s", rows[i][j])
+		}
+		log.Println()
+		break
+	}
+
+	for i := FIRST_IDX; i < len(rows); i++ {
+
+		pattern := rows[i][0]
+
+		//복합 질환인 경우 pattern 변수하나에 두 질환을 합쳐 저
+		if rows[i][1] != "" {
+			pattern += rows[i][1]
+		}
+
+		description := rows[i][2]
+		explanation := []string{rows[i][3], rows[i][4], rows[i][5], rows[i][6]}
+		var curation []string
+		for j := 7; j < len(rows[i]); j++ {
+			append(curation, rows[i][j])
+		}
+		temp := DB.ResultAndCuration{
+			Pattern:     pattern,     // Pattern     []string `bson:"pattern"`
+			Description: description, // Description string   `bson:"description"`
+			Explanation: explanation, // Explanation []string `bson:"explanation"`
+			Curation:    curation,    // Curation    []string `bson:"curation"`
+		}
+	}
+}
+
 /*
 * Author: Jun
 * DB와의 Connection을 생성 뒤 반환

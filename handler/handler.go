@@ -7,7 +7,7 @@ import (
 	//"munzini/DB"
 	"munzini/intent"
 	"munzini/protocol"
-	"munzini/question"
+
 	"net/http"
 )
 
@@ -34,7 +34,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	//log.Println(DB.RetreiveRecentMedicalRecordByUserID(req.Session.User.UserId))
 	//log.Println(DB.GetMedicalRecordTable(req.Session.User.UserId))
 	//log.Println(req.Contexts)
-	question.SaveResult_and_CurationDataAtDB()
+	DB.SaveResult_and_CurationDataAtDB()
 	////////////////////////////////
 
 	var response protocol.CEKResponse
