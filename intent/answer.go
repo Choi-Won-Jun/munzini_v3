@@ -608,7 +608,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 				return notification, flag
 
 			} else {
-				notification := " 이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-2].Pattern, " ") + "이 치료되었어요!"
+				notification := " 이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-2].Pattern, " ") + "증상이 완화되었어요!"
 				return notification, flag
 			}
 

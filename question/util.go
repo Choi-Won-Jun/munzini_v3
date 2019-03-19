@@ -5,12 +5,27 @@ import (
 	"bufio"        // csv data load 관련
 	"encoding/csv" // csv data load 관련
 	"fmt"          // 출력 ( 디버그 )
-	"math"         // 반올림 관련
-	"math/rand"    // 임의 추출 관련
-	"os"           // csv data load 관련
-	"strconv"      // string 관련 형변환
-	"time"         // 임의 추출 관련
+	"log"
+	"math"      // 반올림 관련
+	"math/rand" // 임의 추출 관련
+	"os"        // csv data load 관련
+	"strconv"   // string 관련 형변환
+	"time"      // 임의 추출 관련
 )
+
+func SaveResult_and_CurationDataAtDB() {
+	rc_file, _ := os.Open("resources/data/CDI_AISpeaker_ResultAndCuration0317.csv") //result&curation file
+	rc_reader := csv.NewReader(bufio.NewReader(rc_file))
+	rows, _ := rc_reader.ReadAll()
+
+	for i, row := range rows {
+		for j := range row {
+			log.Printf("%s", rows[i][j])
+		}
+		log.Println()
+	}
+
+}
 
 // 1. load data to initalize the structure qDataConst
 func loadData() qDataConst {
