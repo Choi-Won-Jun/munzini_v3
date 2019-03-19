@@ -235,19 +235,13 @@ func SaveResult_and_CurationDataAtDB() {
 
 	// Find First, If user is not exist in database, add his data
 	c := session.DB(Database).C(RnCCollection)
-	c.RemoveAll()
+
+	//Before update all data, clear the Collection(DB)
+	c.RemoveAll(bson.M{})
 
 	rc_file, _ := os.Open("resources/data/CDI_AISpeaker_ResultAndCuration0317.csv") //result&curation file
 	rc_reader := csv.NewReader(bufio.NewReader(rc_file))
 	rows, _ := rc_reader.ReadAll()
-
-	for i, row := range rows {
-		for j := range row {
-			log.Printf("%s", rows[i][j])
-		}
-		log.Println()
-		break
-	}
 
 	for i := question.FIRST_IDX; i < len(rows); i++ {
 
