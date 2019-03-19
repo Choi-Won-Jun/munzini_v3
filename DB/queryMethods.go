@@ -219,6 +219,23 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 }
 
 func SaveResult_and_CurationDataAtDB() {
+
+	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		//fmt.Println("no connection string provided")
+		os.Exit(1)
+	}
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		//fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
+	}
+	defer session.Close()
+	//fmt.Printf("Connected to %v!\n", session.LiveServers())
+
+	// Find First, If user is not exist in database, add his data
+	c := session.DB(Database).C(RnCCollection)
+
 	rc_file, _ := os.Open("resources/data/CDI_AISpeaker_ResultAndCuration0317.csv") //result&curation file
 	rc_reader := csv.NewReader(bufio.NewReader(rc_file))
 	rows, _ := rc_reader.ReadAll()
@@ -251,6 +268,9 @@ func SaveResult_and_CurationDataAtDB() {
 			Description: description, // Description string   `bson:"description"`
 			Explanation: explanation, // Explanation []string `bson:"explanation"`
 			Curation:    curation,    // Curation    []string `bson:"curation"`
+		}
+		if err := c.Insert(ur); err != nil {
+			panic(err)
 		}
 	}
 }

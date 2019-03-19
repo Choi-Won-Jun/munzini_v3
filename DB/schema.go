@@ -37,12 +37,13 @@ type ResultAndCuration struct {
 }
 
 const (
-	Username     = "partnersnco"
-	Password     = "sc06250625"
-	Database     = "heroku_7v6nqjgb"
-	MRCollection = "MEDICALRECORD_COLLECTION"
-	URCollection = "USERRECOLD_COLLECTION"
-	DB_URL       = "mongodb://partnersnco:sc06250625@ds111791.mlab.com:11791/heroku_7v6nqjgb"
+	Username      = "partnersnco"
+	Password      = "sc06250625"
+	Database      = "heroku_7v6nqjgb"
+	MRCollection  = "MEDICALRECORD_COLLECTION"
+	URCollection  = "USERRECOLD_COLLECTION"
+	RnCCollection = "RESULT_AND_CURATION_COLLECTION"
+	DB_URL        = "mongodb://partnersnco:sc06250625@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 
 	COMPLECATION       = "미병의심"
 	COMPLECATION_INDEX = 5
