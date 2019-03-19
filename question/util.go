@@ -5,9 +5,8 @@ import (
 	"bufio"        // csv data load 관련
 	"encoding/csv" // csv data load 관련
 	"fmt"          // 출력 ( 디버그 )
-	"log"
-	"math"      // 반올림 관련
-	"math/rand" // 임의 추출 관련
+	"math"         // 반올림 관련
+	"math/rand"    // 임의 추출 관련
 
 	"os"      // csv data load 관련
 	"strconv" // string 관련 형변환
