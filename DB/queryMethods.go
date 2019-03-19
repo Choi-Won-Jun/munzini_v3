@@ -3,7 +3,9 @@ package DB
 import (
 	//"fmt"
 
-	//"log"
+	"bufio"
+	"encoding/csv"
+	"log"
 	"munzini/question"
 	"os"
 	"time"
@@ -229,7 +231,7 @@ func SaveResult_and_CurationDataAtDB() {
 		break
 	}
 
-	for i := FIRST_IDX; i < len(rows); i++ {
+	for i := question.FIRST_IDX; i < len(rows); i++ {
 
 		pattern := rows[i][0]
 
@@ -244,7 +246,7 @@ func SaveResult_and_CurationDataAtDB() {
 		for j := 7; j < len(rows[i]); j++ {
 			curation = append(curation, rows[i][j])
 		}
-		temp := DB.ResultAndCuration{
+		temp := ResultAndCuration{
 			Pattern:     pattern,     // Pattern     []string `bson:"pattern"`
 			Description: description, // Description string   `bson:"description"`
 			Explanation: explanation, // Explanation []string `bson:"explanation"`
