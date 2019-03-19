@@ -263,7 +263,7 @@ func SaveResult_and_CurationDataAtDB() {
 		description := rows[i][2]
 		explanation := []string{rows[i][3], rows[i][4], rows[i][5], rows[i][6]}
 		var curation []string
-		log.Println(len(rows[i]))
+
 		for j := 7; j < len(rows[i]); j++ {
 
 			// 해당  필드가 비어있는 경우의 예외처리
@@ -304,6 +304,7 @@ func GetResult_Explanation(pattern string) {
 	// Find First, If user is not exist in database, add his data
 	findC := session.DB(Database).C(RnCCollection)
 
+	log.Println("??")
 	var rncInfo ResultAndCuration //result&curation Info that matches to the given userID
 	if findErr := findC.Find(bson.M{"pattern": pattern}).One(&rncInfo); findErr != nil {
 		panic(findErr)
