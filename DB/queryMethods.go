@@ -242,7 +242,7 @@ func SaveResult_and_CurationDataAtDB() {
 		explanation := []string{rows[i][3], rows[i][4], rows[i][5], rows[i][6]}
 		var curation []string
 		for j := 7; j < len(rows[i]); j++ {
-			append(curation, rows[i][j])
+			curation = append(curation, rows[i][j])
 		}
 		temp := DB.ResultAndCuration{
 			Pattern:     pattern,     // Pattern     []string `bson:"pattern"`
