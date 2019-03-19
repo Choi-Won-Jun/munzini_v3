@@ -269,7 +269,7 @@ func SaveResult_and_CurationDataAtDB() {
 			Explanation: explanation, // Explanation []string `bson:"explanation"`
 			Curation:    curation,    // Curation    []string `bson:"curation"`
 		}
-		if err := c.Insert(ur); err != nil {
+		if err := c.Insert(temp); err != nil {
 			panic(err)
 		}
 	}
