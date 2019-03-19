@@ -30,7 +30,7 @@ type MedicalRecord struct {
 }
 
 type ResultAndCuration struct {
-	Pattern     []string `bson:"pattern"`
+	Pattern     string   `bson:"pattern"`
 	Description string   `bson:"description"`
 	Explanation []string `bson:"explanation"`
 	Curation    []string `bson:"curation"`

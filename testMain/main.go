@@ -2,16 +2,13 @@ package main
 
 import (
 	"fmt"
-
+	"strings"
 	//"time"
-
-	"bufio"
-	"encoding/csv"
-
+	//	"bufio"
+	//"encoding/csv"
 	//"munzini/DB"
-	"os"
-
-	"gopkg.in/mgo.v2"
+	//"os"
+	//"gopkg.in/mgo.v2"
 	//"gopkg.in/mgo.v2/bson"
 )
 
@@ -87,16 +84,22 @@ func main() {
 	// }
 	// defer session.Close()
 
-	rc_file, _ := os.Open("resources/data/CDI_AISpeaker_ResultAndCuration0317.csv") //result&curation file
-	rc_reader := csv.NewReader(bufio.NewReader(rc_file))
-	rows, _ := rc_reader.ReadAll()
+	// rc_file, _ := os.Open("resources/data/CDI_AISpeaker_ResultAndCuration0317.csv") //result&curation file
+	// rc_reader := csv.NewReader(bufio.NewReader(rc_file))
+	// rows, _ := rc_reader.ReadAll()
 
-	for i, row := range rows {
-		for j := range row {
-			fmt.Printf("%s", rows[i][j])
-		}
-		fmt.Println()
-	}
+	// for i, row := range rows {
+	// 	for j := range row {
+	// 		fmt.Printf("%s", rows[i][j])
+	// 	}
+	// 	fmt.Println()
+	// }
+
+	a := []string{"123", "  "}
+	b := strings.Join(a, " ")
+	c := strings.Trim(b, " ")
+
+	fmt.Println(c)
 
 	/////
 	// qcwp, _ := qcwp_reader.ReadAll() // read QCWP.csv
