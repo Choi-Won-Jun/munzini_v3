@@ -264,7 +264,7 @@ func SaveResult_and_CurationDataAtDB() {
 		for j := 7; j < len(rows[i]); j++ {
 
 			// 해당  필드가 비어있는 경우의 예외처리
-			if row[i][j] != "" {
+			if rows[i][j] != "" {
 				curation = append(curation, rows[i][j])
 			}
 		}
