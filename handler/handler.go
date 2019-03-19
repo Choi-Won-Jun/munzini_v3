@@ -34,7 +34,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	//log.Println(DB.RetreiveRecentMedicalRecordByUserID(req.Session.User.UserId))
 	//log.Println(DB.GetMedicalRecordTable(req.Session.User.UserId))
 	//log.Println(req.Contexts)
-	DB.SaveResult_and_CurationDataAtDB()
+	DB.GetResult_Explanation("담음")
 	////////////////////////////////
 
 	var response protocol.CEKResponse

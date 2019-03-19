@@ -5,6 +5,7 @@ import (
 	"log"
 
 	//"munzini/DB"
+
 	"munzini/handler"
 	"net/http"
 	"os"
@@ -15,27 +16,8 @@ import (
 
 func main() {
 
-	// //TODO UserRecord Insert Sample
-	// temp_user := DB.UserRecord{
-	// 	UserID:           "124",
-	// 	UserName:         "124",
-	// 	RecordID:         []string{"obj23412", "129dhflb"},
-	// 	RegistrationDate: time.Now(),
-	// }
-	// DB.InsertUserRecord(temp_user)
-
-	// recordID := bson.NewObjectId()
-
-	// temp := DB.MedicalRecord{
-
-	// 	RecordID:     recordID,
-	// 	UserID:       "125",
-	// 	TimeStamp:    time.Now(),
-	// 	QuestionType: 1,
-	// 	Pattern:      []string{"담읍", "심혈"},
-	// 	TherapyID:    "124",
-	// }
-	// DB.InsertMedicalRecord(temp)
+	//CDI_AISpeaker_ResultAndCuration0317.csv 파일 업데이트시 아래 코드의 주석을 해제하여 DB에 업데이트
+	//DB.SaveResult_and_CurationDataAtDB()
 
 	fileServer := http.FileServer(http.Dir("resources"))
 	http.Handle("/resources/", http.StripPrefix("/resources/", fileServer))

@@ -177,6 +177,10 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 
 }
 
+/*
+* Author: Jun
+* UserID에 해당하는 사용자의 문진 기록을 불러와 반환
+ */
 func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int, []MedicalRecord, bool) { //기본 5가지의 패턴과 미병의심, 건강의 2 가지 패턴을 추가하여 (총 7가지의 패턴) 테이블을 구성
 	//var PATTERN_NAME = []string{"칠정", "노권", "담음", "식적", "어혈"}                       // 변증 이름
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
@@ -218,6 +222,10 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 
 }
 
+/*
+* Author: Jun
+* 질환들의 설명, 해설, 및 처방들을 Resource 폴더의 CDI_AISpeaker_Result_And_Curation.csv로부터 DB에 업데이트 하는 함수
+ */
 func SaveResult_and_CurationDataAtDB() {
 
 	uri := os.Getenv("MONGODB_URI")
@@ -273,6 +281,35 @@ func SaveResult_and_CurationDataAtDB() {
 			panic(err)
 		}
 	}
+}
+
+/*
+* Author: Jun
+* Result and Curation Collection(DB)로 부터 Pattern에 해당하는 문진 설명을 불러온다.
+ */
+func GetResult_Explanation(pattern string) {
+
+	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		//	fmt.Println("no connection string provided")
+		os.Exit(1)
+	}
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		//	fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
+	}
+	defer session.Close()
+
+	// Find First, If user is not exist in database, add his data
+	findC := session.DB(Database).C(RnCCollection)
+
+	var rncInfo ResultAndCuration //result&curation Info that matches to the given userID
+	if findErr := findC.Find(bson.M{"pattern": pattern}).All(&rncInfo); findErr != nil {
+		panic(findErr)
+	}
+
+	log.Print(rncInfo)
 }
 
 /*
