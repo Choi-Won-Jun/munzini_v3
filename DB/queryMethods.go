@@ -263,7 +263,10 @@ func SaveResult_and_CurationDataAtDB() {
 		log.Println(len(rows[i]))
 		for j := 7; j < len(rows[i]); j++ {
 
-			curation = append(curation, rows[i][j])
+			// 해당  필드가 비어있는 경우의 예외처리
+			if row[i][j] != "" {
+				curation = append(curation, rows[i][j])
+			}
 		}
 		temp := ResultAndCuration{
 			Pattern:     pattern,     // Pattern     []string `bson:"pattern"`
