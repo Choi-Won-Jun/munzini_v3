@@ -305,7 +305,7 @@ func GetResult_Explanation(pattern string) {
 	findC := session.DB(Database).C(RnCCollection)
 
 	var rncInfo ResultAndCuration //result&curation Info that matches to the given userID
-	if findErr := findC.Find(bson.M{"pattern": pattern}).All(&rncInfo); findErr != nil {
+	if findErr := findC.Find(bson.M{"pattern": pattern}).One(&rncInfo); findErr != nil {
 		panic(findErr)
 	}
 
