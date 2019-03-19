@@ -45,7 +45,7 @@ const (
 	RnCCollection = "RESULT_AND_CURATION_COLLECTION"
 	DB_URL        = "mongodb://partnersnco:sc06250625@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 
-	COMPLECATION       = "미병의심"
+	COMPLECATION       = "복합적미병"
 	COMPLECATION_INDEX = 5
 	PATTERN_NON        = "건강"
 	PATTERN_NON_INDEX  = 6
