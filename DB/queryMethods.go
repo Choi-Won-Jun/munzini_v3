@@ -37,26 +37,14 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 
 	recordID := bson.NewObjectId().Hex()
 
-	if questionTYPE == SIMPLE_QUESTION_TYPE {
-		medicalRecord := MedicalRecord{
-			RecordID:     recordID,
-			UserID:       userID,
-			TimeStamp:    time.Now(),
-			QuestionType: questionTYPE,
-			Pattern:      patterns,
-			CurationType: CURATION_NON_INDEX,
-			Curation:     curation,
-		}
-	} else {
-		medicalRecord := MedicalRecord{
-			RecordID:     recordID,
-			UserID:       userID,
-			TimeStamp:    time.Now(),
-			QuestionType: questionTYPE,
-			Pattern:      patterns,
-			CurationType: curationType,
-			Curation:     curation,
-		}
+	medicalRecord := MedicalRecord{
+		RecordID:     recordID,
+		UserID:       userID,
+		TimeStamp:    time.Now(),
+		QuestionType: questionTYPE,
+		Pattern:      patterns,
+		CurationType: curationType,
+		Curation:     curation,
 	}
 
 	// Insert medical-record to the DB
