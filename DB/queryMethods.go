@@ -235,6 +235,7 @@ func SaveResult_and_CurationDataAtDB() {
 
 	// Find First, If user is not exist in database, add his data
 	c := session.DB(Database).C(RnCCollection)
+	c.RemoveAll()
 
 	rc_file, _ := os.Open("resources/data/CDI_AISpeaker_ResultAndCuration0317.csv") //result&curation file
 	rc_reader := csv.NewReader(bufio.NewReader(rc_file))
