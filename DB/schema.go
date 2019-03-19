@@ -26,7 +26,8 @@ type MedicalRecord struct {
 	TimeStamp    time.Time `bson:"timeStamp"`
 	QuestionType int       `bson:"questionType"` //0 = 간단문진, 1 = 전체문진, 2 = Interrupt
 	Pattern      []string  `bson:"pattern"`
-	TherapyID    string    `bson:"therapyID"`
+	CurationType int       `bson:curationType` // 0= NONE(간단문진의 경우 추천요법이 없음) 1 = 식이요법, 2 = 운동요법 ...
+	Curation     string    `bson:"curation"`
 }
 
 type ResultAndCuration struct {
@@ -53,6 +54,14 @@ const (
 	PATTERN_NON_INDEX  = 6
 
 	NUM_MR_to_CHECK = 3
+
+	RAC_SQS_ExPLANATION_INDEX = 2
+
+	SIMPLE_QUESTION_TYPE = 0
+
+	//DB에 저장되는 추천 건강 요법들 관련 Index
+	CURATION_NON_INDEX  = 0
+	DIET_CURATION_INDEX = 1
 )
 
 // func main() {

@@ -20,7 +20,7 @@ import (
 * Author: Jun
 * 동일한 ID값을 가진 유저의 계정에 Medical Record의 key값을 추가하고, Medicalrecord collection에 해당 mr 추가
  */
-func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, therapyID string) {
+func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, curationType int, curation string) {
 
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
@@ -36,13 +36,27 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, the
 	//fmt.Printf("Connected to %v!\n", session.LiveServers())
 
 	recordID := bson.NewObjectId().Hex()
-	medicalRecord := MedicalRecord{
-		RecordID:     recordID,
-		UserID:       userID,
-		TimeStamp:    time.Now(),
-		QuestionType: questionTYPE,
-		Pattern:      patterns,
-		TherapyID:    therapyID,
+
+	if questionTYPE == SIMPLE_QUESTION_TYPE {
+		medicalRecord := MedicalRecord{
+			RecordID:     recordID,
+			UserID:       userID,
+			TimeStamp:    time.Now(),
+			QuestionType: questionTYPE,
+			Pattern:      patterns,
+			CurationType: CURATION_NON_INDEX,
+			Curation:     curation,
+		}
+	} else {
+		medicalRecord := MedicalRecord{
+			RecordID:     recordID,
+			UserID:       userID,
+			TimeStamp:    time.Now(),
+			QuestionType: questionTYPE,
+			Pattern:      patterns,
+			CurationType: curationType,
+			Curation:     curation,
+		}
 	}
 
 	// Insert medical-record to the DB
@@ -310,7 +324,8 @@ func GetResult_and_Explanation(pattern string) string {
 		panic(findErr)
 	}
 
-	return rncInfo.Explanation[3]
+	//Index 2: Where the explnation is for Simple Question Score
+	return rncInfo.Explanation[RAC_SQS_ExPLANATION_INDEX]
 }
 
 func GetResult_and_Curation(pattern string) ResultAndCuration {
