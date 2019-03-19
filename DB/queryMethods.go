@@ -288,6 +288,31 @@ func SaveResult_and_CurationDataAtDB() {
 * Author: Jun
 * Result and Curation Collection(DB)로 부터 Pattern에 해당하는 문진 설명을 불러온다.
  */
+func GetResult_and_Explanation(pattern string) string {
+
+	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		//	fmt.Println("no connection string provided")
+		os.Exit(1)
+	}
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		//	fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
+	}
+	defer session.Close()
+
+	// Find First, If user is not exist in database, add his data
+	findC := session.DB(Database).C(RnCCollection)
+
+	var rncInfo ResultAndCuration //result&curation Info that matches to the given userID
+	if findErr := findC.Find(bson.M{"pattern": pattern}).One(&rncInfo); findErr != nil {
+		panic(findErr)
+	}
+
+	return rncInfo.Explanation[3]
+}
+
 func GetResult_and_Curation(pattern string) ResultAndCuration {
 
 	uri := os.Getenv("MONGODB_URI")
