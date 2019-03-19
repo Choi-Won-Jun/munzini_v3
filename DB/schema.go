@@ -17,7 +17,7 @@ type UserRecord struct {
 	UserID           string    `bson:"userID"`
 	RecordID         []string  `bson:"recordID"`
 	RegistrationDate time.Time `bson:"registrationDate"`
-	SimpleMRs []Simple_MedicalRecord 'bson:simple_Medical_Records'
+	SimpleMRs []Simple_MedicalRecord 'bson:"simple_Medical_Records"'
 }
 
 type MedicalRecord struct {
