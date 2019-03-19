@@ -287,7 +287,7 @@ func SaveResult_and_CurationDataAtDB() {
 * Author: Jun
 * Result and Curation Collection(DB)로 부터 Pattern에 해당하는 문진 설명을 불러온다.
  */
-func GetResult_Explanation(pattern string) {
+func GetResult_and_Curation(pattern string) ResultAndCuration {
 
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
@@ -304,13 +304,12 @@ func GetResult_Explanation(pattern string) {
 	// Find First, If user is not exist in database, add his data
 	findC := session.DB(Database).C(RnCCollection)
 
-	log.Println("??")
 	var rncInfo ResultAndCuration //result&curation Info that matches to the given userID
 	if findErr := findC.Find(bson.M{"pattern": pattern}).One(&rncInfo); findErr != nil {
 		panic(findErr)
 	}
 
-	log.Print(rncInfo)
+	return rncInfo
 }
 
 /*
