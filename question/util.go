@@ -23,6 +23,7 @@ func SaveResult_and_CurationDataAtDB() {
 			log.Printf("%s", rows[i][j])
 		}
 		log.Println()
+		break
 	}
 
 }
