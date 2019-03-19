@@ -263,20 +263,20 @@ func SaveResult_and_CurationDataAtDB() {
 
 		description := rows[i][2]
 		explanation := []string{rows[i][3], rows[i][4], rows[i][5], rows[i][6]}
-		var curation []string
+		var dietCuration []string
 
 		for j := 7; j < len(rows[i]); j++ {
 
 			// 해당  필드가 비어있는 경우의 예외처리
 			if rows[i][j] != "" {
-				curation = append(curation, rows[i][j])
+				dietCuration = append(dietCuration, rows[i][j])
 			}
 		}
 		temp := ResultAndCuration{
-			Pattern:     pattern,     // Pattern     []string `bson:"pattern"`
-			Description: description, // Description string   `bson:"description"`
-			Explanation: explanation, // Explanation []string `bson:"explanation"`
-			Curation:    curation,    // Curation    []string `bson:"curation"`
+			Pattern:      pattern,      // Pattern     []string `bson:"pattern"`
+			Description:  description,  // Description string   `bson:"description"`
+			Explanation:  explanation,  // Explanation []string `bson:"explanation"`
+			DietCuration: dietCuration, // Curation    []string `bson:"curation"`
 		}
 		if err := c.Insert(temp); err != nil {
 			panic(err)

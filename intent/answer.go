@@ -480,10 +480,10 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 
 		if isDataENOUGH == false {
 
-			sqsResult = "문진 결과를 알려드릴께요." + DB.GetResult_and_Explanation(DB.COMPLECATION) + "그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?!"
+			sqsResult = "문진 결과를 알려드릴께요." + DB.GetResult_and_Explanation(DB.COMPLECATION) + "그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
 
 		} else {
-			sqsResult = "문진 결과를 알려드릴께요." + DB.GetResult_and_Explanation(DB.COMPLECATION) + recentCKU_result + "그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?!"
+			sqsResult = "문진 결과를 알려드릴께요." + DB.GetResult_and_Explanation(DB.COMPLECATION) + recentCKU_result + "그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
 		}
 
 		return sqsResult
@@ -518,7 +518,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, therapyID)
 	recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
 
-	sqsResult = "문진 결과를 알려드릴께요. " + DB.GetResult_and_Explanation(identifier) + " 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?!!!"
+	sqsResult = "문진 결과를 알려드릴께요. " + DB.GetResult_and_Explanation(identifier) + " 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요? "
 	// switch identifier {
 	// case "칠정":
 	// 	sqsResult = "문진 결과를 알려드릴께요. 현재 정신적인 스트레스로 건강상태가 좋지 않아요. 스트레스가가 지속되면 식욕이 줄고 수면의 질이 나빠질 수 있어요. 그리고, 이유 없이 불안하거나 가슴이 내려앉는 느낌이 종종 나타날 수도 있고요. 그러니까 하루 빨리 스트레스에서 벗어나야 해요! 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"

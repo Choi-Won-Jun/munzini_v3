@@ -30,10 +30,12 @@ type MedicalRecord struct {
 }
 
 type ResultAndCuration struct {
-	Pattern     string   `bson:"pattern"`
-	Description string   `bson:"description"`
-	Explanation []string `bson:"explanation"`
-	Curation    []string `bson:"curation"`
+	Pattern      string   `bson:"pattern"`
+	Description  string   `bson:"description"`
+	Explanation  []string `bson:"explanation"`
+	DietCuration []string `bson:"diet_curation"`
+	// 운동요법 등등 다른 처방 필드 아래에 추가
+
 }
 
 const (
