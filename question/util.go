@@ -8,9 +8,10 @@ import (
 	"log"
 	"math"      // 반올림 관련
 	"math/rand" // 임의 추출 관련
-	"os"        // csv data load 관련
-	"strconv"   // string 관련 형변환
-	"time"      // 임의 추출 관련
+	"munzini/DB"
+	"os"      // csv data load 관련
+	"strconv" // string 관련 형변환
+	"time"    // 임의 추출 관련
 )
 
 func SaveResult_and_CurationDataAtDB() {
@@ -26,6 +27,9 @@ func SaveResult_and_CurationDataAtDB() {
 		break
 	}
 
+	for i := FIRST_IDX; i < len(rows); i++ {
+		log.Println(rows[i])
+	}
 }
 
 // 1. load data to initalize the structure qDataConst
