@@ -722,8 +722,10 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 	//recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
 
-	qData.FinalScoreNotification = "문진 결과를 알려드릴께요. " + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + "이런 증상일 때는 " + curation + "이 효과적이에요! "
-
+	qData.FinalScoreNotification = "문진 결과를 알려드릴께요. " + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+	if curation != "NULL" {
+		qData.FinalScoreNotification += "이런 증상일 때는 " + curation + "이 효과적이에요! "
+	}
 	// switch identifier {
 	// case "칠정":
 	// 	qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 정신적인 스트레스로 건강상태가 좋지 않아요. 스트레스가 지속되면 식욕이 줄고 수면의 질이 나빠질 수 있어요. 그리고, 이유 없이 불안하거나 가슴이 내려앉는 느낌이 종종 나타날 수도 있고요. 그러니까 하루 빨리 스트레스에서 벗어나야 해요! 그럼, 5분만 산책을 해보면 어떨까요? "
