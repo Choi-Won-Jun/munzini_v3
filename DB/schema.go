@@ -68,13 +68,18 @@ const (
 
 	NUM_MR_to_CHECK = 3
 
-	RAC_SQS_ExPLANATION_INDEX = 2
-
-	SIMPLE_QUESTION_TYPE = 0
+	RAC_SQS_EXPLANATION_INDEX = 2 //ResultAndCuration 내의 Explanation Field에 간단 문진 진단 결과가 저장된 인덱스
+	RAC_DQS_EXPLANATION_INDEX = 3 //상세 문진 진단 결과가 저장된 인덱스
+	SIMPLE_QUESTION_TYPE      = 0
 
 	//DB에 저장되는 추천 건강 요법들 관련 Index
-	CURATION_NON_INDEX  = 0
-	DIET_CURATION_INDEX = 1
+	CURATION_NON_INDEX      = 0
+	DIET_CURATION_INDEX     = 1
+	Exercise_Curation_INDEX = 2
+	YangSang_Curation_INDEX = 3
+	CDM_Curation_INDEX      = 4
+	//CURATION_MAP = map[int]
+	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 )
 
 // func main() {

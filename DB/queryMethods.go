@@ -330,7 +330,7 @@ func GetResult_and_Explanation(pattern string) string {
 	}
 
 	//Index 2: Where the explnation is for Simple Question Score
-	return rncInfo.Explanation[RAC_SQS_ExPLANATION_INDEX]
+	return rncInfo.Explanation[RAC_SQS_EXPLANATION_INDEX]
 }
 
 func GetResult_and_Curation(pattern string) ResultAndCuration {

@@ -142,9 +142,6 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				responseValue = SQSResult
 				statusDelta = 1 // next status
 			} else {
-				// //
-				// responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요." // 68
-				// //
 
 				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
@@ -155,7 +152,6 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
 				}
 
-				//saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 			}
 		} else { // 간단진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
 			if qData.RepIdx == question.REP_HALF {
@@ -509,9 +505,6 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 			identifier += " "
 		}
 	}
-	// Identifier를 이용해 Medical Record저장 수행
-
-	//질환이 발견되지 않은 경우
 
 	patterns := strings.Split(identifier, " ")
 
@@ -641,12 +634,23 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 			}
 		}
 		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
-			qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
+			//qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
 
-			//Insert Generated MedicalReuslt to DB
-			//TODO Therapy ID Update and Save Medical Result
-			//therapyID := "will be updated later"
-			//saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, []string{DB.COMPLECATION}, therapyID)
+			racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
+
+			// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
+			curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
+			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
+			recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
+
+			if isDataENOUGH == false {
+
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+
+			} else {
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
+			}
+
 			return qData
 		}
 	} else { // NoSQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
@@ -661,21 +665,47 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 			}
 		}
 		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
-			qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
 
-			//Insert Generated MedicalReuslt to DB
-			//TODO Therapy ID Update and Save Medical Result
-			//therapyID := "will be updated later"
-			//saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, []string{DB.COMPLECATION}, therapyID)
+			//qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
+
+			// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
+			racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
+			curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
+			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
+
+			recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
+
+			if isDataENOUGH == false {
+
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+
+			} else {
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
+			}
+
 			return qData
 		}
 	}
 
-	fmt.Println(strconv.Itoa(probNum) + "문제 있음.")
-	fmt.Println(identifier)
+	// fmt.Println(strconv.Itoa(probNum) + "문제 있음.")
+	// fmt.Println(identifier)
 
 	if probNum == 0 { // 정밀문진 결과 문제되는 패턴이 없을 때
-		qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
+
+		// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
+		racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
+		curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
+		saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
+
+		recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
+
+		if isDataENOUGH == true {
+			qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. " + recentCKU_result + " 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
+		} else {
+			qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
+		}
+
+		//qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
 		return qData
 	}
 
@@ -715,4 +745,22 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	}
 
 	return qData
+}
+
+func suggestCuration(rncInfo DB.ResultAndCuration, curationType int) string { // 패턴정보(질환, Result And Curation)를 인자로 받아서, 4가지 요법 중 한가지의 추천을 반환
+
+	rand_seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(rand_seed)
+
+	switch curationType {
+	case DB.DIET_CURATION_INDEX:
+		return rncInfo.DietCuration[r.Intn(len(rncInfo.DietCuration))]
+	case DB.Exercise_Curation_INDEX:
+
+	case DB.YangSang_Curation_INDEX:
+	case DB.CDM_Curation_INDEX:
+	default:
+
+	}
+
 }
