@@ -570,13 +570,13 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, c
 * 최근 세 번의 건강 검진 결과를 바탕으로 건강 상태에 대한 정보를 추가 제공
 *
  */
-func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
+func makeRecentCheckUPResult(userID string, current_patterns []string) (string, bool) {
 	mrTABLE, mrRecords, flag := DB.GetMedicalRecordTable(userID)
 	var notification string
 	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
 		return notification, flag //종합적인 문진 결과를 notify할 수 없음
 	} else {
-		if patterns[0] == DB.COMPLECATION { //현재 진행중인 문진을 통한 진단결과가 미병의심(3 가지 이상 패턴의 조합)인 경우
+		if current_patterns[0] == DB.COMPLECATION { //현재 진행중인 문진을 통한 진단결과가 미병의심(3 가지 이상 패턴의 조합)인 경우
 
 			_year_of_Record, _month_of_Record, _day_of_Record := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Date()
 			year_of_Record := strconv.Itoa(_year_of_Record)
@@ -593,7 +593,7 @@ func makeRecentCheckUPResult(userID string, patterns []string) (string, bool) {
 				return notification, flag
 			}
 
-		} else if patterns[0] == DB.PATTERN_NON { // 현재 진행중인 문진을 통한 진단결과가 건강(의심되는 패턴이 없음)인 경우
+		} else if current_patterns[0] == DB.PATTERN_NON { // 현재 진행중인 문진을 통한 진단결과가 건강(의심되는 패턴이 없음)인 경우
 			_year_of_Record, _month_of_Record, _day_of_Record := mrRecords[DB.NUM_MR_to_CHECK-1].TimeStamp.Date()
 			year_of_Record := strconv.Itoa(_year_of_Record)
 			month_of_Record := strconv.Itoa(int(_month_of_Record))
@@ -696,8 +696,11 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 		// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
 		racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
+
 		curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
-		saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
+
+		// TODO 사용자에게 의심 질환이 없는 경우에는 건강 요법들을 추천하지 않음 -> 추후 파라미터 DB.Curation_NON_INDEX와 SQS_CURATION를 다른것으로 변경하여 수정가
+		saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 
 		recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 
