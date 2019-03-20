@@ -726,7 +726,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 	// 해당 요법이 DB에 업로드 되지 않은 경우의 예외처
 	if curation != "NULL" {
-		qData.FinalScoreNotification += "이런 증상일 때는 " + curation + "이 효과적이에요! "
+		qData.FinalScoreNotification += "이런 증상일 때는 " + curation + "의 복용을 추천드려요! "
 	}
 	// switch identifier {
 	// case "칠정":
