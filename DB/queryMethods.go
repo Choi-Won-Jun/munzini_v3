@@ -36,11 +36,21 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 	//fmt.Printf("Connected to %v!\n", session.LiveServers())
 
 	recordID := bson.NewObjectId().Hex()
+	timeStamp := time.Now()
 
 	medicalRecord := MedicalRecord{
 		RecordID:     recordID,
 		UserID:       userID,
-		TimeStamp:    time.Now(),
+		TimeStamp:    timeStamp,
+		QuestionType: questionTYPE,
+		Pattern:      patterns,
+		CurationType: curationType,
+		Curation:     curation,
+	}
+
+	//UserRecord에 저장될 간략한 문진 내용 Struct 생성
+	simpleMR := Simple_MedicalRecord{
+		TimeStamp:    timeStamp,
 		QuestionType: questionTYPE,
 		Pattern:      patterns,
 		CurationType: curationType,
@@ -75,7 +85,7 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 	//Push medical-record ID to the repective user's record
 	updateC := session.DB(Database).C(URCollection)
 	query := bson.M{"userID": medicalRecord.UserID}
-	change := bson.M{"$push": bson.M{"recordID": medicalRecord.RecordID}}
+	change := bson.M{"$push": bson.M{"recordID": medicalRecord.RecordID, "simpleMedicalRecords": simpleMR}}
 	updateErr := updateC.Update(query, change)
 
 	if updateErr != nil {
