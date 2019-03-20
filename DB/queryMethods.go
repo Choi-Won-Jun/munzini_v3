@@ -280,6 +280,11 @@ func SaveResult_and_CurationDataAtDB() {
 			Description:  description,  // Description string   `bson:"description"`
 			Explanation:  explanation,  // Explanation []string `bson:"explanation"`
 			DietCuration: dietCuration, // Curation    []string `bson:"curation"`
+
+			//TODO 추후 CDI_AISpeaker_Result and Curation 파일에 아래 3 가지 요법에 대한 추천항목이 업데이트 될시 아래 코드에 업데이트 필요
+			ExerciseCuration: []string{},
+			YangSangCuration: []string{},
+			CDM_Curation:     []string{},
 		}
 		if err := c.Insert(temp); err != nil {
 			panic(err)

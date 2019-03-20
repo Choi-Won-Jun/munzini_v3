@@ -34,8 +34,12 @@ type ResultAndCuration struct {
 	Pattern      string   `bson:"pattern"`
 	Description  string   `bson:"description"`
 	Explanation  []string `bson:"explanation"`
-	DietCuration []string `bson:"diet_curation"`
-	// 운동요법 등등 다른 처방 필드 아래에 추가
+	DietCuration []string `bson:"diet_curation"` //(식이요법)
+	// TODO 양생요법 변경 필
+	ExerciseCuration []string `bson:"excercise_curation"` // (운동요법)
+	YangSangCuration []string `bson:"yangsang_curation"`  // (양생)
+	CDM_Curation     []string `bson:"CDM_curation"`       //chronic disease menagement curation (만성질환 관리)
+
 }
 
 // Light version of MedicalRecord which is stored in UserRecord Schema
