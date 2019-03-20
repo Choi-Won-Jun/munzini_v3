@@ -74,9 +74,9 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 
 	if len(result) == 0 {
 		temp_user := UserRecord{
-			UserID:   userID,
-			UserName: "nil",
-			//RecordID:         []string{},
+			UserID:           userID,
+			UserName:         "nil",
+			RecordID:         []string{},
 			RegistrationDate: time.Now(),
 			SimpleMRs:        []Simple_MedicalRecord{},
 		}
@@ -86,7 +86,7 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 	//Push medical-record ID to the repective user's record
 	updateC := session.DB(Database).C(URCollection)
 	query := bson.M{"userID": medicalRecord.UserID}
-	change := bson.M{"$push": bson.M{"simpleMedicalRecords": simpleMR}}
+	change := bson.M{"$push": bson.M{"recordID": medicalRecord.RecordID, "simpleMedicalRecords": simpleMR}}
 	updateErr := updateC.Update(query, change)
 
 	if updateErr != nil {

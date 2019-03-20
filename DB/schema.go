@@ -13,9 +13,9 @@ import (
 )
 
 type UserRecord struct {
-	UserName string `bson:"userName"`
-	UserID   string `bson:"userID"`
-	//RecordID         []string               `bson:"recordID"`
+	UserName         string                 `bson:"userName"`
+	UserID           string                 `bson:"userID"`
+	RecordID         []string               `bson:"recordID"`
 	RegistrationDate time.Time              `bson:"registrationDate"`
 	SimpleMRs        []Simple_MedicalRecord `bson:"simpleMedicalRecords"`
 }
