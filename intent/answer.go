@@ -620,7 +620,9 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	var identifier string // 문제 패턴 조사
 	var probNum int = 0   // 문제 패턴 개수
 
-	if qData.SQSProb == true { // SQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
+	var recentCKU_result string //Recent Check up result, 최근 문진 결과를 분석하여 sqsResult에 반영
+	var isDataENOUGH bool       //Recent Check up 분석을 할 최근 문진기록이 충분한지 여부를 저장하는 변수
+	if qData.SQSProb == true {  // SQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
 		//finalScoreNotification
 		//qData.FinalScore[] 사용
 		sqslength := len(qData.SQSProbPatternIdx)
@@ -752,15 +754,18 @@ func suggestCuration(rncInfo DB.ResultAndCuration, curationType int) string { //
 	rand_seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(rand_seed)
 
-	switch curationType {
-	case DB.DIET_CURATION_INDEX:
-		return rncInfo.DietCuration[r.Intn(len(rncInfo.DietCuration))]
-	case DB.Exercise_Curation_INDEX:
+	return rncInfo.DietCuration[r.Intn(len(rncInfo.DietCuration))]
 
-	case DB.YangSang_Curation_INDEX:
-	case DB.CDM_Curation_INDEX:
-	default:
+	// In case for Updating the curation types
+	// switch curationType {
+	// case DB.DIET_CURATION_INDEX:
+	// 	return rncInfo.DietCuration[r.Intn(len(rncInfo.DietCuration))]
+	// case DB.Exercise_Curation_INDEX:
 
-	}
+	// case DB.YangSang_Curation_INDEX:
+	// case DB.CDM_Curation_INDEX:
+	// default:
+
+	// }
 
 }
