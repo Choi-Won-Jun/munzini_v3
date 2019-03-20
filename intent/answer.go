@@ -695,7 +695,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	if probNum == 0 { // 정밀문진 결과 문제되는 패턴이 없을 때
 
 		// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
-		racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
+		//racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
 
 		//curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
 
