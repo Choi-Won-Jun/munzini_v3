@@ -697,7 +697,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 		// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
 		racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
 
-		curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
+		//curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
 
 		// TODO 사용자에게 의심 질환이 없는 경우에는 건강 요법들을 추천하지 않음 -> 추후 파라미터 DB.Curation_NON_INDEX와 SQS_CURATION를 다른것으로 변경하여 수정가
 		saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
