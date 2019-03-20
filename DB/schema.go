@@ -13,9 +13,9 @@ import (
 )
 
 type UserRecord struct {
-	UserName         string                 `bson:"userName"`
-	UserID           string                 `bson:"userID"`
-	RecordID         []string               `bson:"recordID"`
+	UserName string `bson:"userName"`
+	UserID   string `bson:"userID"`
+	//RecordID         []string               `bson:"recordID"`
 	RegistrationDate time.Time              `bson:"registrationDate"`
 	SimpleMRs        []Simple_MedicalRecord `bson:"simpleMedicalRecords"`
 }
@@ -44,6 +44,7 @@ type ResultAndCuration struct {
 
 // Light version of MedicalRecord which is stored in UserRecord Schema
 type Simple_MedicalRecord struct {
+	RecordID     string    `bson:"recordID"`
 	TimeStamp    time.Time `bson:"timeStamp"`
 	QuestionType int       `bson:"questionType"` //0 = 간단문진, 1 = 전체문진, 2 = Interrupt
 	Pattern      []string  `bson:"pattern"`
