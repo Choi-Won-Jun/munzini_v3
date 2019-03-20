@@ -716,13 +716,15 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 	patterns := strings.Split(identifier, " ")
 
-	racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
+	racInfo := DB.GetResult_and_Curation(identifier)
 	curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
 	saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, patterns, DB.DIET_CURATION_INDEX, curation)
 
 	//recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
 
 	qData.FinalScoreNotification = "문진 결과를 알려드릴께요. " + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+
+	// 해당 요법이 DB에 업로드 되지 않은 경우의 예외처
 	if curation != "NULL" {
 		qData.FinalScoreNotification += "이런 증상일 때는 " + curation + "이 효과적이에요! "
 	}
