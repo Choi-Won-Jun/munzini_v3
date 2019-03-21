@@ -620,7 +620,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 
 			// cp_mrTABLE에 현재 의심되는 패턴들의 값을 1로 설정
 			for _, current_pattern := range current_patterns {
-				log.Println(current_pattern)
+
 				cp_mrTABLE[question.PATTERN_INDEX[current_pattern]] = 1
 			}
 
@@ -636,7 +636,9 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 
 			// 변화가 있는 경우
 			if isStatusChanged == true {
+				log.Println(len(chgPtn_Indexs))
 				for _, chgPtn_Index := range chgPtn_Indexs {
+
 					if cp_mrTABLE[chgPtn_Index] == 1 { // 이전 문진에서는 없던 패턴(증상)이 현재 문진에서 발견된 경우
 						startDateIndex := 0 // 과거 문진 기록중 해당 패턴이 없었던 날짜들을 추적하기 위한 변수
 
