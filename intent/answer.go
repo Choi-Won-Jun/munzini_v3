@@ -571,6 +571,8 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, c
 *
  */
 func makeRecentCheckUPResult(userID string, current_patterns []string) (string, bool) {
+
+	//mrTABLE = Medical Record Table(이전 3회 분의 문진 결과를 Table형태로 저장한 변)
 	mrTABLE, mrRecords, flag := DB.GetMedicalRecordTable(userID)
 	var notification string
 	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
@@ -609,6 +611,90 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 			}
 
 		} else { // 현재 진행중인 문진을 통한 결과가 하나 혹은 두 가지 패턴의 조합 인 경우 ex)'칠정 노권', '칠정 담음'
+			isStatusChanged := false // 바로 이전 문진 결과(mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1])와 현재 문진 결과를 비교하여, 증상의 변화 여부를 저장하는 변수
+			var chgPtn_Indexs []int  // Changed Pattern Index, 바뀐 증상의 Index를 저장하는 변수
+			var cp_mrTABLE []int     //CurrentPattern Medical Record TABLE: 현재 문진 중 의심되는 패턴들에 대한 테이블
+
+			//var do_Notification string //Disease Occurance Notification
+
+			// cp_mrTABLE에 현재 의심되는 패턴들의 값을 1로 설정
+			for _, current_pattern := range current_patterns {
+				cp_mrTABLE[question.PATTERN_INDEX[current_pattern]] = 1
+			}
+
+			for i := 0; i < question.PATTERN_NUM; i++ { //PATTERN_NUM은 칠정, 노권, 담음 등의 기본적인턴 패턴의 숫자(미병의심, 건강의 두 가지 패턴 제외)로 5로 설정되어있음
+
+				// 바로 이전 문진기록과 비교하여 변화가 있는지 탐색
+				if mrTABLE[i][DB.NUM_MR_to_CHECK-1] != cp_mrTABLE[i] {
+					append(chgPtn_Indexs, i)
+					isStatusChanged = true
+					break
+				}
+			}
+
+			// 변화가 있는 경우
+			if isStatusChanged == true {
+				for _, chgPtn_Index := range chgPtn_Indexs {
+					if cp_mrTABLE[chgPtn_Index] == 1 { // 이전 문진에서는 없던 패턴(증상)이 현재 문진에서 발견된 경우
+						startDateIndex := 0 // 과거 문진 기록중 해당 패턴이 없었던 날짜들을 추적하기 위한 변수
+
+						//가장 최근의 문진기록으로부터 추적하기 시작
+						for i := DB.NUM_MR_to_CHECK - 1; i >= 0; i-- {
+							// 만일 이전기록중에서 해당 패턴(질환)을 가진 것이 발견된다면 break, 해당 검진을 받은 다음 검진 날짜를 startDate Index로 지정(해당 패턴을 가지지 않은 기간을 추적하기 위함)
+							if mrTABLE[chgPtn_Index][i] == 1 {
+								startDateIndex = (i + 1)
+								break
+							}
+						}
+
+						_year_of_Record, _month_of_Record, _day_of_Record := mrRecords[startDateIndex].TimeStamp.Date()
+						year_of_Record := strconv.Itoa(_year_of_Record)
+						month_of_Record := strconv.Itoa(int(_month_of_Record))
+						day_of_Record := strconv.Itoa(_day_of_Record)
+
+						notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 이전까지는 없던 " + question.PATTERN_NAME[chgPtn_Index] + "증상이 발견되었어요! "
+
+					} else { // 이전 문진에서는 있던 패턴(증상)이 현재 문진에서 발견되지 않은 경우
+						startDateIndex := 0 // 과거 문진 기록중 해당 패턴이 없었던 날짜들을 추적하기 위한 변수
+
+						//가장 최근의 문진기록으로부터 추적하기 시작
+						for i := DB.NUM_MR_to_CHECK - 1; i >= 0; i-- {
+							// 만일 이전기록중에서 해당 패턴(질환)이 없던 것이 발견된다면 break, 해당 검진을 받은 다음 검진 날짜를 startDate Index로 지정(해당 패턴을 가지고 있던 기간을 추적하기 위함)
+							if mrTABLE[chgPtn_Index][i] == 0 {
+								startDateIndex = (i + 1)
+								break
+							}
+						}
+
+						_year_of_Record, _month_of_Record, _day_of_Record := mrRecords[startDateIndex].TimeStamp.Date()
+						year_of_Record := strconv.Itoa(_year_of_Record)
+						month_of_Record := strconv.Itoa(int(_month_of_Record))
+						day_of_Record := strconv.Itoa(_day_of_Record)
+
+						notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 지속되었던 " + question.PATTERN_NAME[chgPtn_Index] + "증상이 치료되었어요! "
+					}
+
+				}
+			} else { //변화가 없는 경우: 이전에 가지고 있던 증상이 현재까지 계속 이어짐
+				for _, pattern := range current_patterns {
+					startDateIndex := 0
+
+					for i := DB.NUM_MR_to_CHECK - 1; i >= 0; i-- { //현재 가지고 있던 증상이 초기에 발병된 날짜를 추적
+						if mrTABLE[question.PATTERN_INDEX[pattern]][i] == 0 { //찾는다면 break
+							startDateIndex = (i + 1)
+							break
+						}
+					}
+
+					_year_of_Record, _month_of_Record, _day_of_Record := mrRecords[startDateIndex].TimeStamp.Date()
+					year_of_Record := strconv.Itoa(_year_of_Record)
+					month_of_Record := strconv.Itoa(int(_month_of_Record))
+					day_of_Record := strconv.Itoa(_day_of_Record)
+
+					notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 " + question.PATTERN_NAME[chgPtn_Index] + "증상이 계속되고있어요... "
+
+				}
+			}
 			return notification, flag
 		}
 	}

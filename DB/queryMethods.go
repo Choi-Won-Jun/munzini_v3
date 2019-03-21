@@ -154,11 +154,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 	findC := session.DB(Database).C(URCollection)
 
 	var urRecord UserRecord
-	// iter := findC.Find(bson.M{"userID": userID}).Limit(NUM_MR_to_CHECK).Iter()
-	// findErr := iter.All(&urRecord)
-	// if findErr != nil {
-	// 	panic(err)
-	// }
+
 	if findErr := findC.Find(bson.M{"userID": userID}).One(&urRecord); findErr != nil {
 		panic(findErr)
 	}
@@ -223,15 +219,6 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 			}
 		}
 
-		//log.Println(medicalRecords[0].TimeStamp.Year())
-		////////
-		// var mrTable_ChgReport [question.PATTERN_NUM][NUM_MR_to_CHECK - 1]int // MRTABLE내 사용자의 질환기록 중 변화(쾌유 혹은 발병 등)를 저장하는 테이블 (Change Report)
-		// for i := 0; i < question.PATTERN_NUM; i++ {
-		// 	for j := 0; j < NUM_MR_to_CHECK-1; j++ {
-		// 		mrTable_ChgReport[i][j] = (mrTable[i][j+1] - mrTable[i][j])
-		// 	}
-		// }
-		////////
 		return mrTable, medicalRecords, flag
 	}
 
