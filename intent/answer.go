@@ -567,7 +567,7 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, c
 
 /**
 * Author: Jun
-* 최근 세 번의 건강 검진 결과를 바탕으로 건강 상태에 대한 정보를 추가 제공
+* 최근 세 번의 건강 검진 결과를 바탕으로 최근 건강 상태의 추세 대한 정보를 추가 제공
 *
  */
 func makeRecentCheckUPResult(userID string, current_patterns []string) (string, bool) {
@@ -611,6 +611,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 			}
 
 		} else { // 현재 진행중인 문진을 통한 결과가 하나 혹은 두 가지 패턴의 조합 인 경우 ex)'칠정 노권', '칠정 담음'
+
 			isStatusChanged := false                 // 바로 이전 문진 결과(mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1])와 현재 문진 결과를 비교하여, 증상의 변화 여부를 저장하는 변수
 			var chgPtn_Indexs []int                  // Changed Pattern Index, 바뀐 증상의 Index를 저장하는 변수
 			var cp_mrTABLE [question.PATTERN_NUM]int //CurrentPattern Medical Record TABLE: 현재 문진 중 의심되는 패턴들에 대한 테이블
@@ -697,6 +698,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 				}
 			}
 			return notification, flag
+
 		}
 	}
 }

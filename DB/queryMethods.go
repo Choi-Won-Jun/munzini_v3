@@ -209,8 +209,11 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 		for index, mrRecord := range medicalRecords {
 			for _, pattern := range mrRecord.Pattern {
 				// 사용자가 해당 질환(패턴)을 가진 경우 Table 내의 값은 1로 저장
-				if pattern == COMPLECATION {
+				if pattern == COMPLECATION { //복합적 미병인 경우, 5 가지의 모든 패턴은 1로 저장(3 가지 이상 패턴의 조합인데, 어떠한 조합인지 알 수 없으므로 모두 1로 설정)
 					mrTable[COMPLECATION_INDEX][index] = 1
+					for _, pattern_Temp := range question.PATTERN_NAME { //칠정, 노권, 담음, 식적, 어혈 필드를 모두 1로 설정
+						mrTable[question.PATTERN_INDEX[pattern_Temp]][index] = 1
+					}
 				} else if pattern == PATTERN_NON {
 					mrTable[PATTERN_NON_INDEX][index] = 1
 				} else {

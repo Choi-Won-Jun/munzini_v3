@@ -36,9 +36,9 @@ type ResultAndCuration struct {
 	Explanation  []string `bson:"explanation"`
 	DietCuration []string `bson:"diet_curation"` //(식이요법)
 	// TODO 양생요법 변경 필
-	ExerciseCuration []string `bson:"excercise_curation"` // (운동요법)
-	YangSangCuration []string `bson:"yangsang_curation"`  // (양생)
-	CDM_Curation     []string `bson:"CDM_curation"`       //chronic disease menagement curation (만성질환 관리)
+	ExerciseCuration []string `bson:"exercise_curation"` // (운동요법)
+	YangSangCuration []string `bson:"yangsang_curation"` // (양생)
+	CDM_Curation     []string `bson:"CDM_curation"`      //chronic disease menagement curation (만성질환 관리)
 
 }
 
