@@ -626,7 +626,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 
 				// 바로 이전 문진기록과 비교하여 변화가 있는지 탐색
 				if mrTABLE[i][DB.NUM_MR_to_CHECK-1] != cp_mrTABLE[i] {
-					append(chgPtn_Indexs, i)
+					chgPtn_Indexs = append(chgPtn_Indexs, i)
 					isStatusChanged = true
 					break
 				}
@@ -691,7 +691,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 					month_of_Record := strconv.Itoa(int(_month_of_Record))
 					day_of_Record := strconv.Itoa(_day_of_Record)
 
-					notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 " + question.PATTERN_NAME[chgPtn_Index] + "증상이 계속되고있어요... "
+					notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 " + pattern + "증상이 계속되고있어요... "
 
 				}
 			}
