@@ -653,7 +653,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 						month_of_Record := strconv.Itoa(int(_month_of_Record))
 						day_of_Record := strconv.Itoa(_day_of_Record)
 
-						notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 이전까지는 없던 " + question.PATTERN_NAME[chgPtn_Index] + "증상이 발견되었어요! "
+						notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 이전 문진 까지는 없던 " + question.PATTERN_NAME[chgPtn_Index] + "증상이 발견되었어요! "
 
 					} else { // 이전 문진에서는 있던 패턴(증상)이 현재 문진에서 발견되지 않은 경우
 						startDateIndex := 0 // 과거 문진 기록중 해당 패턴이 없었던 날짜들을 추적하기 위한 변수
@@ -732,6 +732,9 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 			recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 
+			//TODO recentCKU_result 내용을 최종문진 결과에서는 생략하기 위함, 대표님과의 상의 후, 최종문진내용에 이를 포함하고 싶다면 아래 코드 한줄 삭제하거나 주석처리 할 것
+			isDataENOUGH = false
+
 			if isDataENOUGH == false {
 
 				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
@@ -763,6 +766,9 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 			recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 
+			//TODO recentCKU_result 내용을 최종문진 결과에서는 생략하기 위함, 대표님과의 상의 후, 최종문진내용에 이를 포함하고 싶다면 아래 코드 한줄 삭제하거나 주석처리 할 것
+			isDataENOUGH = false
+
 			if isDataENOUGH == false {
 
 				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
@@ -770,6 +776,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 			} else {
 				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
 			}
+
 			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
 
 			return qData
@@ -790,6 +797,9 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 		recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 
+		//TODO recentCKU_result 내용을 최종문진 결과에서는 생략하기 위함, 대표님과의 상의 후, 최종문진내용에 이를 포함하고 싶다면 아래 코드 한줄 삭제하거나 주석처리 할 것
+		isDataENOUGH = false
+
 		if isDataENOUGH == true {
 			qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. " + recentCKU_result + " 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
 		} else {
@@ -805,9 +815,15 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	racInfo := DB.GetResult_and_Curation(identifier)
 	curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
 
-	//recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
+	recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
 
-	qData.FinalScoreNotification = "문진 결과를 알려드릴께요. " + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+	//TODO recentCKU_result 내용을 최종문진 결과에서는 생략하기 위함, 대표님과의 상의 후, 최종문진내용에 이를 포함하고 싶다면 아래 코드 한줄 삭제하거나 주석처리 할 것
+	isDataENOUGH = false
+	if isDataENOUGH == true {
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. " + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
+	} else {
+		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. " + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+	}
 
 	// 해당 요법이 DB에 업로드 되지 않은 경우의 예외처
 	if curation != "NULL" {
