@@ -96,7 +96,6 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				statusDelta = 1
 			} else { // NOSQSProbPatternIdx가 채워졌을 때
 
-				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 
 				if isDataENOUGH == true {
@@ -106,7 +105,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				}
 
 				//saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
-
+				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 				statusDelta = 1 // next status
 			}
 		} else { // 간단진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
@@ -143,7 +142,6 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				statusDelta = 1 // next status
 			} else {
 
-				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 
 				if isDataENOUGH == true {
@@ -151,6 +149,8 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				} else {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
 				}
+				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
+				statusDelta = 1 // next status
 
 			}
 		} else { // 간단진단 질문을 진행할 때, 특정 지점에서 남은 질문의 개수를 알려준다.
@@ -471,7 +471,6 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 
 	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
 
-		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 		recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 
 		if isDataENOUGH == false {
@@ -481,6 +480,8 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 		} else {
 			sqsResult = "문진 결과를 알려드릴께요." + DB.GetResult_and_Explanation(DB.COMPLECATION) + recentCKU_result + "그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요?"
 		}
+
+		saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 
 		return sqsResult
 	}
@@ -508,7 +509,6 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 
 	patterns := strings.Split(identifier, " ")
 
-	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, DB.CURATION_NON_INDEX, SQS_CURATION)
 	recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
 
 	sqsResult = "문진 결과를 알려드릴께요. " + DB.GetResult_and_Explanation(identifier) + " 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요? "
@@ -546,7 +546,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	// default:
 	// 	sqsResult = ""
 	//}
-
+	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, DB.CURATION_NON_INDEX, SQS_CURATION)
 	if isDataENOUGH == false {
 		return sqsResult
 	} else {
@@ -583,8 +583,8 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 			month_of_Record := strconv.Itoa(int(_month_of_Record))
 			day_of_Record := strconv.Itoa(_day_of_Record)
 
-			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,  mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1]의 자리에는 현재 진행된 문진의 결과가 저장되어있으므로 그 이전 기록을 조회하기 위해 -2
-			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-2] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -2] == 1 => 이전 문진에서도 미병의심 진단을 받음
+			//NUM_MR_to_CHECK는 DB에서 최신순으로 불러올 Medical Record들의 수,
+			if mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK-1] == 1 { // case : mrTABLE[DB.COMPLECATION_INDEX][DB.NUM_MR_to_CHECK -1] == 1 => 이전 문진에서도 미병의심 진단을 받음
 
 				notification := " " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 " + "부터 지금까지 종합적인 건강수치가 좋지 못한 상태에요. "
 				return notification, flag
@@ -599,12 +599,12 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 			month_of_Record := strconv.Itoa(int(_month_of_Record))
 			day_of_Record := strconv.Itoa(_day_of_Record)
 
-			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-2] == 1 {
+			if mrTABLE[DB.PATTERN_NON_INDEX][DB.NUM_MR_to_CHECK-1] == 1 {
 				notification := " 최근 건강 상태가 아주 훌륭하시네요! "
 				return notification, flag
 
 			} else {
-				notification := " 이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-2].Pattern, " ") + "증상이 완화되었어요!"
+				notification := " 이전 " + year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일 문진결과와 비교했을 때, " + strings.Join(mrRecords[DB.NUM_MR_to_CHECK-1].Pattern, " ") + "증상이 완화되었어요!"
 				return notification, flag
 			}
 
@@ -642,7 +642,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 			// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
 			curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
-			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
+
 			recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 
 			if isDataENOUGH == false {
@@ -652,7 +652,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 			} else {
 				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
 			}
-
+			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
 			return qData
 		}
 	} else { // NoSQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
@@ -673,7 +673,6 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 			// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
 			racInfo := DB.GetResult_and_Curation(DB.COMPLECATION)
 			curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
-			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
 
 			recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 
@@ -684,6 +683,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 			} else {
 				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
 			}
+			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
 
 			return qData
 		}
@@ -700,7 +700,6 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 		//curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
 
 		// TODO 사용자에게 의심 질환이 없는 경우에는 건강 요법들을 추천하지 않음 -> 추후 파라미터 DB.Curation_NON_INDEX와 SQS_CURATION를 다른것으로 변경하여 수정가
-		saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 
 		recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 
@@ -709,7 +708,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 		} else {
 			qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
 		}
-
+		saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 		//qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
 		return qData
 	}
@@ -718,7 +717,6 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 	racInfo := DB.GetResult_and_Curation(identifier)
 	curation := suggestCuration(racInfo, DB.DIET_CURATION_INDEX)
-	saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, patterns, DB.DIET_CURATION_INDEX, curation)
 
 	//recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
 
@@ -762,7 +760,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	// default:
 	// 	qData.FinalScoreNotification = ""
 	// }
-
+	saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, patterns, DB.DIET_CURATION_INDEX, curation)
 	return qData
 }
 
