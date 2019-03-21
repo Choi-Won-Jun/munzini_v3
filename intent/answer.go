@@ -634,7 +634,6 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 
 					chgPtn_Indexs = append(chgPtn_Indexs, i)
 					isStatusChanged = true
-					break
 				}
 			}
 
