@@ -626,10 +626,10 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 			}
 
 			for i := 0; i < question.PATTERN_NUM; i++ { //PATTERN_NUM은 칠정, 노권, 담음 등의 기본적인턴 패턴의 숫자(미병의심, 건강의 두 가지 패턴 제외)로 5로 설정되어있음
-
+				log.Println(mrTABLE[i][DB.NUM_MR_to_CHECK-1], cp_mrTABLE[i])
 				// 바로 이전 문진기록과 비교하여 변화가 있는지 탐색
 				if mrTABLE[i][DB.NUM_MR_to_CHECK-1] != cp_mrTABLE[i] {
-					log.Println(mrTABLE[i][DB.NUM_MR_to_CHECK-1], cp_mrTABLE[i])
+
 					chgPtn_Indexs = append(chgPtn_Indexs, i)
 					isStatusChanged = true
 					break
