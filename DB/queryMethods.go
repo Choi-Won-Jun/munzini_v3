@@ -184,6 +184,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 	}
 
 	flag := true
+	// 가장 최근의 문진 기록만을 반환
 	return medicalRecords[len(medicalRecords)-NUM_MR_to_CHECK : len(medicalRecords)], flag
 
 }

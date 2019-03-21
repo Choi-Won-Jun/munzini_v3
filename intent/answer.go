@@ -619,6 +619,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 
 			// cp_mrTABLE에 현재 의심되는 패턴들의 값을 1로 설정
 			for _, current_pattern := range current_patterns {
+				log.Println(current_pattern)
 				cp_mrTABLE[question.PATTERN_INDEX[current_pattern]] = 1
 			}
 
