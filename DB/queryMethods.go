@@ -6,7 +6,7 @@ import (
 	"bufio"
 	"encoding/csv"
 
-	//"log"
+	"log"
 	"munzini/question"
 	"os"
 	"time"
@@ -222,7 +222,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 
 			}
 		}
-
+		log.Println(mrTable)
 		return mrTable, medicalRecords, flag
 	}
 
