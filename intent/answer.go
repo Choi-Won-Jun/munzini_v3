@@ -30,7 +30,7 @@ const DETAIL_QUESTION_TYPE = 1
 const SQS_CURATION = "NULL"
 
 // 1. Get Simple Question Proceed Answer: 간단 문진 시작 여부 및 첫 질문 출력
-func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
+func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData userID string) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
@@ -42,6 +42,7 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		qData.RepMax = len(qData.QRepIdx)
 		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문을 듣고 긍정 혹은 부정의 뜻으로 말씀해주시면 됩니다. 첫 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
 		statusDelta = 1                                                                                                                                           // next status
+		DB.SaveUserRecord(userID)
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
 		shouldEndSession = true

@@ -132,6 +132,41 @@ func InsertUserRecord(ur UserRecord) {
 	}
 }
 
+func SaveUserRecord(userID string) {
+	uri := os.Getenv("MONGODB_URI")
+	if uri == "" {
+		//	fmt.Println("no connection string provided")
+		os.Exit(1)
+	}
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		//	fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
+	}
+	defer session.Close()
+	//fmt.Printf("Connected to %v!\n", session.LiveServers())
+
+	// Find First, If user is not exist in database, add his data
+	findC := session.DB(Database).C(URCollection)
+
+	var result []UserRecord
+	if findErr := findC.Find(bson.M{"userID": userID}).All(&result); findErr != nil {
+		panic(findErr)
+	}
+
+	if len(result) == 0 {
+		temp_user := UserRecord{
+			UserID:           userID,
+			UserName:         "nil",
+			RecordID:         []string{},
+			RegistrationDate: time.Now(),
+			SimpleMRs:        []Simple_MedicalRecord{},
+		}
+		InsertUserRecord(temp_user)
+	}
+
+}
+
 /*
 * Author: Jun
 * Look up the recent medical records by userID

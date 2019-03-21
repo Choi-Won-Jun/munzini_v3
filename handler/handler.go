@@ -66,7 +66,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		// 사용자의 발화에 대한 응답을 현재 상태에 따라 세팅한다. 필요한 경우 응답을 세팅하는 과정에서 슬롯에 대한 처리를 포함한다.
 		switch status {
 		case SQP_S: // status가 0인 경우
-			result, statusDelta, qdata = intent.GetSQPAnswer(cekIntent, qdata)
+			result, statusDelta, qdata = intent.GetSQPAnswer(cekIntent, qdata, req.Session.User.UserId)
 		case SQS_S:
 			result, statusDelta, qdata = intent.GetSQSAnswer(cekIntent, qdata, req.Session.User.UserId)
 		case DQP_S:
