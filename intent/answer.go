@@ -4,7 +4,7 @@ import (
 	"fmt"       // 디버그 관련
 	"math/rand" // 임의 추출 관련
 
-	//"log"
+	"log"
 	"munzini/DB"
 	"munzini/nlp"      // 맞장구 관련
 	"munzini/protocol" // CEK 관련 구조체
