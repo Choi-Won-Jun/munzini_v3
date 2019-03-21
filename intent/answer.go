@@ -629,6 +629,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 
 				// 바로 이전 문진기록과 비교하여 변화가 있는지 탐색
 				if mrTABLE[i][DB.NUM_MR_to_CHECK-1] != cp_mrTABLE[i] {
+					log.Println(mrTABLE[i][DB.NUM_MR_to_CHECK-1], cp_mrTABLE[i])
 					chgPtn_Indexs = append(chgPtn_Indexs, i)
 					isStatusChanged = true
 					break
@@ -637,7 +638,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 
 			// 변화가 있는 경우
 			if isStatusChanged == true {
-				log.Println(len(chgPtn_Indexs))
+
 				for _, chgPtn_Index := range chgPtn_Indexs {
 
 					if cp_mrTABLE[chgPtn_Index] == 1 { // 이전 문진에서는 없던 패턴(증상)이 현재 문진에서 발견된 경우
