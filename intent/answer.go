@@ -30,7 +30,7 @@ const DETAIL_QUESTION_TYPE = 1
 const SQS_CURATION = "NULL"
 
 // 1. Get Simple Question Proceed Answer: 간단 문진 시작 여부 및 첫 질문 출력
-func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData userID string) (protocol.CEKResponsePayload, int, question.QData) {
+func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
