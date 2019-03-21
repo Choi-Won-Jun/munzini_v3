@@ -657,7 +657,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 						day_of_Record := strconv.Itoa(_day_of_Record)
 
 						notification += year_of_Record + "년 " + month_of_Record + "월 " + day_of_Record + "일부터 이전 문진 까지는 없던 " + question.PATTERN_NAME[chgPtn_Index] + "증상이 발견되었어요! "
-
+						log.Println(notification)
 					} else { // 이전 문진에서는 있던 패턴(증상)이 현재 문진에서 발견되지 않은 경우
 						startDateIndex := 0 // 과거 문진 기록중 해당 패턴이 없었던 날짜들을 추적하기 위한 변수
 
