@@ -120,7 +120,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = playUptoMessage + ".............                       " + responseValue // nlp.PlayUpto 이제 설계 해야한다.
+					responseValue = playUptoMessage + "다음!" + responseValue // nlp.PlayUpto 이제 설계 해야한다.
 				}
 			}
 		}
@@ -164,7 +164,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				r := rand.New(rand_seed)                                                               // 정해진 확률로 맞장구 추가하기 위함.
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = playUptoMessage + ".............                         " + responseValue
+					responseValue = playUptoMessage + "다음!" + responseValue
 				}
 			}
 		}
