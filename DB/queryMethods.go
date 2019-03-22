@@ -6,7 +6,7 @@ import (
 	"bufio"
 	"encoding/csv"
 
-	"log"
+	//"log"
 	"munzini/question"
 	"os"
 	"time"
@@ -213,9 +213,9 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 	}
 
 	count := 0                                      // 최근 건강 추세 조회를 위한 문진 기록의 수를 count 하기 위한 변수
-	flag := false                                   // 최근 건강 추세 조회를 위한 문진 기록의 수가 NUM_MR_to_CHECK이상인지 확인하기 위한 변
+	flag := false                                   // 최근 건강 추세 조회를 위한 문진 기록의 수가 NUM_MR_to_CHECK이상인지 확인하기 위한 변수
 	mrRecords_to_Return := []MedicalRecord{}        //반환할 최근 문진기록 리스트
-	for i := len(medicalRecords) - 1; i >= 0; i-- { //최근기록일수록 리스트의 뒤에 위치하기에 역순으로 탐
+	for i := len(medicalRecords) - 1; i >= 0; i-- { //최근기록일수록 리스트의 뒤에 위치하기에 역순으로 탐색
 		if count >= NUM_MR_to_CHECK {
 			flag = true
 			break
@@ -240,7 +240,7 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 		mrRecords_to_Return[i], mrRecords_to_Return[j] = mrRecords_to_Return[j], mrRecords_to_Return[i]
 	}
 
-	log.Println(mrRecords_to_Return)
+	log.Println(mrRecords_to_Return, flag)
 	return mrRecords_to_Return, flag
 
 	// // 충분한 수의 문진기록이 저장되어있는지 확인
@@ -288,7 +288,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 
 			}
 		}
-		log.Println(mrTable)
+		//log.Println(mrTable)
 		return mrTable, medicalRecords, flag
 	}
 
