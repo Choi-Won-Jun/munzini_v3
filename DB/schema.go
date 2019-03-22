@@ -70,7 +70,9 @@ const (
 
 	RAC_SQS_EXPLANATION_INDEX = 2 //ResultAndCuration 내의 Explanation Field에 간단 문진 진단 결과가 저장된 인덱스
 	RAC_DQS_EXPLANATION_INDEX = 3 //상세 문진 진단 결과가 저장된 인덱스
-	SIMPLE_QUESTION_TYPE      = 0
+
+	SIMPLE_QUESTION_TYPE = 0
+	DETAIL_QUESTION_TYPE = 1
 
 	//DB에 저장되는 추천 건강 요법들 관련 Index
 	CURATION_NON_INDEX      = 0
