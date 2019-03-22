@@ -212,24 +212,24 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 
 	}
 
-	count := 0                                     // 최근 건강 추세 조회를 위한 문진 기록의 수를 count 하기 위한 변수
-	flag := false                                  // 최근 건강 추세 조회를 위한 문진 기록의 수가 NUM_MR_to_CHECK이상인지 확인하기 위한 변
-	mrRecords_to_Return := []MedicalRecord{}       //반환할 최근 문진기록 리스트
-	for i = len(medicalRecords) - 1; i >= 0; i-- { //최근기록일수록 리스트의 뒤에 위치하기에 역순으로 탐
+	count := 0                                      // 최근 건강 추세 조회를 위한 문진 기록의 수를 count 하기 위한 변수
+	flag := false                                   // 최근 건강 추세 조회를 위한 문진 기록의 수가 NUM_MR_to_CHECK이상인지 확인하기 위한 변
+	mrRecords_to_Return := []MedicalRecord{}        //반환할 최근 문진기록 리스트
+	for i := len(medicalRecords) - 1; i >= 0; i-- { //최근기록일수록 리스트의 뒤에 위치하기에 역순으로 탐
 		if count >= NUM_MR_to_CHECK {
 			flag = true
 			break
 		}
 
 		if medicalRecords[i].QuestionType == DETAIL_QUESTION_TYPE { //i번째의 문진 기록이 정밀 검진인 경우
-			mrRecords_to_Return = append(mrRecords_to_Return, medicalRecord[i])
+			mrRecords_to_Return = append(mrRecords_to_Return, medicalRecords[i])
 			count++
 			if medicalRecords[i-1].QuestionType == SIMPLE_QUESTION_TYPE { // 정밀검진은 항상 간단 검진 결과 뒤에 저장된다.
 				//최근 기록을 조회하여 건강 추세를 분석할 때 간단 검진과 정밀 검진 결과가 모두 있다면 정밀 검진 결과만 사용하므로, 그 앞의 간단 문진 결과를 포함하지 않기 위함
 				i -= 1
 			}
 		} else { //medicalRecords[i].QuestionType ==SIMPLE_QUESTION_TYPE
-			mrRecords_to_Return = append(mrRecords_to_Return, medicalRecord[i])
+			mrRecords_to_Return = append(mrRecords_to_Return, medicalRecords[i])
 			count++
 
 		}
