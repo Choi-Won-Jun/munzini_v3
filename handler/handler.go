@@ -93,7 +93,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 func handleLaunchRequest() protocol.CEKResponsePayload {
 
 	return protocol.CEKResponsePayload{
-		OutputSpeech:     protocol.MakeSimpleOutputSpeech("안녕하세요, 문지니입니다.? 오늘의 문진을 시작해볼까요?"),
+		OutputSpeech:     protocol.MakeSimpleOutputSpeech("안녕하세요, 히포입니다.? 오늘의 문진을 시작해볼까요?"),
 		ShouldEndSession: false,
 	}
 }
