@@ -829,9 +829,11 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 		qData.FinalScoreNotification = "문진 결과를 알려드릴께요. " + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
 	}
 
-	// 해당 요법이 DB에 업로드 되지 않은 경우의 예외처
+	// 해당 요법이 DB에 업로드 되지 않은 경우의 예외처리
 	if curation != "NULL" {
 		qData.FinalScoreNotification += "이런 증상일 때는 " + curation + "의 복용을 추천드려요! "
+	} else {
+		qData.FinalScoreNotification += "이런 증상일 때 회복할 수 있는 좋은 추천을 곧 해드릴게요! "
 	}
 	// switch identifier {
 	// case "칠정":
