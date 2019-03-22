@@ -216,10 +216,6 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 	flag := false                                   // 최근 건강 추세 조회를 위한 문진 기록의 수가 NUM_MR_to_CHECK이상인지 확인하기 위한 변수
 	mrRecords_to_Return := []MedicalRecord{}        //반환할 최근 문진기록 리스트
 	for i := len(medicalRecords) - 1; i >= 0; i-- { //최근기록일수록 리스트의 뒤에 위치하기에 역순으로 탐색
-		if count >= NUM_MR_to_CHECK {
-			flag = true
-			break
-		}
 
 		if medicalRecords[i].QuestionType == DETAIL_QUESTION_TYPE { //i번째의 문진 기록이 정밀 검진인 경우
 			mrRecords_to_Return = append(mrRecords_to_Return, medicalRecords[i])
@@ -232,6 +228,11 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 			mrRecords_to_Return = append(mrRecords_to_Return, medicalRecords[i])
 			count++
 
+		}
+
+		if count >= NUM_MR_to_CHECK {
+			flag = true
+			break
 		}
 	}
 
