@@ -30,13 +30,6 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	reqType := req.Request.Type
 
-	/////////////////////////////////
-	//log.Println(DB.RetreiveRecentMedicalRecordByUserID(req.Session.User.UserId))
-	//log.Println(DB.GetMedicalRecordTable(req.Session.User.UserId))
-	//log.Println(req.Contexts)
-	//DB.GetResult_Explanation("담음")
-	////////////////////////////////
-
 	var response protocol.CEKResponse
 	var result protocol.CEKResponsePayload
 	var statusDelta int

@@ -93,17 +93,6 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 		panic(updateErr)
 	}
 
-	// // Find Example
-
-	// c := session.DB(Database).C(URCollection)
-
-	// result := c.Find(bson.M{"userID": "123"})
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("Results All: ", result)
-
 }
 
 /*
@@ -244,16 +233,6 @@ func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) 
 	log.Println(mrRecords_to_Return, flag)
 	return mrRecords_to_Return, flag
 
-	// // 충분한 수의 문진기록이 저장되어있는지 확인
-	// if len(medicalRecords) < NUM_MR_to_CHECK {
-	// 	flag := false
-	// 	return nil, flag
-	// }
-
-	// flag := true
-	// // 가장 최근의 문진 기록만을 반환
-	// return medicalRecords[len(medicalRecords)-NUM_MR_to_CHECK : len(medicalRecords)], flag
-
 }
 
 /*
@@ -328,7 +307,7 @@ func SaveResult_and_CurationDataAtDB() {
 
 		pattern := rows[i][0]
 
-		//복합 질환인 경우 pattern 변수하나에 두 질환을 합쳐 저
+		//복합 질환인 경우 pattern 변수하나에 두 질환을 합쳐 저장
 		if rows[i][1] != "" {
 			pattern += (" " + rows[i][1])
 		}
@@ -415,36 +394,3 @@ func GetResult_and_Curation(pattern string) ResultAndCuration {
 
 	return rncInfo
 }
-
-/*
-* Author: Jun
-* DB와의 Connection을 생성 뒤 반환
- */
-// func CreateSession() {
-
-// }
-
-// func sample_main() {
-
-// 	recordID := bson.NewObjectId()
-
-// 	temp := MedicalRecord{
-
-// 		RecordID:     recordID,
-// 		UserID:       "123",
-// 		TimeStamp:    time.Now(),
-// 		QuestionType: 1,
-// 		Pattern:      []string{"담읍", "심혈"},
-// 		TherapyID:    "123",
-// 	}
-// 	InsertMedicalRecord(temp)
-
-// 	//TODO UserRecord Insert Sample
-// 	// temp_user := UserRecord{
-// 	// 	UserID:           "125",
-// 	// 	UserName:         "125",
-// 	// 	RecordID:         []string{"obj23412", "129dhflb"},
-// 	// 	RegistrationDate: time.Now(),
-// 	// }
-// 	// insertUserRecord(temp_user)
-// }

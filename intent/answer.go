@@ -41,7 +41,8 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 		qData = question.PrepareRep(qData) // prepare representative questions
 		qData.RepMax = len(qData.QRepIdx)
 		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문을 듣고 긍정 혹은 부정의 뜻으로 말씀해주시면 됩니다. 첫 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
-		statusDelta = 1                                                                                                                                           // next status
+		statusDelta = 1
+		// Author: Jun                                                                                                                                        // next status
 		DB.SaveUserRecord(userID)
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
@@ -96,7 +97,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				responseValue = SQSResult
 				statusDelta = 1
 			} else { // NOSQSProbPatternIdx가 채워졌을 때
-
+				// Author: Jun
 				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 
 				if isDataENOUGH == true {
@@ -120,7 +121,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = playUptoMessage + "다음!" + responseValue // nlp.PlayUpto 이제 설계 해야한다.
+					responseValue = playUptoMessage + responseValue // nlp.PlayUpto 이제 설계 해야한다.
 				}
 			}
 		}
@@ -143,6 +144,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				statusDelta = 1 // next status
 			} else {
 
+				//Author: Jun
 				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
 
 				if isDataENOUGH == true {
@@ -164,7 +166,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 				r := rand.New(rand_seed)                                                               // 정해진 확률로 맞장구 추가하기 위함.
 				responseValue = question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // next question
 				if randomPick := r.Intn(question.PROB_PLAYUPTO); randomPick == 0 {                     // 1/PROB_PLAYUPTO 확률로 점수에 해당하는 맞장구를 추가한다.
-					responseValue = playUptoMessage + "다음!" + responseValue
+					responseValue = playUptoMessage + responseValue
 				}
 			}
 		}
@@ -472,6 +474,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 
 	if len(qData.SQSProbPatternIdx) >= question.SERIOUS_SQS { // 간단문진 결과 발생한 문제가 SERIOUS_SQS개 이상일 시
 
+		// Author: Jun
 		recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, strings.Split(DB.COMPLECATION, " "))
 
 		if isDataENOUGH == false {
@@ -508,6 +511,7 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 		}
 	}
 
+	// Author: Jun
 	patterns := strings.Split(identifier, " ")
 
 	recentCKU_result, isDataENOUGH = makeRecentCheckUPResult(userID, patterns)
@@ -547,6 +551,8 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 	// default:
 	// 	sqsResult = ""
 	//}
+
+	// Author: Jun
 	saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, patterns, DB.CURATION_NON_INDEX, SQS_CURATION)
 	if isDataENOUGH == false {
 		return sqsResult + " 그럼, 더 자세한 건강상태 확인을 위해 추가 문진을 시작해 볼까요? "
@@ -568,7 +574,7 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, c
 
 /**
 * Author: Jun
-* 최근 세 번의 건강 검진 결과를 바탕으로 최근 건강 상태의 추세 대한 정보를 추가 제공
+* 최근 세 번의(NUM_MR_to_CHECK개 만큼의) 건강 검진 결과를 바탕으로 최근 건강 상태의 추세 대한 정보를 추가 제공
 *
  */
 func makeRecentCheckUPResult(userID string, current_patterns []string) (string, bool) {
@@ -726,6 +732,8 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 				probNum++
 			}
 		}
+
+		// Author: Jun
 		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
 			//qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
 
@@ -760,6 +768,8 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 				probNum++
 			}
 		}
+
+		// Author: Jun
 		if probNum >= question.SERIOUS_DQS { // 3가지 이상의 문제 패턴이 있을 시,
 
 			//qData.FinalScoreNotification = "문진 결과를 알려드릴께요. 현재 건강상태는 여러 가지 원인들이 합쳐서 복잡한 문제들이 나타나고 있는 상황이예요. 몸과 마음이 많이 지쳐있고, 이로 인해 삶의 질이 많이 저하된 상태예요. 건강에 대해 여러가지 불편이 발생하고 있어서 혼자 해결하려고 하기 보다는 가급적 의사상담을 권해 드리고 싶어요. 무엇보다 지금은 스스로의 건강에 많은 관심을 가지고, 적극적으로 관리를 꼭 하셔야해요. 주변에 가장 실력 좋은 의사선생님을 추천해 드릴까요?"
@@ -790,6 +800,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	// fmt.Println(strconv.Itoa(probNum) + "문제 있음.")
 	// fmt.Println(identifier)
 
+	// Author: Jun
 	if probNum == 0 { // 정밀문진 결과 문제되는 패턴이 없을 때
 
 		// TODO 처방받을 요법 설정 필요, 현 개발 단계에서는 식이요법이 디폴트로 설정됨
@@ -814,6 +825,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 		return qData
 	}
 
+	// Author: Jun
 	patterns := strings.Split(identifier, " ")
 
 	racInfo := DB.GetResult_and_Curation(identifier)
@@ -873,6 +885,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	return qData
 }
 
+// Author: Jun
 func suggestCuration(rncInfo DB.ResultAndCuration, curationType int) string { // 패턴정보(질환, Result And Curation)를 인자로 받아서, 4가지 요법 중 한가지의 추천을 반환
 
 	rand_seed := rand.NewSource(time.Now().UnixNano())
