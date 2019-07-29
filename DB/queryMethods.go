@@ -400,7 +400,7 @@ func GetResult_and_Curation(pattern string) ResultAndCuration {
 	recommendation package에서 생성된 추천의 말씀 json을 DB에 저장
 */
 func InsertRecomendation(recJson string) {
-	uri := os.Genenv("MONGODB_URI")
+	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
 		os.Exit(1)
 	}
@@ -409,6 +409,7 @@ func InsertRecomendation(recJson string) {
 		os.Exit(1)
 	}
 	defer session.Close()
+
 	// TODO: 추천의 말씀 DB에 저장
 	// return res ( bool )
 }

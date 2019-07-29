@@ -40,7 +40,7 @@ type qDataConst struct {
 
 type QData struct {
 	QRepIdx           []int       // 각 변증의 각 카테고리별 대표 질문들에 대한 QCWP 인덱스 슬라이스
-	QDetailIdx        [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스]
+	QDetailIdx        [][]int     // [칠정에 대한 QCWP 인덱스 슬라이스, 노권에 대한 QCWP 인덱스 슬라이스, ..., 어혈에 대한 QCWP 인덱스 슬라이스
 	QDetailNum        int         // 정밀 진단 질문 개수
 	QDetailCount      int         // 정밀 진단 질문 카운트
 	Answer            map[int]int // QCWP 인덱스 : 응답점수

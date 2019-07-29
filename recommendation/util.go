@@ -1,8 +1,28 @@
 // package recommendation
 package recommendation
 
+import (
+	"bufio"
+	"encoding/csv"
+	"fmt"
+	"os"
+)
+
+// Initialize PatternCat
+func loadData() {
+	// open QCWP file	- Use CWP ( Category-Weight-Pattern )
+	qcwp_file, _ := os.Open("resources/data/QCWP.csv")
+
+	// create csv Reader
+	qcwp_reader := csv.NewReader(bufio.NewReader(file))
+
+	// read csv file
+	qcwp, _ := qcwp_reader.ReadAll()
+
+}
+
 func makeQueries(patterns []string) {
-	//TODO : 입력받은 pattern들에 따라서 query list를 만들어 반환한다.
+	// TODO : 입력받은 pattern들에 따라서 query list를 만들어 반환한다.
 	//  return queries
 }
 

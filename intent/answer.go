@@ -904,5 +904,8 @@ func suggestCuration(rncInfo DB.ResultAndCuration, curationType int) string { //
 	// default:
 
 	// }
+}
+
+func make_PtoC_list() {
 
 }
