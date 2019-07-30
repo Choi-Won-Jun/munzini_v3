@@ -239,26 +239,155 @@
 // 	}
 // }
 
+// package main
+
+// import "fmt"
+
+// type AandB struct {
+// 	A string
+// 	B string
+// }
+
+// func main() {
+// 	var X AandB
+// 	var Y AandB
+// 	X.A = "칠정"
+// 	X.B = "Neuro"
+// 	Y.A = "노권"
+// 	Y.B = "Neuro"
+// 	var a map[AandB]string
+// 	a = make(map[AandB]string)
+// 	a[X] = X.A
+// 	a[Y] = Y.A
+// 	fmt.Println(a[X])
+// 	fmt.Println(a)
+// }
+
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"encoding/csv"
+	"fmt"
+	"os"
+	"strconv"
+	"test"
+)
 
-type AandB struct {
-	A string
-	B string
+type QueryData struct { // Query Data : 총 23개
+	Pattern              string // 변증 이름
+	Category             string // 카테고리 이름
+	Half_Of_Category_Num int    // 카테고리별 질문 수의 절반 = 가중치 / 2
+	ShouldBeQueried      bool   // 추천 DB에 쿼리를 날려야하는가?	- 1. 정밀 진단 결과 해당하는 변증인가? ( Key = Pattern ), 2. 진단 결과 HOCN 의 값이 양인가?
+}
+
+type PatternCat struct { // Queries의 Key 구조체
+	Pattern  string
+	Category string
+}
+
+type Queries struct {
+	QueryCore    map[PatternCat]QueryData // Pattern & Category ( = Key )로 QueryData ( = Value ) 접근
+	QueryStrings []string                 // Query문들
+}
+
+func loadData() Queries {
+	// open QCWP file	- Use CWP ( Category-Weight-Pattern )
+	qcwp_file, _ := os.Open("../resources/data/QCWP.csv")
+
+	// create csv Reader
+	qcwp_reader := csv.NewReader(bufio.NewReader(file))
+
+	// read csv file
+	qcwp, _ := qcwp_reader.ReadAll()
+
+	/*
+		TODO
+		1. QueryCore를 초기화한다.
+			2. QueryCore를 초기화하기 위하여 PatternCat 리스트를 만든다.
+			3. QueryCore의 Key값에 PatternCat을 넣고, 이에 따른 QueryData를 작성하는 로직을 만든다.
+	*/
+
+	// 1. PatternCat 초기화 ( QueryCore의 Key 값 )
+	var patcat []PatternCat
+
+	// TODO: PatternCat리스트 초기화 ( 23개 - 카테고리 개수)
+	var row int = FIRST_IDX
+	var temp_weight []int	// 추후에 QueryCore의 Value값 중 Half_Of_Category_Num에 값을 담아놓기 위해 가중치 값들을 미리 저장해놓는 슬라이스 
+	var patcat_idx int = 0
+	for row < len(qcwp) {
+		patcat[patcat_idx].Pattern = qcwp[row][PATTERN_IDX]
+		patcat[patcat_idx].Category = qcwp[row][CATEGORY_IDX]
+		temp_weight[patcat_idx] = qcwp[row][WEIGHT_IDX]
+		row = row + qcwp[row][WEIGHT_IDX] // 가중치만큼 Forwarding
+		pat_idx++
+	}
+
+	// 2. QueryCore 초기화 ( PatternCat - QueryData : Pattern / Category / Half_Of_Category_Num / ShouldBeQueried )
+	var queryCore map[PatternCat]QueryData
+
+	// TODO: PatternCat의 값을 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
+	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
+		// TODO:구조체 초기화
+		queryCore[patcat[qd_idx]] = QueryData{
+			Pattern:  patcat[qd_idx].Pattern,
+			Category: patcat[qd_idx].Category,
+			Half_Of_Category_Num : temp_weight[qd_idx] / 2,
+			ShouldBeQueried : true
+		}
+	}
+	
+	// 3. Queries 작성
+	var queries Queries = Queries{
+		QueryCore: queryCore,
+		QueryStrings : nil
+	}
+	
+	return queries
 }
 
 func main() {
-	var X AandB
-	var Y AandB
-	X.A = "칠정"
-	X.B = "Neuro"
-	Y.A = "노권"
-	Y.B = "Neuro"
-	var a map[AandB]string
-	a = make(map[AandB]string)
-	a[X] = X.A
-	a[Y] = Y.A
-	fmt.Println(a[X])
-	fmt.Println(a)
+	// qcwp_file, _ := os.Open("../resources/data/QCWP.csv")
+	// qcwp_reader := csv.NewReader(bufio.NewReader(qcwp_file))
+	// qcwp, _ := qcwp_reader.ReadAll()
+
+	// fmt.Printf("%T\n", qcwp)
+
+	// var temp int = test.GetX()
+	// fmt.Println("From test : " + strconv.Itoa(temp))
+
+	// x := 0
+	// for x < 100 {
+	// 	// println(x)
+	// 	x = x + 4
+	// }
+
+	// fmt.Println(x)
+
+	// var A PatternCat
+	// A = PatternCat{Pattern: "하", Category: "하~"}
+	// fmt.Println(A.Category)
+
+	// fmt.Println(5 / 2)
+
+	// var AA Queries = Queries{QueryStrings: nil}
+	// fmt.Println(AA.QueryCore)
+	// fmt.Println(AA.QueryStrings)
+
+	var queries Queries = loadData()
+	fmt.Println(queries.QueryCore)
+	fmt.Println(queries.QueryStrings)
+
+	// var patcat []PatternCat
+
+	// for row := 1; row < len(qcwp); row++ {
+	// 	var tempPatcat PatternCat
+	// 	tempPatcat.Category = qcwp[row][0]
+	// 	tempPatcat.Pattern = qcwp[row][3]
+	// 	patcat = append(patcat, tempPatcat)
+	// 	fmt.Println(patcat)
+	// }
+
+	// a := qcwp[1]
+	// fmt.Println(a)
 }
