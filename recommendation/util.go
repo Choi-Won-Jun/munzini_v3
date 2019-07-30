@@ -6,41 +6,19 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"strconv"
 )
 
-const FIRST_IDX = 1    // QCWP.csv를 담아올 때 접근해야하는 첫번째 인덱스
-const CATEGORY_IDX = 1 // QCWP.csv에서 Category에 접근하기 위한 인덱스
-const PATTERN_IDX = 3  // QCWP.csv에서 Pattern에 접근하기 위한 인덱스
-const WEIGHT_IDX = 2   // QCWP.csv에서 Weight에 접근하기 위한 인덱스
-
-type QueryData struct { // Query Data : 총 23개
-	Pattern              string // 변증 이름
-	Category             string // 카테고리 이름
-	Half_Of_Category_Num int    // 카테고리별 질문 수의 절반 = 가중치 / 2
-	ShouldBeQueried      bool   // 추천 DB에 쿼리를 날려야하는가?	- 1. 정밀 진단 결과 해당하는 변증인가? ( Key = Pattern ), 2. 진단 결과 HOCN 의 값이 양인가?
-}
-
-type PatternCat struct { // Queries의 Key 구조체
-	Pattern  string
-	Category string
-}
-
-type Queries struct {
-	QueryCore    map[PatternCat]QueryData // Pattern & Category ( = Key )로 QueryData ( = Value ) 접근
-	QueryStrings []string                 // Query문들
-}
-
-// Initialize Queries
-func loadData() Queries {
+// Initialize FoodQueryCore
+func PrepareQueryCore() FoodQueryCore {
 	// open QCWP file	- Use CWP ( Category-Weight-Pattern )
 	qcwp_file, _ := os.Open("resources/data/QCWP.csv")
 
 	// create csv Reader
-	qcwp_reader := csv.NewReader(bufio.NewReader(file))
+	qcwp_reader := csv.NewReader(bufio.NewReader(qcwp_file))
 
 	// read csv file
 	qcwp, _ := qcwp_reader.ReadAll()
-
 	/*
 		TODO
 		1. QueryCore를 초기화한다.
@@ -53,37 +31,43 @@ func loadData() Queries {
 
 	// TODO: PatternCat리스트 초기화 ( 23개 - 카테고리 개수)
 	var row int = FIRST_IDX
-	var temp_weight []int	// 추후에 QueryCore의 Value값 중 Half_Of_Category_Num에 값을 담아놓기 위해 가중치 값들을 미리 저장해놓는 슬라이스 
-	var patcat_idx int = 0
+	var weight []int // 추후에 QueryCore의 Value값 중 Half_Of_Category_Num에 값을 담아놓기 위해 가중치 값들을 미리 저장해놓는 슬라이스
+
 	for row < len(qcwp) {
-		patcat[patcat_idx].Pattern = qcwp[row][PATTERN_IDX]
-		patcat[patcat_idx].Category = qcwp[row][CATEGORY_IDX]
-		temp_weight[patcat_idx] = qcwp[row][WEIGHT_IDX]
-		row = row + qcwp[row][WEIGHT_IDX] // 가중치만큼 Forwarding
-		pat_idx++
+		// fmt.Println(patcat_idx)
+		// patcat[patcat_idx].Pattern = qcwp[row][PATTERN_IDX]temp_weight
+		temp_patcat := PatternCat{
+			Pattern:  qcwp[row][PATTERN_IDX],
+			Category: qcwp[row][CATEGORY_IDX],
+		}
+		patcat = append(patcat, temp_patcat)
+		// patcat[patcat_idx].Category = qcwp[row][CATEGORY_IDX]
+		temp_weight, _ := strconv.Atoi(qcwp[row][WEIGHT_IDX])
+		// fmt.Println(temp_weight)
+		weight = append(weight, temp_weight)
+		row_gap, _ := strconv.Atoi(qcwp[row][WEIGHT_IDX])
+		row = row + row_gap // 가중치만큼 Forwarding
 	}
 
 	// 2. QueryCore 초기화 ( PatternCat - QueryData : Pattern / Category / Half_Of_Category_Num / ShouldBeQueried )
-	var queryCore map[PatternCat]QueryData
+	var queryCore map[PatternCat]QueryData = make(map[PatternCat]QueryData)
 
 	// TODO: PatternCat의 값을 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
 	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
 		// TODO:구조체 초기화
 		queryCore[patcat[qd_idx]] = QueryData{
-			Pattern:  patcat[qd_idx].Pattern,
-			Category: patcat[qd_idx].Category,
-			Half_Of_Category_Num : temp_weight[qd_idx] / 2,
-			ShouldBeQueried : true
+			Pattern:              patcat[qd_idx].Pattern,
+			Category:             patcat[qd_idx].Category,
+			Half_Of_Category_Num: weight[qd_idx] / 2,
+			ShouldBeQueried:      true,
 		}
 	}
-	
-	// 3. Queries 작성
-	var queries Queries = Queries{
+
+	// 3. FoodQueryCore 작성
+	var foodQueryCore FoodQueryCore = FoodQueryCore{
 		QueryCore: queryCore,
-		QueryStrings : nil
 	}
-	
-	return queries
+	return foodQueryCore
 }
 
 func makeQueries(patterns []string) {

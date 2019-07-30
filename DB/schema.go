@@ -28,6 +28,7 @@ type MedicalRecord struct {
 	Pattern      []string  `bson:"pattern"`                 // 사용자에게 해당되는 병증
 	CurationType int       `bson:curationType`              // 0= NONE(간단문진의 경우 추천요법이 없음) 1 = 식이요법, 2 = 운동요법 ... //TODO 추후 양생요법, 만성질환 요법 등 업데이트 필
 	Curation     string    `bson:"curation"`                //추천
+	// PatCat와 같은 것 추가
 }
 
 type ResultAndCuration struct {
