@@ -519,4 +519,10 @@ func main() {
 	fmt.Println("Main Testing")
 	fmt.Println(queries.QueryCore)
 	fmt.Println(len(queries.QueryCore))
+
+	fmt.Println("07-31 Testing")
+	fmt.Println(3 >= 3)
+	a := 3
+	a--
+	fmt.Println(a)
 }

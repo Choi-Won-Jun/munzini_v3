@@ -5,6 +5,8 @@ const CATEGORY_IDX = 1 // QCWP.csv에서 Category에 접근하기 위한 인덱�
 const PATTERN_IDX = 3  // QCWP.csv에서 Pattern에 접근하기 위한 인덱스
 const WEIGHT_IDX = 2   // QCWP.csv에서 Weight에 접근하기 위한 인덱스
 
+const HOCN_CRITERIA = 3 // Half_Of_Category_Number을 감소시킬지 말지를 판단하는 점수 기준
+
 type QueryData struct { // Query Data : 총 23개
 	Pattern              string // 변증 이름
 	Category             string // 카테고리 이름
@@ -15,12 +17,6 @@ type QueryData struct { // Query Data : 총 23개
 type PatternCat struct { // Queries의 Key 구조체
 	Pattern  string
 	Category string
-}
-
-type SimpleDoc struct {
-	Pattern  string `bson:"pattern"`
-	Category string `bson:"category"`
-	FoodNm   string `bson:"foodNm"`
 }
 
 // CEKSessionAttributes를 통하여 주고받아야할 구조체

@@ -48,7 +48,8 @@ type QData struct {
 	FinalScore        []float64   // 간단한 문진 이후 컷오프 값을 넘긴 Pattern 인덱스 에 대한 표준점수 슬라이스
 	SQSProb           bool        // 간단한 문진 이후 문제가 없는 지의 여부
 	// 간단한 문진 이후 문제가 없지만 정밀 진단을 받겠다고 한 것의 여부
-	NoSQSProbPatternIdx    []int // 간단한 문진 이후 문제가 없지만, 정밀 진단을 받겠다고 했을 때, 출력할 질문 패턴의 순서를 섞어놓은 슬라이스
+	NoSQSProbPatternIdx []int // 간단한 문진 이후 문제가 없지만, 정밀 진단을 받겠다고 했을 때, 출력할 질문 패턴의 순서를 섞어놓은 슬라이스
+	// FinalProbPatternIdx
 	RepIdx                 int
 	RepMax                 int
 	DetPat                 int // GetDQSAnswer()에서 사용. 값 : 0~len(SQSProbPatternIdx) / 0~len(NoSQSProbPatternIdx)

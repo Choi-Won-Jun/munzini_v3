@@ -41,6 +41,8 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 	case "Clova.YesIntent":
 		qData = question.PrepareRep(qData) // prepare representative questions
 		qData.RepMax = len(qData.QRepIdx)
+		// Author : Wonjun
+		fqCore = recommendation.PrepareQueryCore()
 		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문을 듣고 긍정 혹은 부정의 뜻으로 말씀해주시면 됩니다. 첫 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
 		statusDelta = 1
 		// Author: Jun                                                                                                                                        // next status
@@ -63,7 +65,7 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 		ShouldEndSession: shouldEndSession,
 	}
 
-	return responsePayload, statusDelta, qData
+	return responsePayload, statusDelta, qData, fqCore
 }
 
 // 2. Get Simple Question Score Answer: 간단 문진 질문에 대한 응답 입력 및 전체 간단 문진 질문에 대한 점수 계산
@@ -80,8 +82,8 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 	switch intentName {
 
 	case "Clova.YesIntent": // 질문에 대해 문제가 있다고 이야기 할 때,
-		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.YES_SCORE // 점수 부여
-		fmt.Println(qData.QRepIdx[qData.RepIdx])
+		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.YES_SCORE                                                                                                                                                   // 점수 부여
+		fqCore = recommendation.CalculateHOCN(fqCore, question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.PATTERN], question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.CATEGORY], question.YES_SCORE) // 현재 질문의 인덱스에 해당하는 Pattern, Category, 응답 점수를 통하여 질문과 관련된 Pattern-Category 조합에 따른 추천을 해줄지의 여부를 HOCN변수를 조절함으로써 판단한다.
 		playUptoMessage = nlp.GetPlayUptoMessage(question.YES_SCORE, qData.QRepIdx[qData.RepIdx])
 		qData.RepIdx++ //질문 index
 		// 대표 질문이 끝났을 때
@@ -126,9 +128,10 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 				}
 			}
 		}
-	case "Clova.NoIntent": // 질문에 대해 문제가 있다고 이야기 할 때,
-		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.NO_SCORE                            // 점수 부여
-		playUptoMessage = nlp.GetPlayUptoMessage(question.NO_SCORE, qData.QRepIdx[qData.RepIdx]) // 맞장구 메시지 가져오
+	case "Clova.NoIntent": // 질문에 대해 문제가 없다고 이야기 할 때,
+		qData.Answer[qData.QRepIdx[qData.RepIdx]] = question.NO_SCORE                                                                                                                                                   // 점수 부여
+		fqCore = recommendation.CalculateHOCN(fqCore, question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.PATTERN], question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.CATEGORY], question.NO_SCORE) // 현재 질문의 인덱스에 해당하는 Pattern, Category, 응답 점수를 통하여 질문과 관련된 Pattern-Category 조합에 따른 추천을 해줄지의 여부를 HOCN변수를 조절함으로써 판단한다.
+		playUptoMessage = nlp.GetPlayUptoMessage(question.NO_SCORE, qData.QRepIdx[qData.RepIdx])                                                                                                                        // 맞장구 메시지 가져오기
 		qData.RepIdx++
 		// 대표 질문이 끝났을 때
 		if qData.RepIdx == qData.RepMax {
@@ -187,7 +190,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 		ShouldEndSession: shouldEndSession,
 	}
 
-	return responsePayload, statusDelta, qData
+	return responsePayload, statusDelta, qData, fqCore
 }
 
 // 3. Get Detail Question Proceed Answer: 정밀 문진에 대한 진행 여부 및 첫 정밀 문진 질문 출력
@@ -224,7 +227,7 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 		ShouldEndSession: shouldEndSession,
 	}
 
-	return responsePayload, statusDelta, qData
+	return responsePayload, statusDelta, qData, fqCore
 }
 
 // 4. Get Detail Question Score Answer: 정밀 진단 질문에 대한 응답 점수 입력 및 최종 점수 계산 및 문진 결과 출력
@@ -234,14 +237,22 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 	var statusDelta int = 0
 
 	if qData.SQSProb == true { // 간단문진 결과 문제 패턴(SQSProbPatternIdx)이 있는 경우
-		responsePayload, statusDelta, qData, fqCore = GetDQSAnswer_S(intent, qData, fqCore, userID)
+		responsePayload, statusDelta, qData, fqCore, identifier = GetDQSAnswer_S(intent, qData, fqCore, userID)
 	} else { // 간단문진 결과 문제 패턴이 없는데, 정밀검사를 진행하는 경우.
-		responsePayload, statusDelta, qData, fqCore = GetDQSAnswer_NS(intent, qData, fqCore, userID)
+		responsePayload, statusDelta, qData, fqCore, identifier = GetDQSAnswer_NS(intent, qData, fqCore, userID)
 	}
+
+	if statusDelta == 1 { // identifier 사용해서 GetAndSaveFoodRecommendation 함수 추
+		recommendation.GetAndSave
+		// patcat := recommendation.extractQPC(fqCore)	// fqCore -> PatternCat / []string
+		// queries := recommendation.makequeries(patcat)
+		// GetAndSaveFoodRecommendation
+	}
+
 	return responsePayload, statusDelta, qData, fqCore
 }
 
-func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) { // SQSProbPatternIdx가 존재할 때의 질문
+func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore, string) { // SQSProbPatternIdx가 존재할 때의 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -277,7 +288,7 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore reco
 		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score // score 값 저장
 			playUptoMessage = nlp.GetPlayUptoMessage(score, qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx])
-
+			fqCore = recommendation.CalculateHOCN(fqCore, question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetIdx]][question.PATTERN], question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetIdx]][question.CATEGORY], score) // 현재 질문의 인덱스에 해당하는 Pattern, Category, 응답 점수를 통하여 질문과 관련된 Pattern-Category 조합에 따른 추천을 해줄지의 여부를 HOCN변수를 조절함으로써 판단한다.
 			// 개발 노트)
 			// 이부분에 qData.QDetailIdx[qData.SQSProbPatternIdx[qData.DetPat]][qData.DetIdx] ( 방금 던진 질문 인덱스 )
 			// 를 이용해서 nlp.PlayUptoMessage 를 초기화해주어야 한다. GetSQSAnswer / GetDQSAnswer_S / GetDQSAnswer_NS
@@ -290,8 +301,8 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore reco
 				qData.DetPat++ // 다음 패턴
 				qData.DetIdx = 0
 				if qData.DetPat == len(qData.SQSProbPatternIdx) {
-					qData = question.PrepareFin(qData)                // PrepareFin
-					qData = makeFinalScoreNotification(qData, userID) // 최종 결과에 대한 대답을 지정해준다.
+					qData = question.PrepareFin(qData)                            // PrepareFin
+					qData, identifier = makeFinalScoreNotification(qData, userID) // 최종 결과에 대한 대답을 지정해준다.
 					responseValue = qData.FinalScoreNotification + " 문진 결과를 다시 알려드릴까요?"
 					statusDelta = 1
 				} else { // 다음 패턴 첫질문을 준비한다.
@@ -339,10 +350,10 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore reco
 		),
 		ShouldEndSession: shouldEndSession,
 	}
-	return responsePayload, statusDelta, qData
+	return responsePayload, statusDelta, qData, fqCore, identifier
 }
 
-func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) { // SQSProbPattern이 존재하지 않을 때 질문
+func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore, string) { // SQSProbPattern이 존재하지 않을 때 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -373,15 +384,17 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore rec
 		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
 			qData.Answer[qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score                            // score 값 저장
 			playUptoMessage = nlp.GetPlayUptoMessage(score, qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]) // 맞장구 가져오
-			qData.DetIdx++                                                                                                           // next question
-			qData.QDetailCount++                                                                                                     // 전체 정밀 진단 질문 수 카운트
+			fqCore = recommendation.CalculateHOCN(fqCore, question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetIdx]][question.PATTERN], question.RAW_DATA.QCWP[qData.QDetailIdx[qData.DetIdx]][question.CATEGORY], score)
+
+			qData.DetIdx++       // next question
+			qData.QDetailCount++ // 전체 정밀 진단 질문 수 카운트
 
 			if qData.DetIdx == qData.DetMax {
 				qData.DetPat++ // 다음 패턴
 				qData.DetIdx = 0
 				if qData.DetPat == len(qData.NoSQSProbPatternIdx) {
-					qData = question.PrepareFin(qData)                // PrepareFin
-					qData = makeFinalScoreNotification(qData, userID) // 최종 결과에 대한 대답을 지정해준다.
+					qData = question.PrepareFin(qData)                            // PrepareFin
+					qData, identifier = makeFinalScoreNotification(qData, userID) // 최종 결과에 대한 대답을 지정해준다.
 					responseValue = qData.FinalScoreNotification + " 문진 결과를 다시 알려드릴까요?"
 					statusDelta = 1
 				} else { // 다음 패턴 첫질문을 준비한다.
@@ -429,7 +442,7 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore rec
 		),
 		ShouldEndSession: shouldEndSession,
 	}
-	return responsePayload, statusDelta, qData
+	return responsePayload, statusDelta, qData, fqCore, identifier
 }
 
 // 5. Get Repeat Answer: 최종 문진 결과에 대한 다시 듣기 여부 처리
@@ -461,7 +474,7 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recommen
 		),
 		ShouldEndSession: shouldEndSession,
 	}
-	return responsePayload, statusDelta, qData
+	return responsePayload, statusDelta, qData, fqCore
 }
 
 func makeSQSResult(qData question.QData, userID string) string { // SQSProbPattern이 NULL이 아닌 경우, 간단문진 결과 출
@@ -713,7 +726,7 @@ func makeRecentCheckUPResult(userID string, current_patterns []string) (string, 
 }
 
 // 최종 문진 결과 생성
-func makeFinalScoreNotification(qData question.QData, userID string) question.QData {
+func makeFinalScoreNotification(qData question.QData, userID string) (question.QData, string) {
 
 	var identifier string // 문제 패턴 조사
 	var probNum int = 0   // 문제 패턴 개수
@@ -756,7 +769,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
 			}
 			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
-			return qData
+			return qData, identifier
 		}
 	} else { // NoSQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
 		nosqslength := len(qData.NoSQSProbPatternIdx)
@@ -794,7 +807,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 
 			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
 
-			return qData
+			return qData, identifier
 		}
 	}
 
@@ -823,7 +836,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 		}
 		saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
 		//qData.FinalScoreNotification = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 오늘도 화이팅 하세요!"
-		return qData
+		return qData, identifier
 	}
 
 	// Author: Jun
@@ -883,7 +896,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	// 	qData.FinalScoreNotification = ""
 	// }
 	saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, patterns, DB.DIET_CURATION_INDEX, curation)
-	return qData
+	return qData, identifier
 }
 
 // Author: Jun

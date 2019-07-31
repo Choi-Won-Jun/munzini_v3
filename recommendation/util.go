@@ -65,7 +65,30 @@ func PrepareQueryCore() FoodQueryCore {
 	return foodQueryCore
 }
 
-func makeQueries(patterns []string) {
+// 2. Calculate FoodQueryCore's Half_Of_Category_Num according to user's Response
+func CalculateHOCN(fqcore FoodQueryCore, pattern string, category string, score int) FoodQueryCore {
+
+	// Make QueryCore's Key
+	QCkey := PatternCat{
+		Pattern:  pattern,
+		Category: category,
+	}
+
+	if score >= HOCN_CRITERIA { // 3점 이상일 시 QCKey에 해당하는 QueryData의 HOCN을 감소시킨다.
+		fqcore.QueryCore[QCKey].Half_Of_Category_Num--
+	}
+
+	return fqcore
+}
+
+// 3. Determine Which Pattern-Category should be queried to RMD Database
+func extractQPC() []PatternCat {
+	// TBD
+	// 1. return PatternCat list based on fqCore-QueyData-ShouldbeQueried
+	// ( A. 정밀 문진 결과 의심되는 패턴으로 거르기 and B. HOCN이 음수(<0)인지 여부로 판단. )
+}
+
+func makeQueries(patterncats []PatternCat) {
 	// TODO : 입력받은 pattern들에 따라서 query list를 만들어 반환한다.
 	//  return queries
 }
