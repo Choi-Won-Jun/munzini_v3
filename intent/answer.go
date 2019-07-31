@@ -6,10 +6,11 @@ import (
 
 	"log"
 	"munzini/DB"
-	"munzini/nlp"      // 맞장구 관련
-	"munzini/protocol" // CEK 관련 구조체
-	"munzini/question" // 문진 데이터 관련
-	"strconv"          // 문자열 함수 관련
+	"munzini/nlp"            // 맞장구 관련
+	"munzini/protocol"       // CEK 관련 구조체
+	"munzini/question"       // 문진 데이터 관련
+	"munzini/recommendation" // 추천 데이터 관련 - 음식
+	"strconv"                // 문자열 함수 관련
 	"strings"
 	"time" // 임의 추출 관련
 )
@@ -30,7 +31,7 @@ const DETAIL_QUESTION_TYPE = 1
 const SQS_CURATION = "NULL"
 
 // 1. Get Simple Question Proceed Answer: 간단 문진 시작 여부 및 첫 질문 출력
-func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) {
+func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
@@ -66,7 +67,7 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 }
 
 // 2. Get Simple Question Score Answer: 간단 문진 질문에 대한 응답 입력 및 전체 간단 문진 질문에 대한 점수 계산
-func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) {
+func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) {
 	//var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -190,7 +191,7 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 }
 
 // 3. Get Detail Question Proceed Answer: 정밀 문진에 대한 진행 여부 및 첫 정밀 문진 질문 출력
-func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
+func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false
@@ -227,20 +228,20 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 }
 
 // 4. Get Detail Question Score Answer: 정밀 진단 질문에 대한 응답 점수 입력 및 최종 점수 계산 및 문진 결과 출력
-func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) {
+func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) {
 
 	var responsePayload protocol.CEKResponsePayload
 	var statusDelta int = 0
 
 	if qData.SQSProb == true { // 간단문진 결과 문제 패턴(SQSProbPatternIdx)이 있는 경우
-		responsePayload, statusDelta, qData = GetDQSAnswer_S(intent, qData, userID)
+		responsePayload, statusDelta, qData, fqCore = GetDQSAnswer_S(intent, qData, fqCore, userID)
 	} else { // 간단문진 결과 문제 패턴이 없는데, 정밀검사를 진행하는 경우.
-		responsePayload, statusDelta, qData = GetDQSAnswer_NS(intent, qData, userID)
+		responsePayload, statusDelta, qData, fqCore = GetDQSAnswer_NS(intent, qData, fqCore, userID)
 	}
-	return responsePayload, statusDelta, qData
+	return responsePayload, statusDelta, qData, fqCore
 }
 
-func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) { // SQSProbPatternIdx가 존재할 때의 질문
+func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) { // SQSProbPatternIdx가 존재할 때의 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -341,7 +342,7 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, userID stri
 	return responsePayload, statusDelta, qData
 }
 
-func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, userID string) (protocol.CEKResponsePayload, int, question.QData) { // SQSProbPattern이 존재하지 않을 때 질문
+func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) { // SQSProbPattern이 존재하지 않을 때 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -432,7 +433,7 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, userID str
 }
 
 // 5. Get Repeat Answer: 최종 문진 결과에 대한 다시 듣기 여부 처리
-func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKResponsePayload, int, question.QData) {
+func GetRAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) {
 	var statusDelta int = 0
 	var responseValue string
 	var shouldEndSession bool = false

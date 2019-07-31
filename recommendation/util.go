@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-// Initialize FoodQueryCore
+// 1. Initialize FoodQueryCore
 func PrepareQueryCore() FoodQueryCore {
 	// open QCWP file	- Use CWP ( Category-Weight-Pattern )
 	qcwp_file, _ := os.Open("resources/data/QCWP.csv")
@@ -34,16 +34,12 @@ func PrepareQueryCore() FoodQueryCore {
 	var weight []int // 추후에 QueryCore의 Value값 중 Half_Of_Category_Num에 값을 담아놓기 위해 가중치 값들을 미리 저장해놓는 슬라이스
 
 	for row < len(qcwp) {
-		// fmt.Println(patcat_idx)
-		// patcat[patcat_idx].Pattern = qcwp[row][PATTERN_IDX]temp_weight
 		temp_patcat := PatternCat{
 			Pattern:  qcwp[row][PATTERN_IDX],
 			Category: qcwp[row][CATEGORY_IDX],
 		}
 		patcat = append(patcat, temp_patcat)
-		// patcat[patcat_idx].Category = qcwp[row][CATEGORY_IDX]
 		temp_weight, _ := strconv.Atoi(qcwp[row][WEIGHT_IDX])
-		// fmt.Println(temp_weight)
 		weight = append(weight, temp_weight)
 		row_gap, _ := strconv.Atoi(qcwp[row][WEIGHT_IDX])
 		row = row + row_gap // 가중치만큼 Forwarding
@@ -52,9 +48,8 @@ func PrepareQueryCore() FoodQueryCore {
 	// 2. QueryCore 초기화 ( PatternCat - QueryData : Pattern / Category / Half_Of_Category_Num / ShouldBeQueried )
 	var queryCore map[PatternCat]QueryData = make(map[PatternCat]QueryData)
 
-	// TODO: PatternCat의 값을 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
+	// PatternCat의 값을 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
 	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
-		// TODO:구조체 초기화
 		queryCore[patcat[qd_idx]] = QueryData{
 			Pattern:              patcat[qd_idx].Pattern,
 			Category:             patcat[qd_idx].Category,

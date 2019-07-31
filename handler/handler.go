@@ -51,6 +51,8 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		sesstionAttributesReq := req.Session.SessionAttributes
 		status := sesstionAttributesReq.Status
 		qdata := sesstionAttributesReq.QData
+		// Author : Wonjun
+		fqcore := sesstionAttributesReq.FQCore
 
 		//userID := sesstionAttributesReq.
 
@@ -59,15 +61,15 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		// 사용자의 발화에 대한 응답을 현재 상태에 따라 세팅한다. 필요한 경우 응답을 세팅하는 과정에서 슬롯에 대한 처리를 포함한다.
 		switch status {
 		case SQP_S: // status가 0인 경우
-			result, statusDelta, qdata = intent.GetSQPAnswer(cekIntent, qdata, req.Session.User.UserId)
+			result, statusDelta, qdata, fqcore = intent.GetSQPAnswer(cekIntent, qdata, fqcore, req.Session.User.UserId)
 		case SQS_S:
-			result, statusDelta, qdata = intent.GetSQSAnswer(cekIntent, qdata, req.Session.User.UserId)
+			result, statusDelta, qdata, fqcore = intent.GetSQSAnswer(cekIntent, qdata, fqcore, req.Session.User.UserId)
 		case DQP_S:
-			result, statusDelta, qdata = intent.GetDQPAnswer(cekIntent, qdata)
+			result, statusDelta, qdata, fqcore = intent.GetDQPAnswer(cekIntent, qdata, fqcore)
 		case DQS_S:
-			result, statusDelta, qdata = intent.GetDQSAnswer(cekIntent, qdata, req.Session.User.UserId) // 개발노트) qData.SQSProb에 따라 다르게 처리 하도록 구현해야 함.
+			result, statusDelta, qdata, fqcore = intent.GetDQSAnswer(cekIntent, qdata, fqcore, req.Session.User.UserId) // 개발노트) qData.SQSProb에 따라 다르게 처리 하도록 구현해야 함.
 		case R_S:
-			result, statusDelta, qdata = intent.GetRAnswer(cekIntent, qdata)
+			result, statusDelta, qdata, fqcore = intent.GetRAnswer(cekIntent, qdata, fqcore)
 		}
 		response = protocol.MakeCEKResponse(result) // 응답 구조체 작성
 		status += statusDelta                       // 상태 변화 적용
@@ -75,6 +77,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		var sessionAttributesRes protocol.CEKSessionAttributes
 		sessionAttributesRes.Status = status
 		sessionAttributesRes.QData = qdata
+		sessionAttributesRes.FQcore = fqcore
 		response = protocol.SetSessionAttributes(response, sessionAttributesRes) // json:status 값 추가
 	}
 
