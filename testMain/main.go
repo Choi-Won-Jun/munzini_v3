@@ -400,6 +400,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const FIRST_IDX = 1    // QCWP.csv를 담아올 때 접근해야하는 첫번째 인덱스
@@ -522,7 +523,24 @@ func main() {
 
 	fmt.Println("07-31 Testing")
 	fmt.Println(3 >= 3)
-	a := 3
-	a--
+	var a []int
+	a = append(a, 3)
 	fmt.Println(a)
+	v := "가 나 다 라 마 바"
+	v_list := strings.Split(v, " ")
+	fmt.Println(v_list[0])
+
+	var dd map[int]int = make(map[int]int)
+	dd[3] = 5
+	dd[2] = 2
+	dd[1] = 6
+
+	for k, v := range dd {
+		fmt.Println(k, v)
+	}
+
+	for i := 0; i < len(a); i++ {
+		fmt.Println(a[i])
+	}
+
 }

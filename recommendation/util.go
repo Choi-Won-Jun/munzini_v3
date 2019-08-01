@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // 1. Initialize FoodQueryCore
@@ -78,42 +80,80 @@ func CalculateHOCN(fqcore FoodQueryCore, pattern string, category string, score 
 		fqcore.QueryCore[QCKey].Half_Of_Category_Num--
 	}
 
+	// HOCN이 음수가 되면, 쿼리 대상에서 제외시킨다.
+	if fqcore.QueryCore[QCKey].Half_Of_Category_Num < 0 {
+		fqcore.QueryCore[QCKey].ShouldBeQueried = false
+	}
+
 	return fqcore
 }
 
 // 3. Determine Which Pattern-Category should be queried to RMD Database
-func extractQPC() []PatternCat {
+func ExtractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
 	// TBD
 	// 1. return PatternCat list based on fqCore-QueyData-ShouldbeQueried
 	// ( A. 정밀 문진 결과 의심되는 패턴으로 거르기 and B. HOCN이 음수(<0)인지 여부로 판단. )
+	var patcats []PatternCat
+
+	// A. 정밀 문진 결과 의심되는 패턴이 아닌 것은 모두 쿼리 대상에서 제외시킨다.
+	for _, value := range fqcore.QueryCore { // Value Type : QueryData
+		if !strIn(value.Pattern, ProbPatternList) { // QueryData의 Pattern이 ProbPatternList에 없다면, (문제있는 변증이 아니라면)
+			value.ShouldBeQueried = false
+		}
+	}
+
+	for _, value := range fqcore.QueryCore {
+		if value.ShouldBeQueried { // QueryData를 검색해야한다면
+			temp_patcat := PatternCat{
+				Pattern:  value.Pattern,
+				Category: value.Category,
+			}
+			patcats = append(patcats, temp_patcat)
+		}
+	}
+	return patcats
 }
 
+func strIn(pattern string, ProbPatternList []string) bool {
+
+	var isIn bool = false
+
+	for i := 0; i < len(ProbPatternList); i++ {
+		if pattern == ProbPatternList[i] {
+			isIn = true
+			break
+		}
+	}
+	return isIn
+}
+
+// 4.
 func makeQueries(patterncats []PatternCat) {
 	// TODO : 입력받은 pattern들에 따라서 query list를 만들어 반환한다.
 	//  return queries
 }
 
-func RequestQueries(queries []string) {
-	// TODO : 생산된 query list들을 mongoDB에 요청한다. 그에 따라 나온 결과값들을 JSON string리스트 형식으로 받아온다.
-	// return dbResponses
-}
+// func RequestQueries(queries []string) {
+// 	// TODO : 생산된 query list들을 mongoDB에 요청한다. 그에 따라 나온 결과값들을 JSON string리스트 형식으로 받아온다.
+// 	// return dbResponses
+// }
 
-func makeRecJson(dbResponses []string) {
-	// TODO: DB에서 뽑아온 데이터를 가공하여 추천 JSON을 만든다.
-	// return recJson
-}
+// func makeRecJson(dbResponses []string) {
+// 	// TODO: DB에서 뽑아온 데이터를 가공하여 추천 JSON을 만든다.
+// 	// return recJson
+// }
 
-func makeRecScript(recJson []string) {
-	// TODO: 가공된 추천 JSON에서 추천의 말씀 제작
-	// return recScript (string)
-}
+// func makeRecScript(recJson []string) {
+// 	// TODO: 가공된 추천 JSON에서 추천의 말씀 제작
+// 	// return recScript (string)
+// }
 
-func InsertAndGetRecommendation(patterns []string) {
-	// TODO: recommendation 외부 패키지에서 이 함수를 호출하여 추천의 말씀을 얻을 수 있음.
-	// return recScript
-	queries = makeQueries(patterns)
-	dbResponses = RequestQueries(queries)
-	recJson = makeRecJson(dbResponses)
-	recScript = makeRecScript(recJson)
-	return recScript
-}
+// func InsertAndGetRecommendation(patterns []string) {
+// 	// TODO: recommendation 외부 패키지에서 이 함수를 호출하여 추천의 말씀을 얻을 수 있음.
+// 	// return recScript
+// 	queries = makeQueries(patterns)
+// 	dbResponses = RequestQueries(queries)
+// 	recJson = makeRecJson(dbResponses)
+// 	recScript = makeRecScript(recJson)
+// 	return recScript
+// }
