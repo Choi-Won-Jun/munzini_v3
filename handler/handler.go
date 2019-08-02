@@ -8,6 +8,7 @@ import (
 	"munzini/intent"
 	"munzini/protocol"
 
+	// "fmt"
 	"net/http"
 )
 
@@ -19,7 +20,6 @@ const R_S = 4   // Repeat Status
 
 // ServeHTTP handles CEK requests
 func Dispatch(w http.ResponseWriter, r *http.Request) {
-
 	var req protocol.CEKRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -77,7 +77,7 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		var sessionAttributesRes protocol.CEKSessionAttributes
 		sessionAttributesRes.Status = status
 		sessionAttributesRes.QData = qdata
-		sessionAttributesRes.FQcore = fqcore
+		sessionAttributesRes.FQCore = fqcore
 		response = protocol.SetSessionAttributes(response, sessionAttributesRes) // json:status 값 추가
 	}
 

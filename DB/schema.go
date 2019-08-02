@@ -84,4 +84,11 @@ const (
 	CDM_Curation_INDEX      = 4
 	//CURATION_MAP = map[int]
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
+
+	// RequestQueries()와 InsertDocs()를 위함
+	DB_HOST = "ds111791.mlab.com"
+	DB_PORT = "11791"
+	DB_NAME = "heroku_7v6nqjgb"
+	DB_USER = "heroku_7v6nqjgb"
+	DB_PASS = "q69a7s0ikl24sif7oe7hld13r0"
 )

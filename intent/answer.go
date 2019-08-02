@@ -40,13 +40,16 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 	switch intentName {
 	case "Clova.YesIntent":
 		qData = question.PrepareRep(qData) // prepare representative questions
+		fmt.Println("PrepareRep(qData) done")
 		qData.RepMax = len(qData.QRepIdx)
 		// Author : Wonjun
 		fqCore = recommendation.PrepareQueryCore()
+		fmt.Println("recommendation.PrepareQueryCore() done")
 		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문을 듣고 긍정 혹은 부정의 뜻으로 말씀해주시면 됩니다. 첫 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
-		statusDelta = 1
-		// Author: Jun                                                                                                                                        // next status
+		statusDelta = 1                                                                                                                                           // next status
+		// Author: Jun
 		DB.SaveUserRecord(userID)
+		fmt.Println("SaveUserRecord.(userId) done")
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
 		shouldEndSession = true
@@ -237,23 +240,15 @@ func GetDQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 	var statusDelta int = 0
 
 	if qData.SQSProb == true { // 간단문진 결과 문제 패턴(SQSProbPatternIdx)이 있는 경우
-		responsePayload, statusDelta, qData, fqCore, identifier = GetDQSAnswer_S(intent, qData, fqCore, userID)
+		responsePayload, statusDelta, qData, fqCore = GetDQSAnswer_S(intent, qData, fqCore, userID)
 	} else { // 간단문진 결과 문제 패턴이 없는데, 정밀검사를 진행하는 경우.
-		responsePayload, statusDelta, qData, fqCore, identifier = GetDQSAnswer_NS(intent, qData, fqCore, userID)
-	}
-
-	if statusDelta == 1 { // identifier 사용해서 GetAndSaveFoodRecommendation 함수 추가
-		pattern_list := strings.Split(identifier, " ")
-		patcat := recommendation.ExtractQPC(fqCore, pattern_list)
-		// patcat := recommendation.extractQPC(fqCore)	// fqCore -> PatternCat / []string
-		// queries := recommendation.makequeries(patcat)
-		// GetAndSaveFoodRecommendation
+		responsePayload, statusDelta, qData, fqCore = GetDQSAnswer_NS(intent, qData, fqCore, userID)
 	}
 
 	return responsePayload, statusDelta, qData, fqCore
 }
 
-func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore, string) { // SQSProbPatternIdx가 존재할 때의 질문
+func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) { // SQSProbPatternIdx가 존재할 때의 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -351,10 +346,10 @@ func GetDQSAnswer_S(intent protocol.CEKIntent, qData question.QData, fqCore reco
 		),
 		ShouldEndSession: shouldEndSession,
 	}
-	return responsePayload, statusDelta, qData, fqCore, identifier
+	return responsePayload, statusDelta, qData, fqCore
 }
 
-func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore, string) { // SQSProbPattern이 존재하지 않을 때 질문
+func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore recommendation.FoodQueryCore, userID string) (protocol.CEKResponsePayload, int, question.QData, recommendation.FoodQueryCore) { // SQSProbPattern이 존재하지 않을 때 질문
 	var score int = 0
 	var statusDelta int = 0
 	var responseValue string
@@ -443,7 +438,7 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore rec
 		),
 		ShouldEndSession: shouldEndSession,
 	}
-	return responsePayload, statusDelta, qData, fqCore, identifier
+	return responsePayload, statusDelta, qData, fqCore
 }
 
 // 5. Get Repeat Answer: 최종 문진 결과에 대한 다시 듣기 여부 처리
@@ -866,7 +861,7 @@ func makeFinalScoreNotification(qData question.QData, fqCore recommendation.Food
 func suggestCuration(identifier string, fqCore recommendation.FoodQueryCore) string { // 패턴정보(질환, Result And Curation)를 인자로 받아서, 4가지 요법 중 한가지의 추천을 반환
 
 	pattern_list := strings.Split(identifier, " ")
+	foodRecScript := recommendation.GetAndSaveFoodRecommendation(fqCore, pattern_list)
 
-	// patcats := recommendation.ExtractQPC(pattern_list, fqCore)
-	// recommedation.makeQueries()
+	return foodRecScript
 }

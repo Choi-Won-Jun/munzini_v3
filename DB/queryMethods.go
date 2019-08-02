@@ -1,7 +1,7 @@
 package DB
 
 import (
-	//"fmt"
+	"fmt"
 
 	"bufio"
 	"encoding/csv"
@@ -128,6 +128,7 @@ func SaveUserRecord(userID string) {
 		os.Exit(1)
 	}
 	session, err := mgo.Dial(uri)
+	fmt.Println("DB.SaveUserRecord(): mgo.Dial(uri) done")
 	if err != nil {
 		//	fmt.Printf("Can't connect to mongo, go error %v\n", err)
 		os.Exit(1)
@@ -412,4 +413,41 @@ func InsertRecomendation(recJson string) {
 
 	// TODO: 추천의 말씀 DB에 저장
 	// return res ( bool )
+}
+
+// COLLECTION 이름과 쿼리 리스트를 받아 해당 COLLECTION에 쿼리한 결과 리스트를 반환
+func RequestQueries(collectionName string, queries []bson.M) [][]interface{} {
+	uri := "mongodb://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		panic(err)
+	}
+	collection := session.DB(DB_NAME).C(collectionName)
+
+	var result [][]interface{}
+	for i := 0; i < len(queries); i++ {
+		var res []interface{}
+		if err := collection.Find(queries[i]).All(&res); err != nil {
+			panic(err)
+		}
+		result = append(result, res)
+	}
+
+	return result
+}
+
+// COLLECTION 이름과 문서 리스트를 받아 문서를 해당 COLLECTION에 저장
+func InsertDocs(collectionName string, docs []interface{}) {
+	uri := "mongodb://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		panic(err)
+	}
+	collection := session.DB(DB_NAME).C(collectionName)
+
+	for i := 0; i < len(docs); i++ {
+		if err := collection.Insert(docs[i]); err != nil {
+			panic(err)
+		}
+	}
 }

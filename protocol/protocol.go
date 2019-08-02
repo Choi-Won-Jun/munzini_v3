@@ -103,7 +103,7 @@ type CardValue struct {
 
 // SesstionAttributes 값
 type CEKSessionAttributes struct {
-	Status	int            `json:"status"`
-	QData	question.QData `json:"qdata"`
-	FQCore	recommendation.FoodQueryCore	'json:"fqcore"'
+	Status int                          `json:"status"`
+	QData  question.QData               `json:"qdata"`
+	FQCore recommendation.FoodQueryCore `json:"fqcore"`
 }
