@@ -22,7 +22,7 @@ import (
  */
 func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, curationType int, curation string) {
 
-	uri := os.Getenv("MONGODB_URI")
+	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -100,7 +100,7 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 * 사용자 정보를 DB안의 UserRecordCollection에 추가
  */
 func InsertUserRecord(ur UserRecord) {
-	uri := os.Getenv("MONGODB_URI")
+	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
 	if uri == "" {
 		//fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -122,7 +122,8 @@ func InsertUserRecord(ur UserRecord) {
 }
 
 func SaveUserRecord(userID string) {
-	uri := os.Getenv("MONGODB_URI")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
+	fmt.Println("하 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -162,7 +163,7 @@ func SaveUserRecord(userID string) {
 * Look up the recent medical records by userID
  */
 func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) {
-	uri := os.Getenv("MONGODB_URI")
+	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
 	if uri == "" {
 		//fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -281,7 +282,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
  */
 func SaveResult_and_CurationDataAtDB() {
 
-	uri := os.Getenv("MONGODB_URI")
+	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
 	if uri == "" {
 		//fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -347,7 +348,7 @@ func SaveResult_and_CurationDataAtDB() {
  */
 func GetResult_and_Explanation(pattern string) string {
 
-	uri := os.Getenv("MONGODB_URI")
+	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -373,7 +374,7 @@ func GetResult_and_Explanation(pattern string) string {
 
 func GetResult_and_Curation(pattern string) ResultAndCuration {
 
-	uri := os.Getenv("MONGODB_URI")
+	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -401,7 +402,7 @@ func GetResult_and_Curation(pattern string) ResultAndCuration {
 	recommendation package에서 생성된 추천의 말씀 json을 DB에 저장
 */
 func InsertRecomendation(recJson string) {
-	uri := os.Getenv("MONGODB_URI")
+	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
 	if uri == "" {
 		os.Exit(1)
 	}

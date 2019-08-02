@@ -8,7 +8,9 @@ import (
 	"munzini/intent"
 	"munzini/protocol"
 
-	// "fmt"
+	// "munzini/recommendation"
+
+	"fmt"
 	"net/http"
 )
 
@@ -41,6 +43,9 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 		var sessionAttributesRes protocol.CEKSessionAttributes
 		sessionAttributesRes.Status = 0
+		// var fqCore recommendation.FoodQueryCore
+		// fqCore.QueryCore = make(map[recommendation.PatternCat]recommendation.QueryData)
+		// sessionAttributesRes.FQCore = fqCore
 		response = protocol.SetSessionAttributes(response, sessionAttributesRes)
 
 	case "SessionEndedRequest": // 앱 종료 요청 시
@@ -53,7 +58,6 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		qdata := sesstionAttributesReq.QData
 		// Author : Wonjun
 		fqcore := sesstionAttributesReq.FQCore
-
 		//userID := sesstionAttributesReq.
 
 		cekIntent := req.Request.Intent // CEKIntent
@@ -73,17 +77,29 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		}
 		response = protocol.MakeCEKResponse(result) // 응답 구조체 작성
 		status += statusDelta                       // 상태 변화 적용
+		fmt.Println("status value : ")
+		fmt.Println(status)
 
 		var sessionAttributesRes protocol.CEKSessionAttributes
 		sessionAttributesRes.Status = status
 		sessionAttributesRes.QData = qdata
 		sessionAttributesRes.FQCore = fqcore
+
+		fmt.Println("sessionAttributesRes.FQCore Value:")
+		fmt.Println(sessionAttributesRes.FQCore)
+
 		response = protocol.SetSessionAttributes(response, sessionAttributesRes) // json:status 값 추가
 	}
 
+	fmt.Println("Response Value:")
+	fmt.Println(response)
+	fmt.Println("Ready to Send Message")
+
 	w.Header().Set("Content-Type", "application/json")
 	b, _ := json.Marshal(&response)
+	fmt.Println("response is sending")
 	w.Write(b)
+	fmt.Println("w.Write(b) done")
 }
 
 func handleLaunchRequest() protocol.CEKResponsePayload {

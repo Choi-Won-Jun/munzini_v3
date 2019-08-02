@@ -107,6 +107,11 @@ func extractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
 
 	// A. 정밀 문진 결과 의심되는 패턴이 아닌 것은 모두 쿼리 대상에서 제외시킨다.
 	for key, value := range fqcore.QueryCore { // Value Type : QueryData
+
+		// if key == "INIT_PATTERN" {	// 예외처리
+		// 	continue
+		// }
+
 		if !strIn(value.Pattern, ProbPatternList) { // QueryData의 Pattern이 ProbPatternList에 없다면, (문제있는 변증이 아니라면)
 			newQueryData := QueryData{
 				Pattern:              value.Pattern,
@@ -119,6 +124,11 @@ func extractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
 	}
 
 	for _, value := range fqcore.QueryCore {
+
+		// if value == "INIT_CATEGORY" {	// 예외처리
+		// 	continue
+		// }
+
 		if value.ShouldBeQueried { // QueryData를 검색해야한다면
 			temp_patcat := PatternCat{
 				Pattern:  value.Pattern,
@@ -140,7 +150,6 @@ func strIn(pattern string, ProbPatternList []string) bool {
 			break
 		}
 	}
-
 	return isIn
 }
 

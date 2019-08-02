@@ -67,6 +67,9 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 		),
 		ShouldEndSession: shouldEndSession,
 	}
+	fmt.Println(responseValue)
+	fmt.Println("fqCore Value:")
+	fmt.Println(fqCore)
 
 	return responsePayload, statusDelta, qData, fqCore
 }
