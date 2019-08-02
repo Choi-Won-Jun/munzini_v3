@@ -401,6 +401,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 const FIRST_IDX = 1    // QCWP.csv를 담아올 때 접근해야하는 첫번째 인덱스
@@ -542,5 +544,11 @@ func main() {
 	for i := 0; i < len(a); i++ {
 		fmt.Println(a[i])
 	}
+
+	var asd []bson.M
+
+	fmt.Println("08-02 Testing")
+	fmt.Print(asd)
+	fmt.Printf("%T\n", asd)
 
 }

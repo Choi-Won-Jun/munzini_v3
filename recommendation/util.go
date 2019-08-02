@@ -127,10 +127,27 @@ func strIn(pattern string, ProbPatternList []string) bool {
 	return isIn
 }
 
+/*
+   func makeQueries() []bson.M {
+   	var queries []bson.M
+   	queries = append(queries, bson.M{"pattern": "칠정", "category": "Sleep & anger"})
+   	queries = append(queries, bson.M{"pattern": "어혈", "category": "Pain"})
+
+   	return queries
+}
+*/
+
 // 4.
-func makeQueries(patterncats []PatternCat) {
-	// TODO : 입력받은 pattern들에 따라서 query list를 만들어 반환한다.
-	//  return queries
+func makeQueries(patterncats []PatternCat) []bson.M {
+
+	var queries []bson.M // Queries를 담는 배열
+
+	for i := 0; i < len(patterncats); i++ {
+		// PatternCat의 Pattern과 Category를 사용하여 쿼리를 작성한다.
+		queries = append(queries, bson.M{"pattern": patterncats[i].Pattern, "category": patterncats[i].Category})
+	}
+
+	return queries
 }
 
 // func RequestQueries(queries []string) {
