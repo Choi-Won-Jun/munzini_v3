@@ -53,11 +53,11 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 	case "IntentRequest": // 의도가 담긴 요청 시
 
-		sesstionAttributesReq := req.Session.SessionAttributes
-		status := sesstionAttributesReq.Status
-		qdata := sesstionAttributesReq.QData
+		sessionAttributesReq := req.Session.SessionAttributes
+		status := sessionAttributesReq.Status
+		qdata := sessionAttributesReq.QData
 		// Author : Wonjun
-		fqcore := sesstionAttributesReq.FQCore
+		fqcore := sessionAttributesReq.FQCore
 		//userID := sesstionAttributesReq.
 
 		cekIntent := req.Request.Intent // CEKIntent
@@ -96,8 +96,14 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Ready to Send Message")
 
 	w.Header().Set("Content-Type", "application/json")
-	b, _ := json.Marshal(&response)
+	b, err := json.Marshal(&response)
+	if err != nil {
+		fmt.Println("JSON Encoding Failed.")
+	}
 	fmt.Println("response is sending")
+	fmt.Printf("%T\n", err)
+	fmt.Println("Response Value:")
+	fmt.Println(b)
 	w.Write(b)
 	fmt.Println("w.Write(b) done")
 }

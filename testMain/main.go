@@ -397,12 +397,12 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
-
-	"go.mongodb.org/mongo-driver/bson"
+	// "strings"
+	// "go.mongodb.org/mongo-driver/bson"
 )
 
 const FIRST_IDX = 1    // QCWP.csv를 담아올 때 접근해야하는 첫번째 인덱스
@@ -424,6 +424,10 @@ type PatternCat struct { // Queries의 Key 구조체
 	Category string
 }
 
+func (pc PatternCat) toString() string {
+	return pc.Pattern + " " + pc.Category
+}
+
 type SimpleDoc struct {
 	Pattern  string `bson:"pattern"`
 	Category string `bson:"category"`
@@ -432,8 +436,7 @@ type SimpleDoc struct {
 
 // CEKSessionAttributes를 통하여 주고받아야할 구조체
 type Queries struct {
-	QueryCore map[PatternCat]QueryData // Pattern & Category ( = Key )로 QueryData ( = Value ) 접근
-
+	QueryCore map[string]QueryData // Pattern & Category ( = Key )로 QueryData ( = Value ) 접근
 	// 확장을 위하여 남겨두었음.
 	// QueryStrings []string
 	// QueryOutput [][]SimpleDoc
@@ -492,7 +495,7 @@ func loadData() Queries {
 	}
 	fmt.Println("Step 1 Completed.")
 	// 2. QueryCore 초기화 ( PatternCat - QueryData : Pattern / Category / Half_Of_Category_Num / ShouldBeQueried )
-	var queryCore map[PatternCat]QueryData = make(map[PatternCat]QueryData)
+	var queryCore map[string]QueryData = make(map[string]QueryData)
 	fmt.Println(len(queryCore))
 
 	fmt.Println(len(patcat))
@@ -502,7 +505,7 @@ func loadData() Queries {
 	// TODO: PatternCat의 값을 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
 	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
 		// TODO:구조체 초기화
-		queryCore[patcat[qd_idx]] = QueryData{
+		queryCore[patcat[qd_idx].toString()] = QueryData{
 			Pattern:              patcat[qd_idx].Pattern,
 			Category:             patcat[qd_idx].Category,
 			Half_Of_Category_Num: weight[qd_idx] / 2,
@@ -519,36 +522,65 @@ func loadData() Queries {
 
 func main() {
 
-	fmt.Println("Main Testing")
-	fmt.Println(queries.QueryCore)
-	fmt.Println(len(queries.QueryCore))
+	// fmt.Println("Main Testing")
+	// fmt.Println(queries.QueryCore)
+	// fmt.Println(len(queries.QueryCore))
 
-	fmt.Println("07-31 Testing")
-	fmt.Println(3 >= 3)
-	var a []int
-	a = append(a, 3)
-	fmt.Println(a)
-	v := "가 나 다 라 마 바"
-	v_list := strings.Split(v, " ")
-	fmt.Println(v_list[0])
+	// fmt.Println("07-31 Testing")
+	// fmt.Println(3 >= 3)
+	// var a []int
+	// a = append(a, 3)
+	// fmt.Println(a)
+	// v := "가 나 다 라 마 바"
+	// v_list := strings.Split(v, " ")
+	// fmt.Println(v_list[0])
 
-	var dd map[int]int = make(map[int]int)
-	dd[3] = 5
-	dd[2] = 2
-	dd[1] = 6
+	// var dd map[int]int = make(map[int]int)
+	// dd[3] = 5
+	// dd[2] = 2
+	// dd[1] = 6
 
-	for k, v := range dd {
-		fmt.Println(k, v)
+	// for k, v := range dd {
+	// 	fmt.Println(k, v)
+	// }
+
+	// for i := 0; i < len(a); i++ {
+	// 	fmt.Println(a[i])
+	// }
+
+	// var asd []bson.M
+
+	// fmt.Println("08-02 Testing")
+	// fmt.Print(asd)
+	// fmt.Printf("%T\n", asd)
+
+	fmt.Println("Main Testing is started.")
+
+	var q Queries
+	q.QueryCore = make(map[string]QueryData)
+	q.QueryCore[PatternCat{Pattern: "칠정", Category: "카테고리1"}.toString()] = QueryData{
+		Pattern:              "칠정",
+		Category:             "카테고리1",
+		Half_Of_Category_Num: 3,
+		ShouldBeQueried:      true,
+	}
+	for k, v := range q.QueryCore {
+		fmt.Println(k)
+		fmt.Println(v)
 	}
 
-	for i := 0; i < len(a); i++ {
-		fmt.Println(a[i])
+	fmt.Println("JSON Testing is started.")
+
+	doc, err := json.Marshal(q.QueryCore)
+
+	if err != nil {
+		fmt.Println("Error occured!!")
+		fmt.Println("Error Type :")
+		fmt.Printf("%T\n", err)
+	} else {
+		fmt.Println("JSON Encoding Succeded!")
 	}
 
-	var asd []bson.M
-
-	fmt.Println("08-02 Testing")
-	fmt.Print(asd)
-	fmt.Printf("%T\n", asd)
+	fmt.Println(string(doc))
 
 }
