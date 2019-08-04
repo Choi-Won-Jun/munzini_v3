@@ -34,9 +34,17 @@ type PatternCat struct { // Queries의 Key 구조체
 
 // CEKSessionAttributes를 통하여 주고받아야할 구조체
 type FoodQueryCore struct {
-	QueryCore map[PatternCat]QueryData // Pattern & Category ( = Key )로 QueryData ( = Value ) 접근
+	QueryCore map[string]QueryData
+	// type(PatternCat.toString()) = string Pattern & Category ( = Key )로 QueryData ( = Value ) 접근
+	// 구) map[PatternCat]QueryData
+	// 바뀐 이유) golang 내부에서는 map의 Key값으로 구조체를 사용할 수 있습니다.
+	// 하지만, JSON을 통해 클라이언트-서버 통신을 할 때, JSON의 키 값은 "무조건" string이어야 합니다.
+	// FoodQueryCore값은 클라이언트-서버 통신에서 주고받아야 할 데이터로, 이에 대한 map의 키 값은 String이어야 합니다.
+	// PatternCat을 이용한 백엔드 부분의 개발이 완료된 시점에서 이 문제를 파악했고, 이에 따라 PatternCat 구조체에 toString()메소드를 추가하여
+	// 키 값은 기존의 {"칠정", "카테고리1"} 과 같은 형식에서 "칠정 카테고리1" 형식의 String으로 변환하여 주고받을 수 있게 하였습니다.
 
 	// 확장을 위하여 남겨두었음.
+	// 나중에 음식 추천과 관련하여 클라이언트와의 세션이 유지되는 동안 기억해야할 정보를 이 구조체(FoodQueryCore)내에 추가하여 담으면 됩니다.
 	// QueryStrings []string
 	// QueryOutput [][]SimpleDoc
 	// QueryStrings map[PatternCat]string                 // Query문들

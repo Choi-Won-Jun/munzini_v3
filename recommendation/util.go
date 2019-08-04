@@ -50,11 +50,11 @@ func PrepareQueryCore() FoodQueryCore {
 	}
 
 	// 2. QueryCore 초기화 ( PatternCat - QueryData : Pattern / Category / Half_Of_Category_Num / ShouldBeQueried )
-	var queryCore map[PatternCat]QueryData = make(map[PatternCat]QueryData)
+	var queryCore map[string]QueryData = make(map[string]QueryData)
 
-	// PatternCat의 값을 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
+	// PatternCat의 값을 string으로 치환한 후 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
 	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
-		queryCore[patcat[qd_idx]] = QueryData{
+		queryCore[patcat[qd_idx].toString()] = QueryData{
 			Pattern:              patcat[qd_idx].Pattern,
 			Category:             patcat[qd_idx].Category,
 			Half_Of_Category_Num: weight[qd_idx] / 2,
@@ -76,12 +76,12 @@ func CalculateHOCN(fqcore FoodQueryCore, pattern string, category string, score 
 	QCkey := PatternCat{
 		Pattern:  pattern,
 		Category: category,
-	}
+	}.toString()
 
 	new_HOCN := fqcore.QueryCore[QCkey].Half_Of_Category_Num
 	new_ShouldBeQueried := fqcore.QueryCore[QCkey].ShouldBeQueried
 
-	if score >= HOCN_CRITERIA { // 3점 이상일 시 QCKey에 해당하는 QueryData의 HOCN을 감소시킨다.
+	if score < HOCN_CRITERIA { // 3점(HOCN_CRITERIA) 미만일 시 QCKey에 해당하는 QueryData의 HOCN을 감소시킨다.
 		new_HOCN -= 1
 	}
 	// HOCN이 음수가 되면, 쿼리 대상에서 제외시킨다.
@@ -290,4 +290,10 @@ func GetAndSaveFoodRecommendation(fqCore FoodQueryCore, probPatternList []string
 	fmt.Println(recScript)
 
 	return recScript
+}
+
+// 기존의 FoodQueryCore.QueryCore의 key값인 PatternCat을 JSON으로 치환하기 위해 string값으로 변환시키는 메소드
+func (pc PatternCat) toString() string {
+	return pc.Pattern + " " + pc.Category
+	// 클라이어트에게 다시 Request를 받을 때, " "을 기준으로 Split하여 PatternCat에 값을 담기위해 " "을 추가하였습니다.
 }

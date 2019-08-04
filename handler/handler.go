@@ -58,6 +58,9 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		qdata := sessionAttributesReq.QData
 		// Author : Wonjun
 		fqcore := sessionAttributesReq.FQCore
+		fmt.Println("=====fqcore Value=====")
+		fmt.Println(fqcore)
+		fmt.Println("======================")
 		//userID := sesstionAttributesReq.
 
 		cekIntent := req.Request.Intent // CEKIntent
@@ -102,8 +105,6 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("response is sending")
 	fmt.Printf("%T\n", err)
-	fmt.Println("Response Value:")
-	fmt.Println(b)
 	w.Write(b)
 	fmt.Println("w.Write(b) done")
 }
