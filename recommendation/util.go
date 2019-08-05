@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"munzini/DB"
+	"munzini/question"
 	"munzini/random"
 	"os"
 	"strconv"
@@ -34,26 +35,31 @@ func PrepareQueryCore() FoodQueryCore {
 	var patcat []PatternCat
 
 	// TODO: PatternCat리스트 초기화 ( 23개 - 카테고리 개수)
-	var row int = FIRST_IDX
+	var row int = question.FIRST_IDX
 	var weight []int // 추후에 QueryCore의 Value값 중 Half_Of_Category_Num에 값을 담아놓기 위해 가중치 값들을 미리 저장해놓는 슬라이스
 
 	for row < len(qcwp) {
+		// PatternCat 슬라이스 ( patcat )채우기
 		temp_patcat := PatternCat{
-			Pattern:  qcwp[row][PATTERN_IDX],
-			Category: qcwp[row][CATEGORY_IDX],
+			Pattern:  qcwp[row][question.PATTERN],
+			Category: qcwp[row][question.CATEGORY],
 		}
 		patcat = append(patcat, temp_patcat)
-		temp_weight, _ := strconv.Atoi(qcwp[row][WEIGHT_IDX])
+
+		// Weight 슬라이스 (weight) 채우기
+		temp_weight, _ := strconv.Atoi(qcwp[row][question.WEIGHT])
 		weight = append(weight, temp_weight)
-		row_gap, _ := strconv.Atoi(qcwp[row][WEIGHT_IDX])
-		row = row + row_gap // 가중치만큼 Forwarding
+
+		// 가중치만큼 Forwarding
+		row_gap, _ := strconv.Atoi(qcwp[row][question.WEIGHT])
+		row = row + row_gap
 	}
 
 	// 2. QueryCore 초기화 ( PatternCat - QueryData : Pattern / Category / Half_Of_Category_Num / ShouldBeQueried )
 	var queryCore map[string]QueryData = make(map[string]QueryData)
 
-	// PatternCat의 값을 string으로 치환한 후 QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
-	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
+	// PatternCat의 값을 string으로 치환한 후(toString()메소드) QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
+	for qd_i dx := 0; qd_idx < len(patcat); qd_idx++ {
 		queryCore[patcat[qd_idx].toString()] = QueryData{
 			Pattern:              patcat[qd_idx].Pattern,
 			Category:             patcat[qd_idx].Category,
@@ -103,14 +109,11 @@ func CalculateHOCN(fqcore FoodQueryCore, pattern string, category string, score 
 
 // 3. Determine Which Pattern-Category should be queried to RMD Database
 func extractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
-	var patcats []PatternCat
+
+	var patcats []PatternCat // Queried Pattern-Category 쌍을 담을 슬라이
 
 	// A. 정밀 문진 결과 의심되는 패턴이 아닌 것은 모두 쿼리 대상에서 제외시킨다.
 	for key, value := range fqcore.QueryCore { // Value Type : QueryData
-
-		// if key == "INIT_PATTERN" {	// 예외처리
-		// 	continue
-		// }
 
 		if !strIn(value.Pattern, ProbPatternList) { // QueryData의 Pattern이 ProbPatternList에 없다면, (문제있는 변증이 아니라면)
 			newQueryData := QueryData{
@@ -124,10 +127,6 @@ func extractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
 	}
 
 	for _, value := range fqcore.QueryCore {
-
-		// if value == "INIT_CATEGORY" {	// 예외처리
-		// 	continue
-		// }
 
 		if value.ShouldBeQueried { // QueryData를 검색해야한다면
 			temp_patcat := PatternCat{
@@ -155,7 +154,7 @@ func strIn(pattern string, ProbPatternList []string) bool {
 
 // 4. DB 모듈로부터 받은 쿼리 결과 데이터를 가공
 func makeQueries(patterncats []PatternCat) []bson.M {
-	var queries []bson.M // Queries를 담는 배열
+	var queries []bson.M // Queries를 담는 슬라이스
 	for i := 0; i < len(patterncats); i++ {
 		// PatternCat의 Pattern과 Category를 사용하여 쿼리를 작성한다.
 		queries = append(queries, bson.M{"pattern": patterncats[i].Pattern, "category": patterncats[i].Category})

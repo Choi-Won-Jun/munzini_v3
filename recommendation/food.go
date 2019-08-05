@@ -1,17 +1,10 @@
 package recommendation
 
 const (
-	FIRST_IDX    = 1 // QCWP.csv를 담아올 때 접근해야하는 첫번째 인덱스
-	CATEGORY_IDX = 1 // QCWP.csv에서 Category에 접근하기 위한 인덱스
-	PATTERN_IDX  = 3 // QCWP.csv에서 Pattern에 접근하기 위한 인덱스
-	WEIGHT_IDX   = 2 // QCWP.csv에서 Weight에 접근하기 위한 인덱스
-
-	HOCN_CRITERIA = 3 // Half_Of_Category_Number을 감소시킬지 말지를 판단하는 점수 기준
-
+	HOCN_CRITERIA       = 3                                  // Half_Of_Category_Number을 감소시킬지 말지를 판단하는 점수 기준
 	RMD_PER_CAT         = 1                                  // (변증, 카테고리)별 음식 추천 수
 	RMD_COLLECTION_NAME = "FOOD_RECOMMEND_COLLECTION_SIMPLE" // 음식 추천 DB 이름 (조회할 DB)
 	// RMD_STORE_COLLECTION_NAME = "FOOD_RECOMMEND_STORE_COLLECTION"  // 음식 추천 기록 DB 이름 (저장할 DB)
-
 )
 
 type RecJson struct { // 추천의 말씀을 뽑아내기 위한 구조체

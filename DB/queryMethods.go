@@ -123,7 +123,7 @@ func InsertUserRecord(ur UserRecord) {
 
 func SaveUserRecord(userID string) {
 	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
-	fmt.Println("하 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	fmt.Println("DB.SaveUserRecord(): SaveUserRecord() is started.")
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
