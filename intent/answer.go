@@ -139,14 +139,20 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 		fqCore = recommendation.CalculateHOCN(fqCore, question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.PATTERN], question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.CATEGORY], question.NO_SCORE) // 현재 질문의 인덱스에 해당하는 Pattern, Category, 응답 점수를 통하여 질문과 관련된 Pattern-Category 조합에 따른 추천을 해줄지의 여부를 HOCN변수를 조절함으로써 판단한다.
 		playUptoMessage = nlp.GetPlayUptoMessage(question.NO_SCORE, qData.QRepIdx[qData.RepIdx])                                                                                                                        // 맞장구 메시지 가져오기
 		qData.RepIdx++
+		fmt.Println("qData.RepIdx++ done")
 		// 대표 질문이 끝났을 때
 		if qData.RepIdx == qData.RepMax {
+			fmt.Println("if case entered.")
 			qData = question.PrepareDet(qData) // 대표 질문들에 대한 컷오프 계산 후 문제가 있는 변증 관련 데이터 준비
+			fmt.Println("question.PrepareDet(qData) done")
 			for i := 0; i < len(qData.SQSProbPatternIdx); i++ {
 				qNum += len(qData.QDetailIdx[qData.SQSProbPatternIdx[i]]) // 질문의 개수 이야기 해주기 위함. 모든 SQS 정밀 진단 질문 개수.
 			}
+			fmt.Println("qNum += len ... done")
 			qData.QDetailNum = qNum // 정밀 진단 질문 개수 기록
-
+			fmt.Println(qNum)
+			fmt.Println("qData.SQSProb Value:")
+			fmt.Println(qData.SQSProb)
 			if qData.SQSProb == true {
 				var SQSResult string = makeSQSResult(qData, userID)
 				SQSResult += " 총 " + strconv.Itoa(qNum) + "개의 질문에 대답해 주셔야 해요."
@@ -155,14 +161,22 @@ func GetSQSAnswer(intent protocol.CEKIntent, qData question.QData, fqCore recomm
 			} else {
 
 				//Author: Jun
-				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " "))
-
+				recentCKU_result, isDataENOUGH := makeRecentCheckUPResult(userID, strings.Split(DB.PATTERN_NON, " ")) // 이 함수에 문제 있음.
+				fmt.Println("recentCKU_result... done")
+				fmt.Println("isDataENOUGH Value:")
+				fmt.Println(isDataENOUGH)
+				fmt.Println("recentCKU_result : ")
+				fmt.Println(recentCKU_result)
 				if isDataENOUGH == true {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. " + recentCKU_result + "하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
 				} else {
 					responseValue = "기쁜 소식이예요! 현재 건강 발랜스가 매우 좋습니다. 지금처럼만 유지하신다면 매일매일 건강한 하루를 보내실 수 있습니다. 하지만 자만은 금물이예요! 그래도 혹시 모르니깐 더 자세한 문진을 시작해 볼까요? 총" + strconv.Itoa(question.Q_NUM-question.SQ_NUM) + "개의 질문에 대답해 주셔야 해요."
 				}
+				fmt.Println("responseValue:")
+				fmt.Println(responseValue)
+				fmt.Println("saveUserMedicalResult(..) started.")
 				saveUserMedicalResult(userID, SIMPLE_QUESTION_TYPE, strings.Split(DB.PATTERN_NON, " "), DB.CURATION_NON_INDEX, SQS_CURATION)
+				fmt.Println("saveUserMedicalResult(..) done.")
 				statusDelta = 1 // next status
 
 			}
@@ -381,6 +395,7 @@ func GetDQSAnswer_NS(intent protocol.CEKIntent, qData question.QData, fqCore rec
 		if score == 0 {
 			responseValue = "다시 말씀해주세요."
 		} else if score > 0 && score <= question.SCORE_MAX { // score 값이 정상적으로 부여된 경우
+			fmt.Println("GetDQSAnswer_NS started. Score value is well parsed.")
 			qData.Answer[qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]] = score                            // score 값 저장
 			playUptoMessage = nlp.GetPlayUptoMessage(score, qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]) // 맞장구 가져오
 			fqCore = recommendation.CalculateHOCN(fqCore, question.RAW_DATA.QCWP[qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]][question.PATTERN], question.RAW_DATA.QCWP[qData.QDetailIdx[qData.NoSQSProbPatternIdx[qData.DetPat]][qData.DetIdx]][question.CATEGORY], score)
@@ -581,8 +596,9 @@ func makeSQSResult(qData question.QData, userID string) string { // SQSProbPatte
 * questionTYPE(0: 간단 문진, 1: 정밀 문진)
  */
 func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, curationType int, curation string) {
-
+	fmt.Println("DB.InsertMedicalRecord started.")
 	DB.InsertMedicalRecord(userID, questionTYPE, patterns, curationType, curation)
+	fmt.Println("DB.InsertMedicalRecord done.")
 }
 
 /**
@@ -593,7 +609,9 @@ func saveUserMedicalResult(userID string, questionTYPE int, patterns []string, c
 func makeRecentCheckUPResult(userID string, current_patterns []string) (string, bool) {
 
 	//mrTABLE = Medical Record Table(이전 3회 분의 문진 결과를 Table형태로 저장한 변)
+	fmt.Println("mrTABLE, mrRecords, flag := ... started.")
 	mrTABLE, mrRecords, flag := DB.GetMedicalRecordTable(userID)
+	fmt.Println("mrTABLE, mrRecords, flag := ... done.")
 	var notification string
 	if flag == false { // DB에 세번 이상의 문진기록이 저장되어있지 않는 경우
 		return notification, flag //종합적인 문진 결과를 notify할 수 없음

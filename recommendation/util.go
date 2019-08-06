@@ -59,7 +59,7 @@ func PrepareQueryCore() FoodQueryCore {
 	var queryCore map[string]QueryData = make(map[string]QueryData)
 
 	// PatternCat의 값을 string으로 치환한 후(toString()메소드) QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
-	for qd_i dx := 0; qd_idx < len(patcat); qd_idx++ {
+	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
 		queryCore[patcat[qd_idx].toString()] = QueryData{
 			Pattern:              patcat[qd_idx].Pattern,
 			Category:             patcat[qd_idx].Category,
@@ -294,5 +294,4 @@ func GetAndSaveFoodRecommendation(fqCore FoodQueryCore, probPatternList []string
 // 기존의 FoodQueryCore.QueryCore의 key값인 PatternCat을 JSON으로 치환하기 위해 string값으로 변환시키는 메소드
 func (pc PatternCat) toString() string {
 	return pc.Pattern + " " + pc.Category
-	// 클라이어트에게 다시 Request를 받을 때, " "을 기준으로 Split하여 PatternCat에 값을 담기위해 " "을 추가하였습니다.
 }

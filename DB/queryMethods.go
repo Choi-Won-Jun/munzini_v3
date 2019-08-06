@@ -22,7 +22,7 @@ import (
  */
 func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, curationType int, curation string) {
 
-	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -100,7 +100,7 @@ func InsertMedicalRecord(userID string, questionTYPE int, patterns []string, cur
 * 사용자 정보를 DB안의 UserRecordCollection에 추가
  */
 func InsertUserRecord(ur UserRecord) {
-	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 	if uri == "" {
 		//fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -163,12 +163,15 @@ func SaveUserRecord(userID string) {
 * Look up the recent medical records by userID
  */
 func RetreiveRecentMedicalRecordByUserID(userID string) ([]MedicalRecord, bool) {
-	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
+	fmt.Println("RetreiveRecentMedicalRecordByUserID started.")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 	if uri == "" {
 		//fmt.Println("no connection string provided")
 		os.Exit(1)
 	}
 	session, err := mgo.Dial(uri)
+
+	fmt.Println("mgo.Dial(uri) done.")
 	if err != nil {
 		//fmt.Printf("Can't connect to mongo, go error %v\n", err)
 		os.Exit(1)
@@ -246,7 +249,9 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
 	//var PATTERN_INDEX = map[string]int{"칠정": 0, "노권": 1, "담음": 2, "식적": 3, "어혈": 4} // 변증 인덱스 : 이름
 	//const PATTERN_NUM = 5
 
+	fmt.Println("DB.GetMedicalRecordTable started.")
 	medicalRecords, flag := RetreiveRecentMedicalRecordByUserID(userID)
+	fmt.Println("medicalRecords, falg := RetreiveRecent... done.")
 
 	if flag == false { // 충분한 수의 문진 기록이 없는 경우 : False Flag를 반환하여, 최근 문진 기록에 대한 설명기능을 비활성
 		var nilTable [question.PATTERN_NUM + 2][NUM_MR_to_CHECK]int
@@ -282,7 +287,7 @@ func GetMedicalRecordTable(userID string) ([question.PATTERN_NUM + 2][NUM_MR_to_
  */
 func SaveResult_and_CurationDataAtDB() {
 
-	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 	if uri == "" {
 		//fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -348,7 +353,7 @@ func SaveResult_and_CurationDataAtDB() {
  */
 func GetResult_and_Explanation(pattern string) string {
 
-	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -374,7 +379,7 @@ func GetResult_and_Explanation(pattern string) string {
 
 func GetResult_and_Curation(pattern string) ResultAndCuration {
 
-	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 	if uri == "" {
 		//	fmt.Println("no connection string provided")
 		os.Exit(1)
@@ -402,7 +407,7 @@ func GetResult_and_Curation(pattern string) ResultAndCuration {
 	recommendation package에서 생성된 추천의 말씀 json을 DB에 저장
 */
 func InsertRecomendation(recJson string) {
-	uri := os.Getenv("mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb")
+	uri := "mongodb://heroku_7v6nqjgb:q69a7s0ikl24sif7oe7hld13r0@ds111791.mlab.com:11791/heroku_7v6nqjgb"
 	if uri == "" {
 		os.Exit(1)
 	}
