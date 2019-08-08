@@ -780,10 +780,10 @@ func makeFinalScoreNotification(qData question.QData, fqCore recommendation.Food
 
 			if isDataENOUGH == false {
 
-				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + curation
 
 			} else {
-				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result + curation
 			}
 			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
 			return qData
@@ -816,10 +816,10 @@ func makeFinalScoreNotification(qData question.QData, fqCore recommendation.Food
 
 			if isDataENOUGH == false {
 
-				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX]
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + curation
 
 			} else {
-				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result
+				qData.FinalScoreNotification = "문진 결과를 알려드릴께요." + racInfo.Explanation[DB.RAC_DQS_EXPLANATION_INDEX] + recentCKU_result + curation
 			}
 
 			saveUserMedicalResult(userID, DETAIL_QUESTION_TYPE, strings.Split(DB.COMPLECATION, " "), DB.DIET_CURATION_INDEX, curation)
