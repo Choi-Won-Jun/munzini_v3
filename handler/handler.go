@@ -2,15 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-
+	"fmt"
 	"log"
-	//"munzini/DB"
 	"munzini/intent"
 	"munzini/protocol"
-
-	// "munzini/recommendation"
-
-	"fmt"
 	"net/http"
 )
 
@@ -43,9 +38,6 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 
 		var sessionAttributesRes protocol.CEKSessionAttributes
 		sessionAttributesRes.Status = 0
-		// var fqCore recommendation.FoodQueryCore
-		// fqCore.QueryCore = make(map[recommendation.PatternCat]recommendation.QueryData)
-		// sessionAttributesRes.FQCore = fqCore
 		response = protocol.SetSessionAttributes(response, sessionAttributesRes)
 
 	case "SessionEndedRequest": // 앱 종료 요청 시
@@ -56,11 +48,6 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		sessionAttributesReq := req.Session.SessionAttributes
 		status := sessionAttributesReq.Status
 		qdata := sessionAttributesReq.QData
-		// Author : Wonjun
-		fqcore := sessionAttributesReq.FQCore
-		fmt.Println("=====fqcore Value=====")
-		fmt.Println(fqcore)
-		fmt.Println("======================")
 		//userID := sesstionAttributesReq.
 
 		cekIntent := req.Request.Intent // CEKIntent
@@ -68,28 +55,22 @@ func Dispatch(w http.ResponseWriter, r *http.Request) {
 		// 사용자의 발화에 대한 응답을 현재 상태에 따라 세팅한다. 필요한 경우 응답을 세팅하는 과정에서 슬롯에 대한 처리를 포함한다.
 		switch status {
 		case SQP_S: // status가 0인 경우
-			result, statusDelta, qdata, fqcore = intent.GetSQPAnswer(cekIntent, qdata, fqcore, req.Session.User.UserId)
+			result, statusDelta, qdata = intent.GetSQPAnswer(cekIntent, qdata, req.Session.User.UserId)
 		case SQS_S:
-			result, statusDelta, qdata, fqcore = intent.GetSQSAnswer(cekIntent, qdata, fqcore, req.Session.User.UserId)
+			result, statusDelta, qdata = intent.GetSQSAnswer(cekIntent, qdata, req.Session.User.UserId)
 		case DQP_S:
-			result, statusDelta, qdata, fqcore = intent.GetDQPAnswer(cekIntent, qdata, fqcore)
+			result, statusDelta, qdata = intent.GetDQPAnswer(cekIntent, qdata)
 		case DQS_S:
-			result, statusDelta, qdata, fqcore = intent.GetDQSAnswer(cekIntent, qdata, fqcore, req.Session.User.UserId) // 개발노트) qData.SQSProb에 따라 다르게 처리 하도록 구현해야 함.
+			result, statusDelta, qdata = intent.GetDQSAnswer(cekIntent, qdata, req.Session.User.UserId) // 개발노트) qData.SQSProb에 따라 다르게 처리 하도록 구현해야 함.
 		case R_S:
-			result, statusDelta, qdata, fqcore = intent.GetRAnswer(cekIntent, qdata, fqcore)
+			result, statusDelta, qdata = intent.GetRAnswer(cekIntent, qdata)
 		}
 		response = protocol.MakeCEKResponse(result) // 응답 구조체 작성
 		status += statusDelta                       // 상태 변화 적용
-		fmt.Println("status value : ")
-		fmt.Println(status)
 
 		var sessionAttributesRes protocol.CEKSessionAttributes
 		sessionAttributesRes.Status = status
 		sessionAttributesRes.QData = qdata
-		sessionAttributesRes.FQCore = fqcore
-
-		fmt.Println("sessionAttributesRes.FQCore Value:")
-		fmt.Println(sessionAttributesRes.FQCore)
 
 		response = protocol.SetSessionAttributes(response, sessionAttributesRes) // json:status 값 추가
 	}

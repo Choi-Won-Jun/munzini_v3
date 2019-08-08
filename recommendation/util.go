@@ -15,7 +15,7 @@ import (
 )
 
 // 1. Initialize FoodQueryCore
-func PrepareQueryCore() FoodQueryCore {
+func prepareQueryCore() (FoodQueryCore, [][]string) {
 	// open QCWP file	- Use CWP ( Category-Weight-Pattern )
 	qcwp_file, _ := os.Open("resources/data/QCWP.csv")
 
@@ -56,11 +56,10 @@ func PrepareQueryCore() FoodQueryCore {
 	}
 
 	// 2. QueryCore 초기화 ( PatternCat - QueryData : Pattern / Category / Half_Of_Category_Num / ShouldBeQueried )
-	var queryCore map[string]QueryData = make(map[string]QueryData)
+	var queryCore map[PatternCat]QueryData = make(map[PatternCat]QueryData)
 
-	// PatternCat의 값을 string으로 치환한 후(toString()메소드) QueryCore의 Key값에 넣고, 그에 해당하는 QueryData를 작성한다.
 	for qd_idx := 0; qd_idx < len(patcat); qd_idx++ {
-		queryCore[patcat[qd_idx].toString()] = QueryData{
+		queryCore[patcat[qd_idx]] = QueryData{
 			Pattern:              patcat[qd_idx].Pattern,
 			Category:             patcat[qd_idx].Category,
 			Half_Of_Category_Num: weight[qd_idx] / 2,
@@ -72,38 +71,42 @@ func PrepareQueryCore() FoodQueryCore {
 	var foodQueryCore FoodQueryCore = FoodQueryCore{
 		QueryCore: queryCore,
 	}
-	return foodQueryCore
+	return foodQueryCore, qcwp
 }
 
 // 2. Calculate FoodQueryCore's Half_Of_Category_Num according to user's Response
-func CalculateHOCN(fqcore FoodQueryCore, pattern string, category string, score int) FoodQueryCore {
+func calculateHOCN(fqcore FoodQueryCore, qData question.QData, qcwp [][]string) FoodQueryCore {
 
-	// Make QueryCore's Key
-	QCkey := PatternCat{
-		Pattern:  pattern,
-		Category: category,
-	}.toString()
+	for qIdx, score := range qData.Answer {
+		// Make pattern, category
+		pattern := qcwp[qIdx][question.PATTERN]
+		category := qcwp[qIdx][question.CATEGORY]
 
-	new_HOCN := fqcore.QueryCore[QCkey].Half_Of_Category_Num
-	new_ShouldBeQueried := fqcore.QueryCore[QCkey].ShouldBeQueried
+		// Make QueryCore's Key
+		QCkey := PatternCat{
+			Pattern:  pattern,
+			Category: category,
+		}
 
-	if score < HOCN_CRITERIA { // 3점(HOCN_CRITERIA) 미만일 시 QCKey에 해당하는 QueryData의 HOCN을 감소시킨다.
-		new_HOCN -= 1
+		new_HOCN := fqcore.QueryCore[QCkey].Half_Of_Category_Num
+		new_ShouldBeQueried := fqcore.QueryCore[QCkey].ShouldBeQueried
+
+		if score < HOCN_CRITERIA { // 3점(HOCN_CRITERIA) 미만일 시 QCKey에 해당하는 QueryData의 HOCN을 감소시킨다.
+			new_HOCN -= 1
+		}
+		// HOCN이 음수가 되면, 쿼리 대상에서 제외시킨다.
+		if new_HOCN < 0 {
+			new_ShouldBeQueried = false
+		}
+
+		newQueryData := QueryData{
+			Pattern:              pattern,
+			Category:             category,
+			Half_Of_Category_Num: new_HOCN,
+			ShouldBeQueried:      new_ShouldBeQueried,
+		}
+		fqcore.QueryCore[QCkey] = newQueryData
 	}
-	// HOCN이 음수가 되면, 쿼리 대상에서 제외시킨다.
-	if new_HOCN < 0 {
-		new_ShouldBeQueried = false
-	}
-
-	newQueryData := QueryData{
-		Pattern:              pattern,
-		Category:             category,
-		Half_Of_Category_Num: new_HOCN,
-		ShouldBeQueried:      new_ShouldBeQueried,
-	}
-
-	fqcore.QueryCore[QCkey] = newQueryData
-
 	return fqcore
 }
 
@@ -255,7 +258,14 @@ func makeRecScript(recJsonSet [][]RecJson) string {
 }
 
 // 추천 스크립트 제작 후 저장 및 반환
-func GetAndSaveFoodRecommendation(fqCore FoodQueryCore, probPatternList []string) string {
+func GetAndSaveFoodRecommendation(probPatternList []string, qData question.QData) string {
+
+	// 1. FoodQueryCore 초기화
+	fqCore, qcwp := prepareQueryCore()
+
+	// 2. calculationHOCN을 통해 Answer에 따라 점수 계산
+	fqCore = calculateHOCN(fqCore, qData, qcwp)
+
 	// 3. 문제 패턴 및 카테고리 정보 생성
 	patternCatList := extractQPC(fqCore, probPatternList)
 
@@ -289,9 +299,4 @@ func GetAndSaveFoodRecommendation(fqCore FoodQueryCore, probPatternList []string
 	fmt.Println(recScript)
 
 	return recScript
-}
-
-// 기존의 FoodQueryCore.QueryCore의 key값인 PatternCat을 JSON으로 치환하기 위해 string값으로 변환시키는 메소드
-func (pc PatternCat) toString() string {
-	return pc.Pattern + " " + pc.Category
 }

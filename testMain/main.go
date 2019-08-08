@@ -459,6 +459,8 @@ func loadData() Queries {
 	fmt.Println(len(a))
 	fmt.Println("test2")
 
+	fmt.Printf("%T\n", qcwp)
+
 	/*
 		TODO
 		1. QueryCore를 초기화한다.
@@ -555,6 +557,8 @@ func main() {
 	// fmt.Printf("%T\n", asd)
 
 	fmt.Println("Main Testing is started.")
+
+	loadData()
 
 	var q Queries
 	q.QueryCore = make(map[string]QueryData)

@@ -27,7 +27,7 @@ type PatternCat struct { // Queries의 Key 구조체
 
 // CEKSessionAttributes를 통하여 주고받아야할 구조체
 type FoodQueryCore struct {
-	QueryCore map[string]QueryData
+	QueryCore map[PatternCat]QueryData
 	// type(PatternCat.toString()) = string Pattern & Category ( = Key )로 QueryData ( = Value ) 접근
 	// 구) map[PatternCat]QueryData
 	// 바뀐 이유) golang 내부에서는 map의 Key값으로 구조체를 사용할 수 있습니다.
