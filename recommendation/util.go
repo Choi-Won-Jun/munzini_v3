@@ -78,9 +78,19 @@ func prepareQueryCore() (FoodQueryCore, [][]string) {
 func calculateHOCN(fqcore FoodQueryCore, qData question.QData, qcwp [][]string) FoodQueryCore {
 
 	for qIdx, score := range qData.Answer {
+
+		if qIdx == -1 { // Answer Map의 Init Value인 -1 : -1 을 제외한다.
+			break
+		}
+
+		// fmt.Println("qIdx: ")
+		// fmt.Println(qIdx)
+		// fmt.Println("qIdx Type: ")
+		// fmt.Printf("%T\n", qIdx)
 		// Make pattern, category
 		pattern := qcwp[qIdx][question.PATTERN]
 		category := qcwp[qIdx][question.CATEGORY]
+		// fmt.Println("Made Pattern & Category")
 
 		// Make QueryCore's Key
 		QCkey := PatternCat{
@@ -139,6 +149,8 @@ func extractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
 			patcats = append(patcats, temp_patcat)
 		}
 	}
+
+	fmt.Println(patcats)
 
 	return patcats
 }
@@ -261,13 +273,19 @@ func makeRecScript(recJsonSet [][]RecJson) string {
 func GetAndSaveFoodRecommendation(probPatternList []string, qData question.QData) string {
 
 	// 1. FoodQueryCore 초기화
+	fmt.Println("prepareQueryCore() started.")
 	fqCore, qcwp := prepareQueryCore()
+	fmt.Println("done.")
 
 	// 2. calculationHOCN을 통해 Answer에 따라 점수 계산
+	fmt.Println("calculateHOCAN() started.")
 	fqCore = calculateHOCN(fqCore, qData, qcwp)
+	fmt.Println("done.")
 
 	// 3. 문제 패턴 및 카테고리 정보 생성
+	fmt.Println("extractQPC() started.")
 	patternCatList := extractQPC(fqCore, probPatternList)
+	fmt.Println("done.")
 
 	// 4. 추천 DB에 요청할 쿼리 작성
 	fmt.Print("building queries..")
