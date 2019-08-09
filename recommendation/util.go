@@ -2,28 +2,19 @@
 package recommendation
 
 import (
-	"bufio"
-	"encoding/csv"
 	"fmt"
 	"munzini/DB"
 	"munzini/question"
 	"munzini/random"
-	"os"
 	"strconv"
 
 	"gopkg.in/mgo.v2/bson"
 )
 
 // 1. Initialize FoodQueryCore
-func prepareQueryCore() (FoodQueryCore, [][]string) {
-	// open QCWP file	- Use CWP ( Category-Weight-Pattern )
-	qcwp_file, _ := os.Open("resources/data/QCWP.csv")
+func prepareQueryCore() FoodQueryCore {
 
-	// create csv Reader
-	qcwp_reader := csv.NewReader(bufio.NewReader(qcwp_file))
-
-	// read csv file
-	qcwp, _ := qcwp_reader.ReadAll()
+	qcwp := question.RAW_DATA.QCWP
 	/*
 		TODO
 		1. QueryCore를 초기화한다.
@@ -71,11 +62,13 @@ func prepareQueryCore() (FoodQueryCore, [][]string) {
 	var foodQueryCore FoodQueryCore = FoodQueryCore{
 		QueryCore: queryCore,
 	}
-	return foodQueryCore, qcwp
+	return foodQueryCore
 }
 
 // 2. Calculate FoodQueryCore's Half_Of_Category_Num according to user's Response
-func calculateHOCN(fqcore FoodQueryCore, qData question.QData, qcwp [][]string) FoodQueryCore {
+func calculateHOCN(fqcore FoodQueryCore, qData question.QData) FoodQueryCore {
+
+	qcwp := question.RAW_DATA.QCWP
 
 	for qIdx, score := range qData.Answer {
 
@@ -146,6 +139,7 @@ func extractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
 				Pattern:  value.Pattern,
 				Category: value.Category,
 			}
+			fmt.Println(temp_patcat)
 			patcats = append(patcats, temp_patcat)
 		}
 	}
@@ -274,12 +268,12 @@ func GetAndSaveFoodRecommendation(probPatternList []string, qData question.QData
 
 	// 1. FoodQueryCore 초기화
 	fmt.Println("prepareQueryCore() started.")
-	fqCore, qcwp := prepareQueryCore()
+	fqCore := prepareQueryCore()
 	fmt.Println("done.")
 
 	// 2. calculationHOCN을 통해 Answer에 따라 점수 계산
-	fmt.Println("calculateHOCAN() started.")
-	fqCore = calculateHOCN(fqCore, qData, qcwp)
+	fmt.Println("calculateHOCN() started.")
+	fqCore = calculateHOCN(fqCore, qData)
 	fmt.Println("done.")
 
 	// 3. 문제 패턴 및 카테고리 정보 생성

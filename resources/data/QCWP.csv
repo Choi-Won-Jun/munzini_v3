@@ -1,92 +1,92 @@
 ﻿질문,카테고리,가중치,병증
-건망증이 있으신가요?,Neuropsychology-related,6,칠정
-가족 간의 갈등이 있으신가요?,Neuropsychology-related,6,칠정
-심장이 두근거리시나요?,Neuropsychology-related,6,칠정
-불안할 때가 있으신가요?,Neuropsychology-related,6,칠정
-깜짝깜짝 잘 놀라시나요?,Neuropsychology-related,6,칠정
-평소 근심 걱정이 많으신가요?,Neuropsychology-related,6,칠정
+건망증이 있으신가요?,Neuropsychology,6,칠정
+가족 간의 갈등이 있으신가요?,Neuropsychology,6,칠정
+심장이 두근거리시나요?,Neuropsychology,6,칠정
+불안할 때가 있으신가요?,Neuropsychology,6,칠정
+깜짝깜짝 잘 놀라시나요?,Neuropsychology,6,칠정
+평소 근심 걱정이 많으신가요?,Neuropsychology,6,칠정
 추웠다 더웠다 하시나요?,Psychosomatic,5,칠정
 가슴이 조이는 느낌이 있으신가요?,Psychosomatic,5,칠정
 입맛은 있는데 소화가 잘 안되시나요?,Psychosomatic,5,칠정
 자주 어지러우신가요?,Psychosomatic,5,칠정
 가슴이 아프신가요?,Psychosomatic,5,칠정
-한숨을 쉬시나요?,Depression-related,5,칠정
-가슴이 답답하신가요?,Depression-related,5,칠정
-늘 피곤해서 눕고만 싶으신가요?,Depression-related,5,칠정
-기분이 가라앉거나 사는게 재미없으신가요?,Depression-related,5,칠정
-잠자는 동안 땀이 나시나요?,Depression-related,5,칠정
+한숨을 쉬시나요?,Depression,5,칠정
+가슴이 답답하신가요?,Depression,5,칠정
+늘 피곤해서 눕고만 싶으신가요?,Depression,5,칠정
+기분이 가라앉거나 사는게 재미없으신가요?,Depression,5,칠정
+잠자는 동안 땀이 나시나요?,Depression,5,칠정
 불면증이 있으신가요?,Sleep & anger,2,칠정
 분노의 마음이 들 때가 있으신가요?,Sleep & anger,2,칠정
-감기가 자주 걸리시나요?,Common cold-related,3,노권
-감기가 오랫동안 지속되는 편인가요?,Common cold-related,3,노권
-말을 많이 하면 힘들어서 목소리가 작아지시나요?,Common cold-related,3,노권
-체력에 비해 일을 무리하게 많이 하시나요?,Overworking-related,3,노권
-일하는데 스트레스를 많이 받으시나요?,Overworking-related,3,노권
-일하는 시간이 불규칙하신가요?,Overworking-related,3,노권
-입맛이 없으신가요?,Digestion-related,4,노권
-소화가 잘 안되시나요?,Digestion-related,4,노권
-평소 팔다리가 무겁고 힘이 없으신가요?,Digestion-related,4,노권
-오래 서 있거나 걷기가 힘드신가요?,Digestion-related,4,노권
-식사를 거르면 힘이 쭉 빠지시나요?,Fatigue-related,4,노권
-식사 후에 몸이 나른하고 피곤하신가요?,Fatigue-related,4,노권
-일을 하고 나면 몸이 아프신가요?,Fatigue-related,4,노권
-몸이 항상 피곤하고 나른하신가요?,Fatigue-related,4,노권
-일을 하면 숨이 차시나요?,Deficiency-related,4,노권
-몸에서 열이 자주 나시나요?,Deficiency-related,4,노권
-말을 하고 나면 쉽게 목이 상하시나요?,Deficiency-related,4,노권
-기억력이 점점 떨어지시나요?,Deficiency-related,4,노권
-항문이 아래로 빠지거나- 빠지는 느낌이 있으신가요?,Pelvic floor muscle-related,1,노권
-가슴이 두근거리시나요?,Neuropsychology-related,7,담음
-사소한 일에도 쉽게 놀라시나요?,Neuropsychology-related,7,담음
-가슴이 답답하신가요?,Neuropsychology-related,7,담음
-어깨나 무릎에 관절통이 있으신가요?,Neuropsychology-related,7,담음
-숨이 자주 차시나요?,Neuropsychology-related,7,담음
-귀에서 소리가 나시나요?,Neuropsychology-related,7,담음
-옆구리가 당기듯이 아프신가요?,Neuropsychology-related,7,담음
-소화가 잘 안되시나요?,Digestion-related,5,담음
-조금만 먹어도 속이 그득하신가요?,Digestion-related,5,담음
-식욕이 없으신가요?,Digestion-related,5,담음
-속이 메스꺼워 토하고 싶을 때가 있으신가요?,Digestion-related,5,담음
-뱃속에서 '꾸르륵'하는 소리가 나시나요?,Digestion-related,5,담음
-머리가 아플 때가 있으신가요?,Fatigue-related,5,담음
-머리가 맑지 않으신가요?,Fatigue-related,5,담음
-자주 피곤한 편이신가요?,Fatigue-related,5,담음
-어지럼증을 느끼시나요?,Fatigue-related,5,담음
-팔다리에 힘이 없으신가요?,Fatigue-related,5,담음
-가래가 끓으시나요?,Respiration-related,3,담음
-목에 무언가가 걸려서 뱉거나 삼키려고 해도 잘 안되시나요?,Respiration-related,3,담음
-기침이 나시나요?,Respiration-related,3,담음
-눈 밑이 검은 편이신가요?,skin-related,2,담음
-얼굴색이 누런 편이신가요?,skin-related,2,담음
-몸에 말랑말랑한 멍울이 있으신가요?,Dampness-related,3,담음
-피부가 가려우신가요?,Dampness-related,3,담음
-대변이 묽고 끈끈한 편이신가요?,Dampness-related,3,담음
-신물이 올라오시나요?,Digestion-related,6,식적
-트림을 자주 하시나요?,Digestion-related,6,식적
-위 부근이 아프다는 느낌이 드시나요?,Digestion-related,6,식적
-종종 배탈이 나시나요?,Digestion-related,6,식적
-식사 후 배가 더부룩하신가요?,Digestion-related,6,식적
-명치 끝을 눌렀을 때 아프신가요?,Digestion-related,6,식적
-몸이 무거운 느낌이 드시나요?,Dampness-related,4,식적
-체중이 점점 늘어나시나요?,Dampness-related,4,식적
-몸이 잘 부으시나요?,Dampness-related,4,식적
-식사 후 피곤이 더 심해지시나요?,Dampness-related,4,식적
-식사 후 바로 배가 아프신가요?,Food sensitivity-related,4,식적
-식사 후 바로 대변을 보시나요?,Food sensitivity-related,4,식적
-다른 지역에 가서 식단이 갑자기 바뀌면 복통이나 설사를 하시나요?,Food sensitivity-related,4,식적
-특정 음식에 두드러기가 난 적이 있나요?,Food sensitivity-related,4,식적
-평소 대변이 묽은 편에 속하시나요?,Urine & feces-related,3,식적
-소변을 자주 보시나요?,Urine & feces-related,3,식적
-팔다리에 관절통이 있으신가요?,Urine & feces-related,3,식적
-관절에 통증이 있으신가요?,Pain-related,7,어혈
-밤에 쑤시고 아파서 잠자기가 힘드신가요?,Pain-related,7,어혈
-옆구리가 아프신가요?,Pain-related,7,어혈
-아랫배가 아프신가요?,Pain-related,7,어혈
-특정 부위의 저림 증상이 오래도록 지속되시나요?,Pain-related,7,어혈
-멍이 잘 드시나요?,Pain-related,7,어혈
-복부에 덩어리가 느껴지시나요?,Pain-related,7,어혈
-눈 밑이 푸르거나 자주색을 띄며 어두우신가요?,blood vessel-related,3,어혈
-입술이나 혀 또는 잇몸의 색이 푸르거나 자주색을 띄며 어두우신가요?,blood vessel-related,3,어혈
-대변색이 검으신가요?,blood vessel-related,3,어혈
-최근 넘어지거나 교통사고 등 심하게 부딪힌 후 증상이 있으신가요?,trauma-related,2,어혈
-발목이나 손목 또는 허리가 삐끗한 일로 증상이 있으신가요?,trauma-related,2,어혈
+감기가 자주 걸리시나요?,Common cold,3,노권
+감기가 오랫동안 지속되는 편인가요?,Common cold,3,노권
+말을 많이 하면 힘들어서 목소리가 작아지시나요?,Common cold,3,노권
+체력에 비해 일을 무리하게 많이 하시나요?,Overworking,3,노권
+일하는데 스트레스를 많이 받으시나요?,Overworking,3,노권
+일하는 시간이 불규칙하신가요?,Overworking,3,노권
+입맛이 없으신가요?,Digestion,4,노권
+소화가 잘 안되시나요?,Digestion,4,노권
+평소 팔다리가 무겁고 힘이 없으신가요?,Digestion,4,노권
+오래 서 있거나 걷기가 힘드신가요?,Digestion,4,노권
+식사를 거르면 힘이 쭉 빠지시나요?,Fatigue,4,노권
+식사 후에 몸이 나른하고 피곤하신가요?,Fatigue,4,노권
+일을 하고 나면 몸이 아프신가요?,Fatigue,4,노권
+몸이 항상 피곤하고 나른하신가요?,Fatigue,4,노권
+일을 하면 숨이 차시나요?,Deficiency,4,노권
+몸에서 열이 자주 나시나요?,Deficiency,4,노권
+말을 하고 나면 쉽게 목이 상하시나요?,Deficiency,4,노권
+기억력이 점점 떨어지시나요?,Deficiency,4,노권
+항문이 아래로 빠지거나- 빠지는 느낌이 있으신가요?,Pelvic floor muscle,1,노권
+가슴이 두근거리시나요?,Neuropsychology,7,담음
+사소한 일에도 쉽게 놀라시나요?,Neuropsychology,7,담음
+가슴이 답답하신가요?,Neuropsychology,7,담음
+어깨나 무릎에 관절통이 있으신가요?,Neuropsychology,7,담음
+숨이 자주 차시나요?,Neuropsychology,7,담음
+귀에서 소리가 나시나요?,Neuropsychology,7,담음
+옆구리가 당기듯이 아프신가요?,Neuropsychology,7,담음
+소화가 잘 안되시나요?,Digestion,5,담음
+조금만 먹어도 속이 그득하신가요?,Digestion,5,담음
+식욕이 없으신가요?,Digestion,5,담음
+속이 메스꺼워 토하고 싶을 때가 있으신가요?,Digestion,5,담음
+뱃속에서 '꾸르륵'하는 소리가 나시나요?,Digestion,5,담음
+머리가 아플 때가 있으신가요?,Fatigue,5,담음
+머리가 맑지 않으신가요?,Fatigue,5,담음
+자주 피곤한 편이신가요?,Fatigue,5,담음
+어지럼증을 느끼시나요?,Fatigue,5,담음
+팔다리에 힘이 없으신가요?,Fatigue,5,담음
+가래가 끓으시나요?,Respiration,3,담음
+목에 무언가가 걸려서 뱉거나 삼키려고 해도 잘 안되시나요?,Respiration,3,담음
+기침이 나시나요?,Respiration,3,담음
+눈 밑이 검은 편이신가요?,skin,2,담음
+얼굴색이 누런 편이신가요?,skin,2,담음
+몸에 말랑말랑한 멍울이 있으신가요?,Dampness,3,담음
+피부가 가려우신가요?,Dampness,3,담음
+대변이 묽고 끈끈한 편이신가요?,Dampness,3,담음
+신물이 올라오시나요?,Digestion,6,식적
+트림을 자주 하시나요?,Digestion,6,식적
+위 부근이 아프다는 느낌이 드시나요?,Digestion,6,식적
+종종 배탈이 나시나요?,Digestion,6,식적
+식사 후 배가 더부룩하신가요?,Digestion,6,식적
+명치 끝을 눌렀을 때 아프신가요?,Digestion,6,식적
+몸이 무거운 느낌이 드시나요?,Dampness,4,식적
+체중이 점점 늘어나시나요?,Dampness,4,식적
+몸이 잘 부으시나요?,Dampness,4,식적
+식사 후 피곤이 더 심해지시나요?,Dampness,4,식적
+식사 후 바로 배가 아프신가요?,Food sensitivity,4,식적
+식사 후 바로 대변을 보시나요?,Food sensitivity,4,식적
+다른 지역에 가서 식단이 갑자기 바뀌면 복통이나 설사를 하시나요?,Food sensitivity,4,식적
+특정 음식에 두드러기가 난 적이 있나요?,Food sensitivity,4,식적
+평소 대변이 묽은 편에 속하시나요?,Urine & feces,3,식적
+소변을 자주 보시나요?,Urine & feces,3,식적
+팔다리에 관절통이 있으신가요?,Urine & feces,3,식적
+관절에 통증이 있으신가요?,Pain,7,어혈
+밤에 쑤시고 아파서 잠자기가 힘드신가요?,Pain,7,어혈
+옆구리가 아프신가요?,Pain,7,어혈
+아랫배가 아프신가요?,Pain,7,어혈
+특정 부위의 저림 증상이 오래도록 지속되시나요?,Pain,7,어혈
+멍이 잘 드시나요?,Pain,7,어혈
+복부에 덩어리가 느껴지시나요?,Pain,7,어혈
+눈 밑이 푸르거나 자주색을 띄며 어두우신가요?,blood vessel,3,어혈
+입술이나 혀 또는 잇몸의 색이 푸르거나 자주색을 띄며 어두우신가요?,blood vessel,3,어혈
+대변색이 검으신가요?,blood vessel,3,어혈
+최근 넘어지거나 교통사고 등 심하게 부딪힌 후 증상이 있으신가요?,trauma,2,어혈
+발목이나 손목 또는 허리가 삐끗한 일로 증상이 있으신가요?,trauma,2,어혈
