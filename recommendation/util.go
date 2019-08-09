@@ -73,17 +73,10 @@ func calculateHOCN(fqcore FoodQueryCore, qData question.QData) FoodQueryCore {
 	for qIdx, score := range qData.Answer {
 
 		if qIdx == -1 { // Answer Map의 Init Value인 -1 : -1 을 제외한다.
-			break
+			continue
 		}
-
-		// fmt.Println("qIdx: ")
-		// fmt.Println(qIdx)
-		// fmt.Println("qIdx Type: ")
-		// fmt.Printf("%T\n", qIdx)
-		// Make pattern, category
 		pattern := qcwp[qIdx][question.PATTERN]
 		category := qcwp[qIdx][question.CATEGORY]
-		// fmt.Println("Made Pattern & Category")
 
 		// Make QueryCore's Key
 		QCkey := PatternCat{
@@ -139,7 +132,6 @@ func extractQPC(fqcore FoodQueryCore, ProbPatternList []string) []PatternCat {
 				Pattern:  value.Pattern,
 				Category: value.Category,
 			}
-			fmt.Println(temp_patcat)
 			patcats = append(patcats, temp_patcat)
 		}
 	}
