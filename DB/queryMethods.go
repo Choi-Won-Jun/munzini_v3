@@ -422,7 +422,7 @@ func InsertRecomendation(recJson string) {
 }
 
 // COLLECTION 이름과 쿼리 리스트를 받아 해당 COLLECTION에 쿼리한 결과 리스트를 반환
-func RequestQueries(collectionName string, queries []bson.M) [][]interface{} {
+func RequestQueries(collectionName string, queries []bson.M) [][]bson.M {
 	uri := "mongodb://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
 	session, err := mgo.Dial(uri)
 	if err != nil {
@@ -430,9 +430,9 @@ func RequestQueries(collectionName string, queries []bson.M) [][]interface{} {
 	}
 	collection := session.DB(DB_NAME).C(collectionName)
 
-	var result [][]interface{}
+	var result [][]bson.M
 	for i := 0; i < len(queries); i++ {
-		var res []interface{}
+		var res []bson.M
 		if err := collection.Find(queries[i]).All(&res); err != nil {
 			panic(err)
 		}

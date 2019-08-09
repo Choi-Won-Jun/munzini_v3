@@ -22,7 +22,7 @@ func prepareQueryCore() FoodQueryCore {
 			3. QueryCore의 Key값에 PatternCat을 넣고, 이에 따른 QueryData를 작성하는 로직을 만든다.
 	*/
 
-	// 1. PatternCat 초기화 ( QueryCore의 Key 값 )
+	// 1. PatternCat리스트 선언 ( QueryCore의 Key 값 )
 	var patcat []PatternCat
 
 	// TODO: PatternCat리스트 초기화 ( 23개 - 카테고리 개수)
@@ -73,7 +73,7 @@ func calculateHOCN(fqcore FoodQueryCore, qData question.QData) FoodQueryCore {
 	for qIdx, score := range qData.Answer {
 
 		if qIdx == -1 { // Answer Map의 Init Value인 -1 : -1 을 제외한다.
-			break
+			continue
 		}
 
 		// fmt.Println("qIdx: ")
@@ -173,7 +173,7 @@ func makeQueries(patterncats []PatternCat) []bson.M {
 }
 
 // 6. DB 모듈로부터 받은 쿼리 결과 데이터를 가공
-func makeRecJsonSet(dbResponses [][]interface{}) [][]RecJson {
+func makeRecJsonSet(dbResponses [][]bson.M) [][]RecJson {
 	var recJsonSet [][]RecJson
 	numRes := len(dbResponses) // (변증, 카테고리) 쌍의 개수
 	for i := 0; i < numRes; i++ {
@@ -181,7 +181,7 @@ func makeRecJsonSet(dbResponses [][]interface{}) [][]RecJson {
 		numDoc := len(dbResponses[i])
 		randIndexes := random.RangeInt(0, numDoc, RMD_PER_CAT)
 		for j := 0; j < RMD_PER_CAT; j++ {
-			doc := dbResponses[i][randIndexes[j]].(bson.M)
+			doc := dbResponses[i][randIndexes[j]]
 			recJson := RecJson{
 				Pattern:  doc["pattern"].(string),
 				Category: doc["category"].(string),
@@ -222,7 +222,7 @@ func makeRecScript(recJsonSet [][]RecJson) string {
 			}
 		}
 	}
-	script := "제가 더욱 건강한 삶을 위해 추천드릴 음식들을 정리해봤어요. "
+	script := "더욱 건강한 삶을 위해 추천드릴 음식도 정리해봤어요. "
 	if len(CRec) != 0 {
 		script += "칠정에 좋은 "
 		for i := 0; i < len(CRec); i++ {
