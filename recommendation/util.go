@@ -75,6 +75,7 @@ func calculateHOCN(fqcore FoodQueryCore, qData question.QData) FoodQueryCore {
 		if qIdx == -1 { // Answer Map의 Init Value인 -1 : -1 을 제외한다.
 			continue
 		}
+
 		pattern := qcwp[qIdx][question.PATTERN]
 		category := qcwp[qIdx][question.CATEGORY]
 

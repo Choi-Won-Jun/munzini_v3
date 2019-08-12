@@ -1,11 +1,11 @@
 package nlp
 
 // ConvertInquiryScore 관련 구조체
-var exStrOne = []string{"일", "일본", "일정"}                                                                    // 1점에 관한 예외 단어
-var exStrTwo = []string{"이", "이정", "이점"}                                                                    // 2점에 관한 예외 단어
-var exStrThr = []string{"삼", "상점", "암점", "삼원", "한번"}                                                        // 3점에 관한 예외 단어
-var exStrFor = []string{"사", "사정", "4동", "서점", "서번", "사본", "사전", "화정", "화성", "다정", "아점", "상가점", "카본", "서본"} // 4점에 관한 예외 단어
-var exStrFif = []string{"오", "오정", "호점", "오전"}                                                              // 5점에 관한 예외 단어
+var exStrOne = []string{"일", "일번", "일점", "일본", "일정"}                                                                    // 1점에 관한 예외 단어
+var exStrTwo = []string{"이", "이번", "이점", "이정", "이점"}                                                                    // 2점에 관한 예외 단어
+var exStrThr = []string{"삼", "삼번", "삼점", "상점", "암점", "삼원", "한번"}                                                        // 3점에 관한 예외 단어
+var exStrFor = []string{"사", "사번", "사점", "사정", "4동", "서점", "서번", "사본", "사전", "화정", "화성", "다정", "아점", "상가점", "카본", "서본"} // 4점에 관한 예외 단어
+var exStrFif = []string{"오", "오번", "오점", "오정", "호점", "오전"}                                                              // 5점에 관한 예외 단어
 
 var exStrArr = [][]string{exStrOne, exStrTwo, exStrThr, exStrFor, exStrFif}
 
