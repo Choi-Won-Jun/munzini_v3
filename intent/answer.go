@@ -41,15 +41,15 @@ func GetSQPAnswer(intent protocol.CEKIntent, qData question.QData, userID string
 	case "Clova.YesIntent":
 		qData = question.PrepareRep(qData) // prepare representative questions
 		qData.RepMax = len(qData.QRepIdx)
-		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문을 듣고 긍정 혹은 부정의 뜻으로 말씀해주시면 됩니다. 첫 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
-		statusDelta = 1                                                                                                                                           // next status
+		responseValue = "그럼, 이제부터 문진을 시작할게요. 질문을 듣고 응 또는 아니야 처럼, 긍정 혹은 부정의 말로 대답해주시면 됩니다. 첫 질문입니다. " + question.RAW_DATA.QCWP[qData.QRepIdx[qData.RepIdx]][question.QUESTION] // current question
+		statusDelta = 1                                                                                                                                                       // next status
 		// Author: Jun
 		DB.SaveUserRecord(userID)
 	case "Clova.NoIntent":
 		responseValue = "다음에 언제든지 불러주세요."
 		shouldEndSession = true
 	default:
-		responseValue = "예 또는 아니오로 대답해주세요."
+		responseValue = "응 또는 아니야 로 대답해주세요."
 	}
 	// make an answer
 	responsePayload := protocol.CEKResponsePayload{
@@ -205,7 +205,7 @@ func GetDQPAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEK
 		responseValue = "검사하시느라 수고하셨어요. 다음에 또 불러주세요!"
 		shouldEndSession = true
 	default:
-		responseValue = "예 또는 아니오로 대답해주세요."
+		responseValue = "응 또는 아니야 로 대답해주세요."
 	}
 	// make an answer
 	responsePayload := protocol.CEKResponsePayload{
@@ -444,7 +444,7 @@ func GetRAnswer(intent protocol.CEKIntent, qData question.QData) (protocol.CEKRe
 		responseValue = "검사하느라 수고 많으셨어요. 다음에도 또 불러주세요."
 		shouldEndSession = true
 	default:
-		responseValue = "예 또는 아니오로 대답해주세요."
+		responseValue = "응 또는 아니야 로 대답해주세요."
 	}
 
 	// make an answer
