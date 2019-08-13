@@ -217,35 +217,35 @@ func makeRecScript(recJsonSet [][]RecJson) string {
 	}
 	script := "더욱 건강한 삶을 위해 추천드릴 음식도 정리해봤어요. "
 	if len(CRec) != 0 {
-		script += "칠정에 좋은 "
+		script += "칠정에 좋은, "
 		for i := 0; i < len(CRec); i++ {
 			script += CRec[i].FoodNm
 			script += ", "
 		}
 	}
 	if len(NRec) != 0 {
-		script += "노권에 좋은 "
+		script += "노권에 좋은, "
 		for i := 0; i < len(NRec); i++ {
 			script += NRec[i].FoodNm
 			script += ", "
 		}
 	}
 	if len(DRec) != 0 {
-		script += "담음에 좋은 "
+		script += "담음에 좋은, "
 		for i := 0; i < len(DRec); i++ {
 			script += DRec[i].FoodNm
 			script += ", "
 		}
 	}
 	if len(SRec) != 0 {
-		script += "식적에 좋은 "
+		script += "식적에 좋은, "
 		for i := 0; i < len(SRec); i++ {
 			script += SRec[i].FoodNm
 			script += ", "
 		}
 	}
 	if len(URec) != 0 {
-		script += "어혈에 좋은 "
+		script += "어혈에 좋은, "
 		for i := 0; i < len(URec); i++ {
 			script += URec[i].FoodNm
 			script += ", "

@@ -723,12 +723,16 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	if qData.SQSProb == true {  // SQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
 		//finalScoreNotification
 		//qData.FinalScore[] 사용
+		isFirstDQSProb := true // 처음 상세 문제 판단 후부터는 false가 된다
 		sqslength := len(qData.SQSProbPatternIdx)
 		for i := 0; i < sqslength; i++ { // identifier 초기화
-			if qData.FinalScore[qData.SQSProbPatternIdx[i]] > question.PROB_EXIST_SCORE {
-				identifier += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]]
-				if i < sqslength-1 { // 후에 질병들을 " "를 기준으로 Split하기 위해 추가
+			if qData.FinalScore[qData.SQSProbPatternIdx[i]] > question.PROB_EXIST_SCORE { // 상세 문제로 판단 시
+				if isFirstDQSProb {
+					identifier += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]]
+					isFirstDQSProb = false
+				} else {
 					identifier += " "
+					identifier += question.PATTERN_NAME[qData.SQSProbPatternIdx[i]]
 				}
 				probNum++
 			}
@@ -761,10 +765,14 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	} else { // NoSQSProbPatternIdx 를 기반으로 정밀검사를 했을 때
 		nosqslength := len(qData.NoSQSProbPatternIdx)
 		for i := 0; i < nosqslength; i++ { // identifier 초기화
-			if qData.FinalScore[qData.NoSQSProbPatternIdx[i]] > question.PROB_EXIST_SCORE {
-				identifier += question.PATTERN_NAME[qData.NoSQSProbPatternIdx[i]]
-				if i < nosqslength-1 { // 후에 질병들을 " "를 기준으로 Split하기 위해 추가
+			isFirstDQSProb := true                                                          // 처음 상세 문제 판단 후부터는 false가 된다
+			if qData.FinalScore[qData.NoSQSProbPatternIdx[i]] > question.PROB_EXIST_SCORE { // 상세 문제로 판단 시
+				if isFirstDQSProb {
+					identifier += question.PATTERN_NAME[qData.NoSQSProbPatternIdx[i]]
+					isFirstDQSProb = false
+				} else {
 					identifier += " "
+					identifier += question.PATTERN_NAME[qData.NoSQSProbPatternIdx[i]]
 				}
 				probNum++
 			}
@@ -799,7 +807,7 @@ func makeFinalScoreNotification(qData question.QData, userID string) question.QD
 	}
 
 	// fmt.Println(strconv.Itoa(probNum) + "문제 있음.")
-	// fmt.Println(identifier)
+	fmt.Println(identifier)
 
 	// Author: Jun
 	if probNum == 0 { // 정밀문진 결과 문제되는 패턴이 없을 때
